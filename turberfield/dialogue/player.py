@@ -22,6 +22,7 @@ import logging
 import logging.handlers
 import sys
 
+import simpleaudio
 import turberfield.dialogue
 
 __doc__ = """
