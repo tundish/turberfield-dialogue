@@ -61,8 +61,11 @@ def log_setup(args, name="turberfield.dialogue", loop=None):
     return name
 
 def main(args):
+    loop = asyncio.get_event_loop()
+    logName = log_setup(args, loop=loop)
+    log = logging.getLogger(logName)
     try:
-        loop = asyncio.get_event_loop()
+        log.info(args)
     except Exception as e:
         log.error(getattr(e, "args", e) or e) 
     finally:
