@@ -57,9 +57,11 @@ setup(
     },
     install_requires=[
         "docutils>=0.12",
-        "simpleaudio>=1.0.1",
         ],
     extras_require={
+        "audio": [
+            "simpleaudio>=1.0.1",
+        ],
         "dev": [
             "pep8>=1.6.2",
         ],

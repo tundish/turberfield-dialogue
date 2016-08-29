@@ -67,6 +67,10 @@ def main(args):
     log = logging.getLogger(logName)
     try:
         log.info(args)
+
+        waveObj = simpleaudio.WaveObject.from_wave_file(args.input)
+        playObj = waveObj.play()
+        playObj.wait_done()
     except Exception as e:
         log.error(getattr(e, "args", e) or e) 
     finally:
@@ -85,6 +89,9 @@ def parser(descr=__doc__):
         action="store_const", dest="log_level",
         const=logging.DEBUG, default=logging.INFO,
         help="Increase the verbosity of output")
+    rv.add_argument(
+        "--input", required=True,
+        help="Set a file path for audio input")
     rv.add_argument(
         "--interval", default=None, type=int,
         help="Set the indexing interval (s)")
