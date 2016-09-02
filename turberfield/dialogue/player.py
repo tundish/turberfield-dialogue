@@ -21,6 +21,7 @@ import asyncio
 import logging
 import logging.handlers
 import sys
+import wave
 
 import simpleaudio
 import turberfield.dialogue
@@ -68,9 +69,32 @@ def main(args):
     try:
         log.info(args)
 
-        waveObj = simpleaudio.WaveObject.from_wave_file(args.input)
-        playObj = waveObj.play()
-        playObj.wait_done()
+        data = wave.open(args.input, "rb")
+        nChannels = data.getnchannels()
+        bytesPerSample = data.getsampwidth()
+        sampleRate = data.getframerate()
+        nFrames = data.getnframes()
+        framesPerMilliSecond = nChannels * sampleRate // 1000
+
+        offset = framesPerMilliSecond * args.start
+        duration = nFrames - offset
+        if duration <= 0:
+            log.error("Start beyond limits.")
+            return 2
+        duration = min(
+            duration,
+            framesPerMilliSecond * args.duration if args.duration is not None else duration
+        )
+
+        data.readframes(offset)
+
+        frames = data.readframes(duration)
+        for i in range(args.loop):
+            waveObj = simpleaudio.WaveObject(frames, nChannels, bytesPerSample, sampleRate)
+            playObj = waveObj.play()
+            playObj.wait_done()
+            # playObj.is_playing()
+
     except Exception as e:
         log.error(getattr(e, "args", e) or e) 
     finally:
@@ -93,8 +117,14 @@ def parser(descr=__doc__):
         "--input", required=True,
         help="Set a file path for audio input")
     rv.add_argument(
-        "--interval", default=None, type=int,
-        help="Set the indexing interval (s)")
+        "--start", default=0, type=int,
+        help="Set the starting offset (ms)")
+    rv.add_argument(
+        "--duration", default=None, type=int,
+        help="Set the clip duration (ms)")
+    rv.add_argument(
+        "--loop", default=1, type=int,
+        help="The number of times to loop the clip")
     rv.add_argument(
         "--log", default=None, dest="log_path",
         help="Set a file path for log output")
