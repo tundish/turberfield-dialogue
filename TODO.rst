@@ -1,3 +1,17 @@
+..  Titling
+    ##++::==~~--''``
+
+Workflow
+::::::::
+
+* Act structure
+* PLot points
+* Objects and memory
+
+
+Model
+:::::
+
 * An actor is a major, named character
 * An actor may play other minor characters, eg: as a bystander
 * A role is the association between character and actor
@@ -7,6 +21,6 @@
   * A scene specifies required characters
 * A SceneSequence is a series of scenes.
 * A frame is a visible container for shots, ie: recent history
-* Phases exist between Plot points. They replay SceneSequences until a branch is made. They vary by location and actors
-  present.
+* Phases exist between Plot points. They replay SceneSequences until a branch is made. They vary by location
+  and actors present.
 * Player Character has a phrase book (numbered slots) with user-defined responses to RTE dialogue.
