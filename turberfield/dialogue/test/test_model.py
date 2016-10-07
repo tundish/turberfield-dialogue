@@ -21,7 +21,7 @@ import unittest
 
 from turberfield.dialogue.directives import RoleDirective
 from turberfield.dialogue.model import group_by_type
-from turberfield.dialogue.model import Scenes
+from turberfield.dialogue.model import SceneScript
 
 class RoleDirectiveTests(unittest.TestCase):
 
@@ -42,7 +42,7 @@ class RoleDirectiveTests(unittest.TestCase):
 
                A hardened recidivist.
             """)
-        s = Scenes()
+        s = SceneScript()
         objs = s.read(content)
         groups = group_by_type(objs)
         self.assertEqual(3, len(groups[RoleDirective.Node]), groups)

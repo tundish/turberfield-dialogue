@@ -30,8 +30,7 @@ def group_by_type(items):
         {k: list(v) for k, v in itertools.groupby(items, key=type)}
     )
 
-# TODO: SceneSequence
-class Scenes:
+class SceneScript:
 
     settings=argparse.Namespace(
         debug = False, error_encoding="utf-8",
@@ -48,7 +47,7 @@ class Scenes:
         )
 
     def read(self, text, name=None):
-        doc = docutils.utils.new_document(name, Scenes.settings)
+        doc = docutils.utils.new_document(name, SceneScript.settings)
         parser = docutils.parsers.rst.Parser()
         parser.parse(text, doc)
         return doc.children
