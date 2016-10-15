@@ -12,10 +12,10 @@
 .. persona:: WEAPON
 
 
-Action
+Combat
 ~~~~~~
 
-Combat
+Action
 ------
 
 [FIGHTER_1]_
