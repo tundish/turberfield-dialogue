@@ -38,6 +38,8 @@ setup(
     packages=[
         "turberfield.dialogue",
         "turberfield.dialogue.test",
+        "turberfield.dialogue.sequences",
+        "turberfield.dialogue.sequences.battle_royal",
     ],
     package_data={
         "turberfield.dialogue": [
@@ -54,6 +56,9 @@ setup(
             "doc/html/_static/*.js",
             "doc/html/_static/*.png",
             ],
+        "turberfield.dialogue.sequences.battl_royal": [
+            "*.rst",
+        ]
     },
     install_requires=[
         "docutils>=0.12",
