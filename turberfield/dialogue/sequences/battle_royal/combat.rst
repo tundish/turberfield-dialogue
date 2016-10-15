@@ -9,12 +9,23 @@
 
 .. persona:: FIGHTER_2
 
-.. persona:: AXE
+.. persona:: WEAPON
 
 
 Action
 ~~~~~~
 
 Combat
-~~~~~~
+------
 
+[FIGHTER_1]_
+
+    I hate the way you use me!
+
+[WEAPON]_
+
+    **Whack!**
+
+[FIGHTER_2]_
+
+    Uuurrggh!
