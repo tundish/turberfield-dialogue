@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#   -*- encoding: UTF-8 -*-
+# encoding: UTF-8
 
 # This file is part of turberfield.
 #
@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
+
 
 import argparse
 import asyncio
