@@ -39,6 +39,7 @@ class SceneScript:
     )
 
     def __init__(self):
+        # TODO: Take metadata from entry point
         docutils.parsers.rst.directives.register_directive(
             "part", RoleDirective
         )
