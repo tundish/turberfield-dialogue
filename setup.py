@@ -56,7 +56,7 @@ setup(
             "doc/html/_static/*.js",
             "doc/html/_static/*.png",
             ],
-        "turberfield.dialogue.sequences.battl_royal": [
+        "turberfield.dialogue.sequences.battle_royal": [
             "*.rst",
         ]
     },
