@@ -20,8 +20,9 @@ import textwrap
 import unittest
 
 from turberfield.dialogue.directives import RoleDirective
-from turberfield.dialogue.model import group_by_type
 from turberfield.dialogue.model import SceneScript
+
+from turberfield.utils.misc import group_by_type
 
 class RoleDirectiveTests(unittest.TestCase):
 

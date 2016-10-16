@@ -62,6 +62,7 @@ setup(
     },
     install_requires=[
         "docutils>=0.12",
+        "turberfield-utils>=0.22.0",
         ],
     extras_require={
         "audio": [

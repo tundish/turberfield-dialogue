@@ -25,10 +25,6 @@ from turberfield.dialogue.directives import RoleDirective
 
 import docutils
 
-def group_by_type(items):
-    return defaultdict(list,
-        {k: list(v) for k, v in itertools.groupby(items, key=type)}
-    )
 
 class SceneScript:
 
