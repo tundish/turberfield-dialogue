@@ -25,7 +25,7 @@ import logging
 import os.path
 import sys
 
-from turberfield.dialogue.directives import RoleDirective
+from turberfield.dialogue.directives import PersonaDirective
 
 import pkg_resources
 import docutils
@@ -52,6 +52,10 @@ class SceneScript:
         warning_stream=sys.stderr
     )
 
+    docutils.parsers.rst.directives.register_directive(
+        "persona", PersonaDirective
+    )
+
     @classmethod
     def scripts(cls, pkg, doc, paths=[]):
         for path in paths:
@@ -73,10 +77,8 @@ class SceneScript:
         # TODO: Take metadata from entry point
         print(fP)
 
-    def read(self, text, name=None):
-        docutils.parsers.rst.directives.register_directive(
-            "part", RoleDirective
-        )
+    @staticmethod
+    def read(text, name=None):
         doc = docutils.utils.new_document(name, SceneScript.settings)
         parser = docutils.parsers.rst.Parser()
         parser.parse(text, doc)

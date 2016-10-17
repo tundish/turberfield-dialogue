@@ -29,23 +29,13 @@ class RoleDirectiveTests(unittest.TestCase):
 
     def test_role(self):
         content = textwrap.dedent("""
-            .. part:: WARDER
-               :addisonarches.roles.Regulating: newboy
+            .. persona:: FIGHTER_1
 
-               An ex-military policeman who now runs a prison wing.
+            .. persona:: FIGHTER_2
 
-            .. part:: NEWBOY
-               :addisonarches.attitudes.Waiting:
-
-               A first-time prisoner.
-
-            .. part:: OLDLAG
-               :addisonarches.attitudes.Resentful:
-
-               A hardened recidivist.
+            .. persona:: WEAPON
             """)
-        s = SceneScript()
-        objs = s.read(content)
+        objs = SceneScript.read(content)
         print(objs)
         groups = group_by_type(objs)
         self.assertEqual(3, len(groups[RoleDirective.Node]), groups)

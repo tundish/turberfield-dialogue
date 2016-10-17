@@ -21,6 +21,41 @@ from collections import namedtuple
 import docutils.parsers.rst
 from docutils.parsers.rst.directives.body import ParsedLiteral
 
+class PersonaDirective(docutils.parsers.rst.Directive):
+
+    """
+    http://docutils.sourceforge.net/docutils/parsers/rst/directives/parts.py
+    """
+
+    required_arguments = 0
+    optional_arguments = 2
+    final_argument_whitespace = True
+    option_spec = {}
+    has_content = True
+
+    def run(self):
+        # Raise an error if the directive does not have contents.
+        self.assert_has_content()
+        # Create the admonition node, to be populated by `nested_parse`.
+        text = '\n'.join(self.content)
+        text_nodes, messages = self.state.inline_text(text, self.lineno)
+        node = docutils.nodes.literal_block(text, '', *text_nodes, **self.options)
+        node.line = self.content_offset + 1
+        self.add_name(node)
+        return [node] + messages
+        kwargs = {
+            i: getattr(self, i, None)
+            for i in (
+                "name", "arguments", "options", "content", "lineno", "content_offset",
+                "block_text", "state", "state_machine"
+            )
+        }
+        dialogueNode = self.node_class(**kwargs)
+        # Parse the directive contents.
+        self.state.nested_parse(self.content, self.content_offset, dialogueNode)
+        return [dialogueNode]
+
+
 class RoleDirective(docutils.parsers.rst.Directive):
 
     """
