@@ -73,13 +73,21 @@ class SceneScript:
                 else:
                     yield cls(fP, doc)
 
-    def __init__(self, fP, doc=""):
-        # TODO: Take metadata from entry point
-        print(fP)
-
     @staticmethod
     def read(text, name=None):
         doc = docutils.utils.new_document(name, SceneScript.settings)
         parser = docutils.parsers.rst.Parser()
         parser.parse(text, doc)
-        return doc.children
+        return doc
+
+    def __init__(self, fP, doc=None):
+        self.fP = fP
+        self.doc = doc
+
+    def __enter__(self):
+        with open(self.fP, "r") as script:
+            self.doc = self.read(script.read())
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        return False

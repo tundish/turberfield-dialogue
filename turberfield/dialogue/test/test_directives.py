@@ -27,13 +27,28 @@ from turberfield.utils.misc import group_by_type
 
 class RoleDirectiveTests(unittest.TestCase):
 
-    def test_role(self):
+    def test_empty_personae(self):
         content = textwrap.dedent("""
             .. persona:: FIGHTER_1
 
             .. persona:: FIGHTER_2
 
             .. persona:: WEAPON
+            """)
+        objs = SceneScript.read(content)
+        print(objs)
+        groups = group_by_type(objs)
+        self.assertEqual(3, len(groups[RoleDirective.Node]), groups)
+
+    def test_personae_with_description(self):
+        content = textwrap.dedent("""
+            .. persona:: FIGHTER_1
+
+            .. persona:: FIGHTER_2
+
+            .. persona:: WEAPON
+
+               A weapoon which makes a noise in use. 
             """)
         objs = SceneScript.read(content)
         print(objs)

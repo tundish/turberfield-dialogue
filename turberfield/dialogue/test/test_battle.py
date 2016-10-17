@@ -54,25 +54,3 @@ class ScriptTests(unittest.TestCase):
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertFalse(rv)
-
-    def tost_role(self):
-        content = textwrap.dedent("""
-            .. part:: WARDER
-               :addisonarches.roles.Regulating: newboy
-
-               An ex-military policeman who now runs a prison wing.
-
-            .. part:: NEWBOY
-               :addisonarches.attitudes.Waiting:
-
-               A first-time prisoner.
-
-            .. part:: OLDLAG
-               :addisonarches.attitudes.Resentful:
-
-               A hardened recidivist.
-            """)
-        s = SceneScript()
-        objs = s.read(content)
-        groups = group_by_type(objs)
-        self.assertEqual(3, len(groups[RoleDirective.Node]), groups)
