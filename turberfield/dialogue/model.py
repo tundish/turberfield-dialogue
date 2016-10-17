@@ -28,6 +28,12 @@ import docutils
 
 
 class SceneScript:
+    """
+    Holds metadata for a scene file (.rst).
+
+    A SceneScript contains one or more scenes. Each scene consists of one or more shots.
+
+    """
 
     settings=argparse.Namespace(
         debug = False, error_encoding="utf-8",

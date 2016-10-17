@@ -12,10 +12,10 @@ Workflow
 Model
 :::::
 
-* An actor is a major, named character
-* An actor may play other minor characters, eg: as a bystander
+* An persona is a major, named character
+* An persona may play other minor characters, eg: as a bystander
 * `Hint` is a character
-* A role is the association between character and actor
+* A role is the association between character and persona
 * A shot contains a single action from each participating character
 * A scene consists of a sequence of shots (ShotSequence).
   * A scene may only take place in certain locations.
@@ -25,14 +25,18 @@ Model
 * A frame is a visible container for shots, ie: recent history
 * Phases exist between Plot points. They replay Shots until a branch is made. They vary by location
   and actors present.
+
+Interaction
+:::::::::::
+
 * Player Character has a phrase book (numbered slots) with user-defined responses to RTE dialogue.
 
 Script Syntax
 :::::::::::::
 
 * Persona states are active, passive, mist
-* Persona methods are locate
-* Explore corner case Battle Royale:
+* Persona methods are locate? Maybe not.
+* Explore corner case Battle Royal:
 
     - Itchy and Scratchy are active personae. Types are both animal
     - Victim character is type animal
