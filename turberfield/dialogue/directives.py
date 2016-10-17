@@ -49,10 +49,9 @@ class Persona(docutils.parsers.rst.Directive):
                 "block_text", "state", "state_machine"
             )
         }
-        dialogueNode = self.node_class(**kwargs)
-        # Parse the directive contents.
-        self.state.nested_parse(self.content, self.content_offset, dialogueNode)
-        return [dialogueNode]
+        node = self.node_class(**kwargs)
+        self.state.nested_parse(self.content, self.content_offset, node)
+        return [node]
 
 
 class RoleDirective(docutils.parsers.rst.Directive):
@@ -61,7 +60,7 @@ class RoleDirective(docutils.parsers.rst.Directive):
     http://docutils.sourceforge.net/docutils/parsers/rst/directives/parts.py
     """
 
-    Node = namedtuple("Role", ["name", "note", "relationships"])
+    Node = namedtuple("Node", ["name", "note", "relationships"])
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = True

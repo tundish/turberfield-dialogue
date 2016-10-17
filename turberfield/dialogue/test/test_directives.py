@@ -34,6 +34,7 @@ class RoleDirectiveTests(unittest.TestCase):
             .. persona:: FIGHTER_2
 
             .. persona:: WEAPON
+
             """)
         objs = SceneScript.read(content)
         print(objs)
@@ -52,4 +53,4 @@ class RoleDirectiveTests(unittest.TestCase):
             """)
         doc = SceneScript.read(content)
         for obj in doc:
-            print(obj.content)
+            print(obj)
