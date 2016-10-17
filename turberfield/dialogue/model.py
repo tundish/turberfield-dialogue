@@ -53,16 +53,21 @@ class SceneScript:
     )
 
     @classmethod
-    def scenes(cls, pkg, doc, paths=[]):
+    def scripts(cls, pkg, doc, paths=[]):
         for path in paths:
             try:
-                fN = pkg_resources.resource_filename(pkg, path)
+                fP = pkg_resources.resource_filename(pkg, path)
             except ImportError:
                 cls.log.warning(
-                    "No script file at {}".format(os.path.join(*pkg.split(".") + [path]))
+                    "No package called {}".format(pkg)
                 )
             else:
-                yield cls(path, doc)
+                if not os.path.isfile(fP):
+                    cls.log.warning(
+                        "No script file at {}".format(os.path.join(*pkg.split(".") + [path]))
+                    )
+                else:
+                    yield cls(fP, doc)
 
     def __init__(self, fP, doc=""):
         # TODO: Take metadata from entry point

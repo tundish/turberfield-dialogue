@@ -35,14 +35,24 @@ class ScriptTests(unittest.TestCase):
             "combat.rst"
     ).decode("utf-8")
 
-    def test_bad_pkg(self):
+    def test_scripts(self):
+        folder = SceneScript.Folder(
+            "turberfield.dialogue.sequences.battle_royal", "test", ["combat.rst"]
+        )
+        rv = list(SceneScript.scripts(**folder._asdict()))
+        self.assertEqual(1, len(rv))
+        self.assertIsInstance(rv[0], SceneScript)
+
+    def test_scripts_bad_pkg(self):
         folder = SceneScript.Folder("turberfield.dialogue.sequences.not_there", "test", ["combat.rst"])
-        rv = list(SceneScript.scenes(**folder._asdict()))
+        rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertFalse(rv)
 
-    def test_bad_scenefile(self):
-        folder = SceneScript.Folder("turberfield.dialogue.sequences.dialogue", "test", ["not_there.rst"])
-        rv = list(SceneScript.scenes(**folder._asdict()))
+    def test_scripts_bad_scenefile(self):
+        folder = SceneScript.Folder(
+            "turberfield.dialogue.sequences.battle_royal", "test", ["not_there.rst"]
+        )
+        rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertFalse(rv)
 
     def tost_role(self):
