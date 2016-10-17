@@ -19,11 +19,15 @@
 
 import argparse
 from collections import defaultdict
+from collections import namedtuple
 import itertools
+import logging
+import os.path
 import sys
 
 from turberfield.dialogue.directives import RoleDirective
 
+import pkg_resources
 import docutils
 
 
@@ -35,6 +39,10 @@ class SceneScript:
 
     """
 
+    Folder = namedtuple("Folder", ["pkg", "doc", "paths"])
+
+    log = logging.getLogger("turberfield.dialogue.scenescript")
+
     settings=argparse.Namespace(
         debug = False, error_encoding="utf-8",
         error_encoding_error_handler="backslashreplace", halt_level=4,
@@ -44,13 +52,26 @@ class SceneScript:
         warning_stream=sys.stderr
     )
 
-    def __init__(self):
+    @classmethod
+    def scenes(cls, pkg, doc, paths=[]):
+        for path in paths:
+            try:
+                fN = pkg_resources.resource_filename(pkg, path)
+            except ImportError:
+                cls.log.warning(
+                    "No script file at {}".format(os.path.join(*pkg.split(".") + [path]))
+                )
+            else:
+                yield cls(path, doc)
+
+    def __init__(self, fP, doc=""):
         # TODO: Take metadata from entry point
+        print(fP)
+
+    def read(self, text, name=None):
         docutils.parsers.rst.directives.register_directive(
             "part", RoleDirective
         )
-
-    def read(self, text, name=None):
         doc = docutils.utils.new_document(name, SceneScript.settings)
         parser = docutils.parsers.rst.Parser()
         parser.parse(text, doc)

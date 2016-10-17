@@ -27,6 +27,7 @@ from turberfield.utils.misc import group_by_type
 
 import pkg_resources
 
+
 class ScriptTests(unittest.TestCase):
 
     text = pkg_resources.resource_string(
@@ -34,13 +35,15 @@ class ScriptTests(unittest.TestCase):
             "combat.rst"
     ).decode("utf-8")
 
-    def setUp(self):
-        # Think abbout selection, ordering, etc
-        s = SceneScript()
-        self.items = s.read(ScriptTests.text)
+    def test_bad_pkg(self):
+        folder = SceneScript.Folder("turberfield.dialogue.sequences.not_there", "test", ["combat.rst"])
+        rv = list(SceneScript.scenes(**folder._asdict()))
+        self.assertFalse(rv)
 
-    def test_text(self):
-        print(self.items)
+    def test_bad_scenefile(self):
+        folder = SceneScript.Folder("turberfield.dialogue.sequences.dialogue", "test", ["not_there.rst"])
+        rv = list(SceneScript.scenes(**folder._asdict()))
+        self.assertFalse(rv)
 
     def tost_role(self):
         content = textwrap.dedent("""
