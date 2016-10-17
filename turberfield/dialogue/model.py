@@ -25,7 +25,7 @@ import logging
 import os.path
 import sys
 
-from turberfield.dialogue.directives import PersonaDirective
+from turberfield.dialogue.directives import Persona
 
 import pkg_resources
 import docutils
@@ -53,7 +53,7 @@ class SceneScript:
     )
 
     docutils.parsers.rst.directives.register_directive(
-        "persona", PersonaDirective
+        "persona", Persona
     )
 
     @classmethod

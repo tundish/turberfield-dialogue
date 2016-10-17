@@ -48,9 +48,8 @@ class RoleDirectiveTests(unittest.TestCase):
 
             .. persona:: WEAPON
 
-               A weapoon which makes a noise in use. 
+               A weapon which makes a noise in use. 
             """)
-        objs = SceneScript.read(content)
-        print(objs)
-        groups = group_by_type(objs)
-        self.assertEqual(3, len(groups[RoleDirective.Node]), groups)
+        doc = SceneScript.read(content)
+        for obj in doc:
+            print(obj.content)
