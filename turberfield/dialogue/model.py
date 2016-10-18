@@ -20,12 +20,15 @@
 import argparse
 from collections import defaultdict
 from collections import namedtuple
+from collections import OrderedDict
 import itertools
 import logging
 import os.path
 import sys
 
-from turberfield.dialogue.directives import Persona
+from turberfield.dialogue.directives import Character
+from turberfield.utils.misc import group_by_type
+
 
 import pkg_resources
 import docutils
@@ -53,7 +56,7 @@ class SceneScript:
     )
 
     docutils.parsers.rst.directives.register_directive(
-        "persona", Persona
+        "character", Character
     )
 
     @classmethod
@@ -73,11 +76,16 @@ class SceneScript:
                 else:
                     yield cls(fP, doc)
 
+
     @staticmethod
     def read(text, name=None):
         doc = docutils.utils.new_document(name, SceneScript.settings)
         parser = docutils.parsers.rst.Parser()
         parser.parse(text, doc)
+        return doc
+
+    @staticmethod
+    def cast(doc, personae):
         return doc
 
     def __init__(self, fP, doc=None):
@@ -91,3 +99,7 @@ class SceneScript:
 
     def __exit__(self, exc_type, exc_value, traceback):
         return False
+
+    def select(self, personae):
+        return self.doc
+

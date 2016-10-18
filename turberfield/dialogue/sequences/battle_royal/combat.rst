@@ -5,11 +5,11 @@
 :author: D Haynes
 :date: 2016-10-15
 
-.. persona:: FIGHTER_1
+.. character:: FIGHTER_1
 
-.. persona:: FIGHTER_2
+.. character:: FIGHTER_2
 
-.. persona:: WEAPON
+.. character:: WEAPON
 
 
 Combat

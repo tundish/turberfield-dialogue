@@ -20,37 +20,40 @@
 import textwrap
 import unittest
 
-from turberfield.dialogue.directives import RoleDirective
+from turberfield.dialogue.directives import Character
 from turberfield.dialogue.model import SceneScript
 
 from turberfield.utils.misc import group_by_type
+
 
 class RoleDirectiveTests(unittest.TestCase):
 
     def test_empty_personae(self):
         content = textwrap.dedent("""
-            .. persona:: FIGHTER_1
+            .. character:: FIGHTER_1
 
-            .. persona:: FIGHTER_2
+            .. character:: FIGHTER_2
 
-            .. persona:: WEAPON
+            .. character:: WEAPON
 
             """)
         objs = SceneScript.read(content)
         print(objs)
         groups = group_by_type(objs)
-        self.assertEqual(3, len(groups[RoleDirective.Node]), groups)
+        self.assertEqual(3, len(groups[Character.Definition]), groups)
 
     def test_personae_with_description(self):
         content = textwrap.dedent("""
-            .. persona:: FIGHTER_1
+            .. character:: FIGHTER_1
 
-            .. persona:: FIGHTER_2
+            .. character:: FIGHTER_2
 
-            .. persona:: WEAPON
+            .. character:: WEAPON
 
                A weapon which makes a noise in use. 
             """)
         doc = SceneScript.read(content)
-        for obj in doc:
-            print(obj)
+        for n, obj in enumerate(doc):
+            with self.subTest(n=n):
+                self.assertIsInstance(obj, Character.Definition)
+

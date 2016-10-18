@@ -17,23 +17,19 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import collections.abc
+from collections import namedtuple
 import textwrap
 import unittest
+import uuid
 
 from turberfield.dialogue.directives import RoleDirective
 from turberfield.dialogue.model import SceneScript
 
-from turberfield.utils.misc import group_by_type
-
 import pkg_resources
 
 
-class ScriptTests(unittest.TestCase):
-
-    text = pkg_resources.resource_string(
-            "turberfield.dialogue.sequences.battle_royal",
-            "combat.rst"
-    ).decode("utf-8")
+class LoaderTests(unittest.TestCase):
 
     def test_scripts(self):
         folder = SceneScript.Folder(
@@ -54,3 +50,25 @@ class ScriptTests(unittest.TestCase):
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertFalse(rv)
+
+class CastingTests(unittest.TestCase):
+
+    Character = namedtuple("Character", ["uuid", "title", "names"])
+    Location = namedtuple("Location", ["name", "capacity"])
+
+    def setUp(self):
+        self.personae = {
+            CastingTests.Character(uuid.uuid4(), None, ("Itchy",)),
+            CastingTests.Character(uuid.uuid4(), None, ("Scratchy",)),
+            CastingTests.Character(uuid.uuid4(), None, ("Rusty", "Chopper",)),
+        }
+        folder = SceneScript.Folder(
+            "turberfield.dialogue.sequences.battle_royal", "test", ["combat.rst"]
+        )
+        self.script = next(SceneScript.scripts(**folder._asdict()))
+
+    def test_mapping(self):
+        with self.script as script:
+            casting = script.select(self.personae)
+            self.assertIsInstance(casting, collections.abc.Mapping, casting)
+            script.cast(casting)

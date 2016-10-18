@@ -24,7 +24,7 @@ import docutils.parsers.rst
 from docutils.parsers.rst.directives.body import ParsedLiteral
 
 
-class Persona(docutils.parsers.rst.Directive):
+class Character(docutils.parsers.rst.Directive):
 
     """
     http://docutils.sourceforge.net/docutils/parsers/rst/directives/parts.py
