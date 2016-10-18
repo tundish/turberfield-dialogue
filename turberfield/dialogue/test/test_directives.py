@@ -38,7 +38,6 @@ class CharacterDirectiveTests(unittest.TestCase):
 
             """)
         objs = SceneScript.read(content)
-        print(objs)
         groups = group_by_type(objs)
         self.assertEqual(3, len(groups[Character.Definition]), groups)
 
@@ -47,6 +46,8 @@ class CharacterDirectiveTests(unittest.TestCase):
             .. character:: FIGHTER_1
 
             .. character:: FIGHTER_2
+               :types: Animal
+               :states: active
 
             .. character:: WEAPON
 
@@ -56,3 +57,11 @@ class CharacterDirectiveTests(unittest.TestCase):
         for n, obj in enumerate(doc):
             with self.subTest(n=n):
                 self.assertIsInstance(obj, Character.Definition)
+
+                if n == 1:
+                    self.assertEqual(["Animal"], obj["options"]["types"])
+                    self.assertEqual(["active"], obj["options"]["states"])
+                elif n == 2:
+                    self.assertTrue(obj["content"])
+                else:
+                    self.assertFalse(obj["content"])
