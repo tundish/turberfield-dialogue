@@ -19,6 +19,7 @@
 
 from collections import namedtuple
 
+import docutils.nodes
 from docutils.nodes import BackLinkable, Element, General, Labeled, Targetable
 import docutils.parsers.rst
 from docutils.parsers.rst.directives.body import ParsedLiteral
@@ -26,9 +27,7 @@ from docutils.parsers.rst.directives.body import ParsedLiteral
 
 class Character(docutils.parsers.rst.Directive):
 
-    """
-    http://docutils.sourceforge.net/docutils/parsers/rst/directives/parts.py
-    """
+    # See http://docutils.sourceforge.net/docutils/parsers/rst/directives/parts.py
 
     class Definition(General, BackLinkable, Element, Labeled, Targetable):
 
@@ -56,43 +55,7 @@ class Character(docutils.parsers.rst.Directive):
             )
         }
         node = self.node_class(**kwargs)
+        name = docutils.nodes.fully_normalize_name(self.arguments[0])
+        node["names"] = list(set(node["names"]) | {name})
         self.state.nested_parse(self.content, self.content_offset, node)
         return [node]
-
-
-class RoleDirective(docutils.parsers.rst.Directive):
-
-    """
-    http://docutils.sourceforge.net/docutils/parsers/rst/directives/parts.py
-    """
-
-    Node = namedtuple("Node", ["name", "note", "relationships"])
-    required_arguments = 1
-    optional_arguments = 0
-    final_argument_whitespace = True
-    option_spec = {}
-    has_content = True
-
-    def run(self):
-        # Raise an error if the directive does not have contents.
-        self.assert_has_content()
-        # Create the admonition node, to be populated by `nested_parse`.
-        text = '\n'.join(self.content)
-        text_nodes, messages = self.state.inline_text(text, self.lineno)
-        node = docutils.nodes.literal_block(text, '', *text_nodes, **self.options)
-        node.line = self.content_offset + 1
-        self.add_name(node)
-        return [node] + messages
-        kwargs = {
-            i: getattr(self, i, None)
-            for i in (
-                "name", "arguments", "options", "content", "lineno", "content_offset",
-                "block_text", "state", "state_machine"
-            )
-        }
-        dialogueNode = self.node_class(**kwargs)
-        # Parse the directive contents.
-        self.state.nested_parse(self.content, self.content_offset, dialogueNode)
-        return [dialogueNode]
-
-

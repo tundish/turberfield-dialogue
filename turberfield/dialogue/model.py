@@ -104,11 +104,9 @@ class SceneScript:
         # See 'citation' method in
         # http://docutils.sourceforge.net/docutils/parsers/rst/states.py
         for p, c in mapping.items():
-            name = docutils.nodes.fully_normalize_name(c["arguments"][0])
-            c["names"] = list(set(c["names"]) | {name})
             self.doc.note_citation(c)
             self.doc.note_explicit_target(c, c)
             c.persona = p
-            self.log.debug("{0} cast as {1}".format(p, name))
+            self.log.debug("{0} cast as {1}".format(p, c["names"][0]))
         return self
 

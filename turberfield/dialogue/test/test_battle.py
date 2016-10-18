@@ -23,7 +23,6 @@ import textwrap
 import unittest
 import uuid
 
-from turberfield.dialogue.directives import RoleDirective
 from turberfield.dialogue.model import SceneScript
 
 import pkg_resources
