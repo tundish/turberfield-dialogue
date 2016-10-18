@@ -17,6 +17,7 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import sys
 import textwrap
 import unittest
 
@@ -32,24 +33,51 @@ class CharacterDirectiveTests(unittest.TestCase):
         class Inner:
             pass
 
-    def test_string_import(self):
+    @unittest.skipIf(
+        "discover" not in sys.argv,
+        "Testing relative import: Needs ~/py3.5/bin/python -m unittest discover turberfield"
+    )
+    def test_string_import_relative(self):
+        rv = Character.Definition.string_import(
+            ".dialogue.test.test_directives.CharacterDirectiveTests",
+            relative=True
+        )
+        self.assertIs(rv, CharacterDirectiveTests)
+
+        rv = Character.Definition.string_import(
+            ".dialogue.test.test_directives.CharacterDirectiveTests.Outer",
+            relative=True
+        )
+        self.assertIs(rv, CharacterDirectiveTests.Outer)
+
+        rv = Character.Definition.string_import(
+            ".dialogue.test.test_directives.CharacterDirectiveTests.Outer.Inner",
+            relative=True
+        )
+        self.assertIs(rv, CharacterDirectiveTests.Outer.Inner)
+
+    @unittest.skipIf(
+        "discover" in sys.argv,
+        ("Testing namespace import: "
+        "Needs ~/py3.5/bin/python -m unittest turberfield.dialogue.test.test_directives")
+    )
+    def test_string_import_namespace(self):
         rv = Character.Definition.string_import(
             "turberfield.dialogue.test.test_directives.CharacterDirectiveTests",
-            namespace=True
+            relative=False
         )
         self.assertIs(rv, CharacterDirectiveTests)
 
         rv = Character.Definition.string_import(
             "turberfield.dialogue.test.test_directives.CharacterDirectiveTests.Outer",
-            namespace=True
+            relative=False
         )
         self.assertIs(rv, CharacterDirectiveTests.Outer)
 
         rv = Character.Definition.string_import(
             "turberfield.dialogue.test.test_directives.CharacterDirectiveTests.Outer.Inner",
-            namespace=True
+            relative=False
         )
-        self.assertIs(rv, CharacterDirectiveTests.Outer.Inner)
 
     def test_empty_characters(self):
         content = textwrap.dedent("""

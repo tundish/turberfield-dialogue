@@ -33,12 +33,16 @@ class Character(docutils.parsers.rst.Directive):
     class Definition(General, BackLinkable, Element, Labeled, Targetable):
 
         @staticmethod
-        def string_import(arg, namespace=True):
+        def string_import(arg, relative=False):
             bits = arg.split(".")
-            index = max(n for n, i in enumerate(bits) if i[0].islower())
-            start = 1 if namespace else 0
+            index = max(n for n, i in enumerate(bits) if i and i[0].islower())
+            start = 1 if relative else 0
             modName = ".".join(bits[start:index + 1])
-            mod = importlib.import_module(modName)
+            try:
+                mod = importlib.import_module(modName)
+            except ImportError:
+                return None
+
             obj = mod
             for name in bits[index + 1:]:
                 obj = getattr(obj, name)
