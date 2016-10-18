@@ -31,12 +31,18 @@ class Character(docutils.parsers.rst.Directive):
     """
 
     class Definition(General, BackLinkable, Element, Labeled, Targetable):
-        pass
 
-    required_arguments = 0
-    optional_arguments = 2
+        @staticmethod
+        def string_split(arg):
+            return arg.split()
+
+    required_arguments = 1
+    optional_arguments = 0
     final_argument_whitespace = False
-    option_spec = {}
+    option_spec = {
+        "states": Definition.string_split,
+        "types": Definition.string_split,
+    }
     has_content = True
     node_class = Definition
 

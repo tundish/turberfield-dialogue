@@ -84,10 +84,6 @@ class SceneScript:
         parser.parse(text, doc)
         return doc
 
-    @staticmethod
-    def cast(doc, personae):
-        return doc
-
     def __init__(self, fP, doc=None):
         self.fP = fP
         self.doc = doc
@@ -101,5 +97,14 @@ class SceneScript:
         return False
 
     def select(self, personae):
-        return self.doc
+        characters = group_by_type(self.doc)[Character.Definition]
+        return {p: c for p, c in zip(personae, characters)}
+
+    def cast(self, mapping):
+        for p, c in mapping.items():
+            id_ = self.doc.set_id(c)
+            #self.doc.note_citation
+            #print(id_)
+            print(p, c)
+        return self
 

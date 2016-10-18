@@ -26,7 +26,7 @@ from turberfield.dialogue.model import SceneScript
 from turberfield.utils.misc import group_by_type
 
 
-class RoleDirectiveTests(unittest.TestCase):
+class CharacterDirectiveTests(unittest.TestCase):
 
     def test_empty_personae(self):
         content = textwrap.dedent("""
@@ -56,4 +56,3 @@ class RoleDirectiveTests(unittest.TestCase):
         for n, obj in enumerate(doc):
             with self.subTest(n=n):
                 self.assertIsInstance(obj, Character.Definition)
-

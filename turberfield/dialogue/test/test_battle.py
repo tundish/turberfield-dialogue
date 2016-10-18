@@ -69,6 +69,10 @@ class CastingTests(unittest.TestCase):
 
     def test_mapping(self):
         with self.script as script:
+            self.assertFalse(script.doc.citations)
+            self.assertEqual(3, len(script.doc.citation_refs))
             casting = script.select(self.personae)
             self.assertIsInstance(casting, collections.abc.Mapping, casting)
             script.cast(casting)
+            self.assertEqual(3, len(script.doc.citations))
+            self.assertEqual(3, len(script.doc.citation_refs))
