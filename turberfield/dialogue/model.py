@@ -96,14 +96,16 @@ class SceneScript:
     def __exit__(self, exc_type, exc_value, traceback):
         return False
 
-    def select(self, personae):
+    def select(self, personae, relative=False):
         characters = group_by_type(self.doc)[Character.Definition]
-        #pool = personae[:]
-        #for c in characters:
-            #
-        #    spec = (object, )
-        #    p = next((i for i in personae if issubclass(type(i), spec)), None)
-        return {p: c for p, c in zip(personae, characters)}
+        pool = list(personae.copy())
+        rv = OrderedDict()
+        for c in characters:
+            types = filter(None, (c.string_import(t, relative) for t in c["options"].get("types", [])))
+            persona = next((i for i in pool if isinstance(i, tuple(types) or (object, ))), None)
+            pool.remove(persona)
+            rv[persona] = c
+        return rv
 
     def cast(self, mapping):
         # See 'citation' method in
