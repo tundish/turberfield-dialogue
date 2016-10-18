@@ -98,6 +98,11 @@ class SceneScript:
 
     def select(self, personae):
         characters = group_by_type(self.doc)[Character.Definition]
+        #pool = personae[:]
+        #for c in characters:
+            #
+        #    spec = (object, )
+        #    p = next((i for i in personae if issubclass(type(i), spec)), None)
         return {p: c for p, c in zip(personae, characters)}
 
     def cast(self, mapping):

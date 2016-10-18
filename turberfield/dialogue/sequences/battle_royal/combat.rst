@@ -8,7 +8,6 @@
 .. character:: FIGHTER_1
 
 .. character:: FIGHTER_2
-   :types: Animal
    :states: active
 
 .. character:: WEAPON

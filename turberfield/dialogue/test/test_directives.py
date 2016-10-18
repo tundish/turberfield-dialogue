@@ -28,7 +28,7 @@ from turberfield.utils.misc import group_by_type
 
 class CharacterDirectiveTests(unittest.TestCase):
 
-    def test_empty_personae(self):
+    def test_empty_characters(self):
         content = textwrap.dedent("""
             .. character:: FIGHTER_1
 
@@ -41,12 +41,12 @@ class CharacterDirectiveTests(unittest.TestCase):
         groups = group_by_type(objs)
         self.assertEqual(3, len(groups[Character.Definition]), groups)
 
-    def test_personae_with_description(self):
+    def test_characters_with_options_and_content(self):
         content = textwrap.dedent("""
             .. character:: FIGHTER_1
 
             .. character:: FIGHTER_2
-               :types: Animal
+               :types: turberfield.dialogue.test.test_battle.CastingTests.Animal
                :states: active
 
             .. character:: WEAPON
@@ -57,11 +57,16 @@ class CharacterDirectiveTests(unittest.TestCase):
         for n, obj in enumerate(doc):
             with self.subTest(n=n):
                 self.assertIsInstance(obj, Character.Definition)
+                self.assertTrue(obj["names"])
 
-                if n == 1:
-                    self.assertEqual(["Animal"], obj["options"]["types"])
+                if n == 0:
+                    self.assertFalse(obj["content"])
+                elif n == 1:
+                    self.assertEqual(
+                        ["turberfield.dialogue.test.test_battle.CastingTests.Animal"],
+                        obj["options"]["types"]
+                    )
                     self.assertEqual(["active"], obj["options"]["states"])
+                    self.assertFalse(obj["content"])
                 elif n == 2:
                     self.assertTrue(obj["content"])
-                else:
-                    self.assertFalse(obj["content"])

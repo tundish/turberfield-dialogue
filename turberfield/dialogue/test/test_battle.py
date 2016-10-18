@@ -52,13 +52,14 @@ class LoaderTests(unittest.TestCase):
 
 class CastingTests(unittest.TestCase):
 
+    Animal = namedtuple("Animal", ["uuid", "title", "names"])
     Persona = namedtuple("Persona", ["uuid", "title", "names"])
     Location = namedtuple("Location", ["name", "capacity"])
 
     def setUp(self):
         self.personae = {
-            CastingTests.Persona(uuid.uuid4(), None, ("Itchy",)),
-            CastingTests.Persona(uuid.uuid4(), None, ("Scratchy",)),
+            CastingTests.Animal(uuid.uuid4(), None, ("Itchy",)),
+            CastingTests.Animal(uuid.uuid4(), None, ("Scratchy",)),
             CastingTests.Persona(uuid.uuid4(), None, ("Rusty", "Chopper",)),
         }
         folder = SceneScript.Folder(
@@ -75,3 +76,11 @@ class CastingTests(unittest.TestCase):
             script.cast(casting)
             self.assertEqual(3, len(script.doc.citations))
             self.assertEqual(3, len(script.doc.citation_refs))
+
+    def test_casting_respects_type(self):
+        for n in range(16):
+            self.setUp()
+            with self.subTest(n=n), self.script as script:
+                casting = script.select(self.personae)
+                p, c = next((p, c) for p, c in casting.items() if "fighter_2" in c["names"])
+                self.assertIsInstance(p, CastingTests.Animal)
