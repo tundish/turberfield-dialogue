@@ -53,21 +53,21 @@ class LoaderTests(unittest.TestCase):
 
 class CastingTests(unittest.TestCase):
 
-    Character = namedtuple("Character", ["uuid", "title", "names"])
+    Persona = namedtuple("Persona", ["uuid", "title", "names"])
     Location = namedtuple("Location", ["name", "capacity"])
 
     def setUp(self):
         self.personae = {
-            CastingTests.Character(uuid.uuid4(), None, ("Itchy",)),
-            CastingTests.Character(uuid.uuid4(), None, ("Scratchy",)),
-            CastingTests.Character(uuid.uuid4(), None, ("Rusty", "Chopper",)),
+            CastingTests.Persona(uuid.uuid4(), None, ("Itchy",)),
+            CastingTests.Persona(uuid.uuid4(), None, ("Scratchy",)),
+            CastingTests.Persona(uuid.uuid4(), None, ("Rusty", "Chopper",)),
         }
         folder = SceneScript.Folder(
             "turberfield.dialogue.sequences.battle_royal", "test", ["combat.rst"]
         )
         self.script = next(SceneScript.scripts(**folder._asdict()))
 
-    def test_mapping(self):
+    def test_casting_adds_citation_definition(self):
         with self.script as script:
             self.assertFalse(script.doc.citations)
             self.assertEqual(3, len(script.doc.citation_refs))

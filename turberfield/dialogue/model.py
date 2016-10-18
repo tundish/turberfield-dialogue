@@ -101,10 +101,14 @@ class SceneScript:
         return {p: c for p, c in zip(personae, characters)}
 
     def cast(self, mapping):
+        # See 'citation' method in
+        # http://docutils.sourceforge.net/docutils/parsers/rst/states.py
         for p, c in mapping.items():
-            id_ = self.doc.set_id(c)
-            #self.doc.note_citation
-            #print(id_)
-            print(p, c)
+            name = docutils.nodes.fully_normalize_name(c["arguments"][0])
+            c["names"] = list(set(c["names"]) | {name})
+            self.doc.note_citation(c)
+            self.doc.note_explicit_target(c, c)
+            c.persona = p
+            self.log.debug("{0} cast as {1}".format(p, name))
         return self
 
