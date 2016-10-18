@@ -18,6 +18,7 @@
 
 
 from collections import namedtuple
+import importlib
 
 import docutils.nodes
 from docutils.nodes import BackLinkable, Element, General, Labeled, Targetable
@@ -30,6 +31,19 @@ class Character(docutils.parsers.rst.Directive):
     # See http://docutils.sourceforge.net/docutils/parsers/rst/directives/parts.py
 
     class Definition(General, BackLinkable, Element, Labeled, Targetable):
+
+        @staticmethod
+        def string_import(arg, namespace=True):
+            bits = arg.split(".")
+            index = max(n for n, i in enumerate(bits) if i[0].islower())
+            start = 1 if namespace else 0
+            modName = ".".join(bits[start:index + 1])
+            mod = importlib.import_module(modName)
+            obj = mod
+            for name in bits[index + 1:]:
+                obj = getattr(obj, name)
+            
+            return obj
 
         @staticmethod
         def string_split(arg):

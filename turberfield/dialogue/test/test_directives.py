@@ -28,6 +28,29 @@ from turberfield.utils.misc import group_by_type
 
 class CharacterDirectiveTests(unittest.TestCase):
 
+    class Outer:
+        class Inner:
+            pass
+
+    def test_string_import(self):
+        rv = Character.Definition.string_import(
+            "turberfield.dialogue.test.test_directives.CharacterDirectiveTests",
+            namespace=True
+        )
+        self.assertIs(rv, CharacterDirectiveTests)
+
+        rv = Character.Definition.string_import(
+            "turberfield.dialogue.test.test_directives.CharacterDirectiveTests.Outer",
+            namespace=True
+        )
+        self.assertIs(rv, CharacterDirectiveTests.Outer)
+
+        rv = Character.Definition.string_import(
+            "turberfield.dialogue.test.test_directives.CharacterDirectiveTests.Outer.Inner",
+            namespace=True
+        )
+        self.assertIs(rv, CharacterDirectiveTests.Outer.Inner)
+
     def test_empty_characters(self):
         content = textwrap.dedent("""
             .. character:: FIGHTER_1
