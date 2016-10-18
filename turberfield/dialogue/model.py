@@ -104,6 +104,7 @@ class SceneScript:
             types = filter(None, (c.string_import(t, relative) for t in c["options"].get("types", [])))
             persona = next((i for i in pool if isinstance(i, tuple(types) or (object, ))), None)
             pool.remove(persona)
+            self.log.info(pool)
             rv[persona] = c
         return rv
 
