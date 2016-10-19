@@ -23,7 +23,7 @@ Action
 
 [FIGHTER_1]_
 
-    I hate the way you use me!
+    I hate the way you use me, |Fighter2| !
 
 [WEAPON]_
 
@@ -33,4 +33,6 @@ Action
 
     Uuurrggh!
 
-    .. property:: state turberfield.dialogue.sequences.battle_royal.types.Availability.passive
+    .. property:: FIGHTER_2.state turberfield.dialogue.sequences.battle_royal.types.Availability.passive
+
+.. |Fighter2| property:: FIGHTER_2.name

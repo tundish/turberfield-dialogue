@@ -21,9 +21,9 @@ from collections import namedtuple
 import importlib
 
 import docutils.nodes
-from docutils.nodes import BackLinkable, Element, General, Labeled, Targetable
+from docutils.nodes import BackLinkable, Element, General, Inline
+from docutils.nodes import Labeled, Targetable, TextElement
 import docutils.parsers.rst
-from docutils.parsers.rst.directives.body import ParsedLiteral
 
 
 class Pathfinder:
@@ -84,16 +84,17 @@ class Character(docutils.parsers.rst.Directive):
 
 class Property(docutils.parsers.rst.Directive):
 
-    class Invocation(Element, Pathfinder):
+    class Getter(Inline, TextElement, Pathfinder):
         pass
 
-    required_arguments = 2
-    optional_arguments = 0
-    final_argument_whitespace = False
+    class Setter(Element, Inline, Pathfinder):
+        pass
+
+    required_arguments = 1
+    optional_arguments = 1
+    final_argument_whitespace = True
     option_spec = {}
     has_content = False
-    node_class = Invocation
-
 
     def run(self):
         kwargs = {
@@ -103,5 +104,8 @@ class Property(docutils.parsers.rst.Directive):
                 "block_text", "state", "state_machine"
             )
         }
-        node = self.node_class(**kwargs)
+        if len(self.arguments) == 1:
+            node = Property.Getter(**kwargs)
+        else:
+            node = Property.Setter(**kwargs)
         return [node]
