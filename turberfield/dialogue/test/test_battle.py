@@ -59,12 +59,6 @@ class CastingTests(unittest.TestCase):
     Persona = namedtuple("Persona", ["uuid", "title", "names"])
     Location = namedtuple("Location", ["name", "capacity"])
 
-    @enum.unique
-    class ActorState(enum.Enum):
-        mist = 0
-        passive = 1
-        active = 2
-
     def setUp(self):
         self.personae = {
             Animal(uuid.uuid4(), None, ("Itchy",)),

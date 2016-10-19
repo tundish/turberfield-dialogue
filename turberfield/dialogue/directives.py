@@ -26,32 +26,36 @@ import docutils.parsers.rst
 from docutils.parsers.rst.directives.body import ParsedLiteral
 
 
+class Pathfinder:
+
+    @staticmethod
+    def string_import(arg, relative=False):
+        bits = arg.split(".")
+        index = max(n for n, i in enumerate(bits) if i and i[0].islower())
+        start = 1 if relative else 0
+        modName = ".".join(bits[start:index + 1])
+        try:
+            mod = importlib.import_module(modName)
+        except ImportError:
+            return None
+
+        obj = mod
+        for name in bits[index + 1:]:
+            obj = getattr(obj, name)
+
+        return obj
+
+    @staticmethod
+    def string_split(arg):
+        return arg.split()
+
+
 class Character(docutils.parsers.rst.Directive):
 
     # See http://docutils.sourceforge.net/docutils/parsers/rst/directives/parts.py
 
-    class Definition(General, BackLinkable, Element, Labeled, Targetable):
-
-        @staticmethod
-        def string_import(arg, relative=False):
-            bits = arg.split(".")
-            index = max(n for n, i in enumerate(bits) if i and i[0].islower())
-            start = 1 if relative else 0
-            modName = ".".join(bits[start:index + 1])
-            try:
-                mod = importlib.import_module(modName)
-            except ImportError:
-                return None
-
-            obj = mod
-            for name in bits[index + 1:]:
-                obj = getattr(obj, name)
-            
-            return obj
-
-        @staticmethod
-        def string_split(arg):
-            return arg.split()
+    class Definition(Pathfinder, General, BackLinkable, Element, Labeled, Targetable):
+        pass
 
     required_arguments = 1
     optional_arguments = 0
@@ -76,4 +80,28 @@ class Character(docutils.parsers.rst.Directive):
         name = docutils.nodes.fully_normalize_name(self.arguments[0])
         node["names"] = list(set(node["names"]) | {name})
         self.state.nested_parse(self.content, self.content_offset, node)
+        return [node]
+
+class Property(docutils.parsers.rst.Directive):
+
+    class Invocation(Element, Pathfinder):
+        pass
+
+    required_arguments = 2
+    optional_arguments = 0
+    final_argument_whitespace = False
+    option_spec = {}
+    has_content = False
+    node_class = Invocation
+
+
+    def run(self):
+        kwargs = {
+            i: getattr(self, i, None)
+            for i in (
+                "name", "arguments", "options", "content", "lineno", "content_offset",
+                "block_text", "state", "state_machine"
+            )
+        }
+        node = self.node_class(**kwargs)
         return [node]

@@ -16,27 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
-import enum
+import unittest
 
 from turberfield.dialogue.types import Stateful
 
-@enum.unique
-class Availability(enum.Enum):
-    mist = 0
-    passive = 1
-    active = 2
+class TestStateful(unittest.TestCase):
 
-class Animal(Stateful):
-
-    def __init__(self, id_, title, names):
-        self.id_, self.title, self.names = id_, title, names
-
-class Furniture(Stateful):
-
-    def __init__(self, id_, names):
-        self.id_, self.names = id_, names
-
-class Tool(Stateful):
-
-    def __init__(self, id_, names):
-        self.id_, self.names = id_, names
+    def test_state_as_int(self):
+        s = Stateful()
+        s.state = 3
+        self.assertEqual({int: 3}, s.state)

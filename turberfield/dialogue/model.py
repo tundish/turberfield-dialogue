@@ -27,8 +27,8 @@ import os.path
 import sys
 
 from turberfield.dialogue.directives import Character
+from turberfield.dialogue.directives import Property
 from turberfield.utils.misc import group_by_type
-
 
 import pkg_resources
 import docutils
@@ -57,6 +57,10 @@ class SceneScript:
 
     docutils.parsers.rst.directives.register_directive(
         "character", Character
+    )
+
+    docutils.parsers.rst.directives.register_directive(
+        "property", Property
     )
 
     @classmethod

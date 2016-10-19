@@ -18,25 +18,20 @@
 
 import enum
 
-from turberfield.dialogue.types import Stateful
+class Stateful:
 
-@enum.unique
-class Availability(enum.Enum):
-    mist = 0
-    passive = 1
-    active = 2
+    def __init__(self, **kwargs):
+        self._states = {}
+        super().__init__(**kwargs)
 
-class Animal(Stateful):
+    @property
+    def state(self):
+        return self._states
 
-    def __init__(self, id_, title, names):
-        self.id_, self.title, self.names = id_, title, names
+    @state.setter
+    def state(self, value):
+        self._states[type(value)] = value
 
-class Furniture(Stateful):
-
-    def __init__(self, id_, names):
-        self.id_, self.names = id_, names
-
-class Tool(Stateful):
-
-    def __init__(self, id_, names):
-        self.id_, self.names = id_, names
+    @state.deleter
+    def state(self):
+        self.state = {}

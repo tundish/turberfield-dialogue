@@ -32,3 +32,5 @@ Action
 [FIGHTER_2]_
 
     Uuurrggh!
+
+    .. property:: state turberfield.dialogue.sequences.battle_royal.types.Availability.passive
