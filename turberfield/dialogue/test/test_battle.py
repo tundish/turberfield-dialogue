@@ -69,21 +69,19 @@ class CastingTests(unittest.TestCase):
         self.script = next(SceneScript.scripts(**folder._asdict()))
 
     def test_casting_adds_citation_definition(self):
-        relative = "discover" in sys.argv
         with self.script as script:
             self.assertFalse(script.doc.citations)
             self.assertEqual(3, len(script.doc.citation_refs))
-            casting = script.select(self.personae, relative=relative)
+            casting = script.select(self.personae)
             self.assertIsInstance(casting, collections.abc.Mapping, casting)
             script.cast(casting)
             self.assertEqual(3, len(script.doc.citations))
             self.assertEqual(3, len(script.doc.citation_refs))
 
     def test_casting_respects_type(self):
-        relative = "discover" in sys.argv
         for n in range(16):
             self.setUp()
             with self.subTest(n=n), self.script as script:
-                casting = script.select(self.personae, relative=False)
+                casting = script.select(self.personae)
                 p, c = next((p, c) for p, c in casting.items() if "fighter_2" in c["names"])
                 self.assertIsInstance(p, Animal, p)
