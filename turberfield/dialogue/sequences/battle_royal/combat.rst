@@ -8,10 +8,10 @@
 .. character:: FIGHTER_1
 
 .. character:: FIGHTER_2
-   :states: active
    :types: turberfield.dialogue.sequences.battle_royal.types.Animal
 
 .. character:: WEAPON
+   :types: turberfield.dialogue.sequences.battle_royal.types.Tool
 
 
 Combat

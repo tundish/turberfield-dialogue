@@ -19,6 +19,7 @@
 
 import collections.abc
 from collections import namedtuple
+import enum
 import sys
 import textwrap
 import unittest
@@ -26,6 +27,7 @@ import uuid
 
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.sequences.battle_royal.types import Animal
+from turberfield.dialogue.sequences.battle_royal.types import Tool
 
 import pkg_resources
 
@@ -57,11 +59,17 @@ class CastingTests(unittest.TestCase):
     Persona = namedtuple("Persona", ["uuid", "title", "names"])
     Location = namedtuple("Location", ["name", "capacity"])
 
+    @enum.unique
+    class ActorState(enum.Enum):
+        mist = 0
+        passive = 1
+        active = 2
+
     def setUp(self):
         self.personae = {
             Animal(uuid.uuid4(), None, ("Itchy",)),
             Animal(uuid.uuid4(), None, ("Scratchy",)),
-            CastingTests.Persona(uuid.uuid4(), None, ("Rusty", "Chopper",)),
+            Tool(uuid.uuid4(), ("Rusty", "Chopper",)),
         }
         folder = SceneScript.Folder(
             "turberfield.dialogue.sequences.battle_royal", "test", ["combat.rst"]
