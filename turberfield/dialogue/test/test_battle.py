@@ -25,6 +25,7 @@ import unittest
 import uuid
 
 from turberfield.dialogue.model import SceneScript
+from turberfield.dialogue.sequences.battle_royal.types import Animal
 
 import pkg_resources
 
@@ -53,14 +54,13 @@ class LoaderTests(unittest.TestCase):
 
 class CastingTests(unittest.TestCase):
 
-    Animal = namedtuple("Animal", ["uuid", "title", "names"])
     Persona = namedtuple("Persona", ["uuid", "title", "names"])
     Location = namedtuple("Location", ["name", "capacity"])
 
     def setUp(self):
         self.personae = {
-            CastingTests.Animal(uuid.uuid4(), None, ("Itchy",)),
-            CastingTests.Animal(uuid.uuid4(), None, ("Scratchy",)),
+            Animal(uuid.uuid4(), None, ("Itchy",)),
+            Animal(uuid.uuid4(), None, ("Scratchy",)),
             CastingTests.Persona(uuid.uuid4(), None, ("Rusty", "Chopper",)),
         }
         folder = SceneScript.Folder(
@@ -84,6 +84,6 @@ class CastingTests(unittest.TestCase):
         for n in range(16):
             self.setUp()
             with self.subTest(n=n), self.script as script:
-                casting = script.select(self.personae, relative=relative)
+                casting = script.select(self.personae, relative=False)
                 p, c = next((p, c) for p, c in casting.items() if "fighter_2" in c["names"])
-                self.assertIsInstance(p, CastingTests.Animal)
+                self.assertIsInstance(p, Animal, p)

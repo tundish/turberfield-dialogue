@@ -97,14 +97,18 @@ class SceneScript:
         return False
 
     def select(self, personae, relative=False):
-        characters = group_by_type(self.doc)[Character.Definition]
-        pool = list(personae.copy())
+
+        def constrained(character):
+            return len(character["options"])
+
         rv = OrderedDict()
+        pool = list(personae)
+        characters = sorted(group_by_type(self.doc)[Character.Definition], key=constrained, reverse=True)
         for c in characters:
             types = filter(None, (c.string_import(t, relative) for t in c["options"].get("types", [])))
-            persona = next((i for i in pool if isinstance(i, tuple(types) or (object, ))), None)
+            spec = tuple(types) or (object, )
+            persona = next((i for i in pool if isinstance(i, spec)), None)
             pool.remove(persona)
-            self.log.info(pool)
             rv[persona] = c
         return rv
 
