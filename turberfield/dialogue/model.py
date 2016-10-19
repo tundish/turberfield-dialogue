@@ -32,7 +32,11 @@ from turberfield.utils.misc import group_by_type
 
 import pkg_resources
 import docutils
+from docutils.nodes import GenericNodeVisitor
 
+
+class Visitor(GenericNodeVisitor):
+    pass
 
 class SceneScript:
     """
@@ -125,4 +129,9 @@ class SceneScript:
             c.persona = p
             self.log.debug("{0} cast as {1}".format(p, c["names"][0]))
         return self
+
+    def run(self):
+        visitor = Visitor(self.doc)
+        self.doc.walk(visitor)
+        return visitor.items
 
