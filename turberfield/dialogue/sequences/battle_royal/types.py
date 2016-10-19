@@ -21,6 +21,11 @@ class Animal:
     def __init__(self, id_, title, names):
         self.id_, self.title, self.names = id_, title, names
 
+class Furniture:
+
+    def __init__(self, id_, names):
+        self.id_, self.names = id_, names
+
 class Tool:
 
     def __init__(self, id_, names):
