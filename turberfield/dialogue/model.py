@@ -35,8 +35,28 @@ import docutils
 from docutils.nodes import GenericNodeVisitor
 
 
-class Visitor(GenericNodeVisitor):
-    pass
+class Model(GenericNodeVisitor):
+
+    def __init__(self, fP, document):
+        super().__init__(document)
+        self.fP = fP
+        self.optional = tuple(i.__name__ for i in (Character.Definition, Property.Getter, Property.Setter))
+        self.log = logging.getLogger("turberfield.dialogue.{0}".format(os.path.basename(self.fP)))
+        print(self.optional)
+
+    def __iter__(self):
+        return iter([])
+
+    def default_visit(self, node):
+        print(type(node))
+
+    def visit_citation_reference(self, node):
+        print([vars(i) for i in self.document.citations])
+        character = next(
+            character
+            for character in self.document.citations
+            if node.attributes["refname"] in character.attributes["names"])
+        print(character.persona)
 
 class SceneScript:
     """
@@ -55,7 +75,8 @@ class SceneScript:
         error_encoding_error_handler="backslashreplace", halt_level=4,
         auto_id_prefix="", id_prefix="", language_code="en",
         pep_references=1,
-        report_level=2, rfc_references=1, tab_width=4,
+        report_level=2, rfc_references=1,
+        strict_visitor=False, tab_width=4,
         warning_stream=sys.stderr
     )
 
@@ -131,7 +152,7 @@ class SceneScript:
         return self
 
     def run(self):
-        visitor = Visitor(self.doc)
-        self.doc.walk(visitor)
-        return visitor.items
+        model = Model(self.fP, self.doc)
+        self.doc.walk(model)
+        return model
 
