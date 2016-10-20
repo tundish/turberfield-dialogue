@@ -29,7 +29,8 @@ class Availability(enum.Enum):
 class Animal(Stateful):
 
     def __init__(self, id_, title, names):
-        self.id_, self.title, self.names = id_, title, names
+        self.id_, self.title, self._names = id_, title, names
+        self.name = self._names[0]
 
 class Furniture(Stateful):
 

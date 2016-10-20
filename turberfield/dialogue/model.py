@@ -32,23 +32,60 @@ from turberfield.utils.misc import group_by_type
 
 import pkg_resources
 import docutils
-from docutils.nodes import GenericNodeVisitor
 
 
-class Model(GenericNodeVisitor):
+class Model(docutils.nodes.GenericNodeVisitor):
+
+    Shot = namedtuple("Shot", ["name", "scene", "items"])
 
     def __init__(self, fP, document):
         super().__init__(document)
         self.fP = fP
         self.optional = tuple(i.__name__ for i in (Character.Definition, Property.Getter, Property.Setter))
         self.log = logging.getLogger("turberfield.dialogue.{0}".format(os.path.basename(self.fP)))
-        print(self.optional)
+        self.section_level = 0
+        self.scenes = []
+        self.shots = []
+        self.speaker = None
 
     def __iter__(self):
         return iter([])
 
     def default_visit(self, node):
         print(type(node))
+
+    def visit_section(self, node):
+        self.section_level += 1
+        print(vars(node))
+
+    def depart_section(self, node):
+        self.section_level -= 1
+
+    def visit_title(self, node):
+        if isinstance(node.parent, docutils.nodes.section):
+            if self.section_level == 1:
+                self.scenes.append(node.parent.attributes["names"][0])
+            elif self.section_level == 2:
+                self.shots.append(Model.Shot(
+                    node.parent.attributes["names"][0],
+                    self.scenes[-1],
+                    []))
+
+    def visit_paragraph(self, node):
+        for c in node.children:
+            if isinstance(c, docutils.nodes.substitution_reference):
+                defn = self.document.substitution_defs[c.attributes["refname"]]
+                for tgt in defn.children:
+                    if isinstance(tgt, Property.Getter):
+                        ref, attr = tgt["arguments"][0].split(".")
+                        character = next(
+                            character
+                            for character in self.document.citations
+                            if ref.lower() in character.attributes["names"])
+                        val = getattr(character.persona, attr)
+                        print(val)
+            print(type(c))
+            print(vars(c))
 
     def visit_citation_reference(self, node):
         print([vars(i) for i in self.document.citations])
