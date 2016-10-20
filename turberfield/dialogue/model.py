@@ -53,11 +53,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
         return iter([])
 
     def default_visit(self, node):
-        print(type(node))
+        self.log.debug(node)
 
     def visit_section(self, node):
         self.section_level += 1
-        print(vars(node))
 
     def depart_section(self, node):
         self.section_level -= 1
@@ -73,6 +72,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
                     []))
 
     def visit_paragraph(self, node):
+        if self.section_level != 2:
+            return
         text = []
         html = []
         for c in node.children:
@@ -87,17 +88,23 @@ class Model(docutils.nodes.GenericNodeVisitor):
                             if ref.lower() in character.attributes["names"])
                         val = getattr(character.persona, attr)
                         text.append(val)
+                        html.append('<span class="ref">{0}</span>'.format(val))
+            elif isinstance(c, docutils.nodes.strong):
+                text.append(c.rawsource)
+                html.append('<strong class="text">{0}</strong>'.format(c.rawsource.replace("*", "")))
+            elif isinstance(c, docutils.nodes.Text):
+                text.append(c.rawsource)
+                html.append('<span class="text">{0}</span>'.format(c.rawsource))
 
-        if self.section_level == 2:
+        if (text or html) and self.section_level == 2:
             self.shots[-1].items.append(Model.Line(self.speaker, " ".join(text), "\n".join(html)))
 
     def visit_citation_reference(self, node):
-        print([vars(i) for i in self.document.citations])
         character = next(
             character
             for character in self.document.citations
             if node.attributes["refname"] in character.attributes["names"])
-        print(character.persona)
+        self.speaker = character.persona
 
 class SceneScript:
     """
