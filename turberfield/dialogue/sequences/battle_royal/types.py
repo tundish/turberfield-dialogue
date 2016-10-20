@@ -31,13 +31,16 @@ class Animal(Stateful):
     def __init__(self, id_, title, names):
         self.id_, self.title, self._names = id_, title, names
         self.name = self._names[0]
+        super().__init__()
 
 class Furniture(Stateful):
 
     def __init__(self, id_, names):
         self.id_, self.names = id_, names
+        super().__init__()
 
 class Tool(Stateful):
 
     def __init__(self, id_, names):
         self.id_, self.names = id_, names
+        super().__init__()

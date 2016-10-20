@@ -37,12 +37,13 @@ import docutils
 class Model(docutils.nodes.GenericNodeVisitor):
 
     Shot = namedtuple("Shot", ["name", "scene", "items"])
+    Act = namedtuple("Act", ["persona", "node"])
     Line = namedtuple("Line", ["persona", "text", "html"])
 
     def __init__(self, fP, document):
         super().__init__(document)
         self.fP = fP
-        self.optional = tuple(i.__name__ for i in (Character.Definition, Property.Getter, Property.Setter))
+        self.optional = tuple(i.__name__ for i in (Character.Definition, Property.Getter))
         self.log = logging.getLogger("turberfield.dialogue.{0}".format(os.path.basename(self.fP)))
         self.section_level = 0
         self.scenes = []
@@ -50,7 +51,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.speaker = None
 
     def __iter__(self):
-        return iter([])
+        yield from self.shots
 
     def default_visit(self, node):
         self.log.debug(node)
@@ -60,6 +61,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def depart_section(self, node):
         self.section_level -= 1
+
+    def visit_Setter(self, node):
+        self.shots[-1].items.append(Model.Act(self.speaker, node))
 
     def visit_title(self, node):
         if isinstance(node.parent, docutils.nodes.section):

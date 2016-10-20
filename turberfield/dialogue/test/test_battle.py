@@ -25,6 +25,7 @@ import textwrap
 import unittest
 import uuid
 
+from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.sequences.battle_royal.types import Animal
 from turberfield.dialogue.sequences.battle_royal.types import Tool
@@ -89,6 +90,11 @@ class CastingTests(unittest.TestCase):
                 self.assertIsInstance(p, Animal, p)
 
     def test_run(self):
+        self.assertFalse(any(i.state for i in self.personae))
         with self.script as script:
             model = script.cast(script.select(self.personae)).run()
-            print(model.shots)
+            for shot in model:
+                self.assertIsInstance(shot, Model.Shot)
+                for item in shot.items:
+                    self.assertIsInstance(item, (Model.Act, Model.Line))
+        self.assertTrue(any(i.state for i in self.personae), [vars(i) for i in self.personae])
