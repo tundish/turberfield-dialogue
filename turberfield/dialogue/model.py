@@ -37,6 +37,7 @@ import docutils
 class Model(docutils.nodes.GenericNodeVisitor):
 
     Shot = namedtuple("Shot", ["name", "scene", "items"])
+    Line = namedtuple("Line", ["persona", "text", "html"])
 
     def __init__(self, fP, document):
         super().__init__(document)
@@ -72,6 +73,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
                     []))
 
     def visit_paragraph(self, node):
+        text = []
+        html = []
         for c in node.children:
             if isinstance(c, docutils.nodes.substitution_reference):
                 defn = self.document.substitution_defs[c.attributes["refname"]]
@@ -83,9 +86,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
                             for character in self.document.citations
                             if ref.lower() in character.attributes["names"])
                         val = getattr(character.persona, attr)
-                        print(val)
-            print(type(c))
-            print(vars(c))
+                        text.append(val)
+
+        if self.section_level == 2:
+            self.shots[-1].items.append(Model.Line(self.speaker, " ".join(text), "\n".join(html)))
 
     def visit_citation_reference(self, node):
         print([vars(i) for i in self.document.citations])

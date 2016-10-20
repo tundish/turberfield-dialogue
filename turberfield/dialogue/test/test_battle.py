@@ -90,5 +90,5 @@ class CastingTests(unittest.TestCase):
 
     def test_run(self):
         with self.script as script:
-            for item in script.cast(script.select(self.personae)).run():
-                print(item)
+            model = script.cast(script.select(self.personae)).run()
+            print(model.shots)
