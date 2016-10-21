@@ -96,4 +96,8 @@ class CastingTests(unittest.TestCase):
             for n, (shot, item) in enumerate(model):
                 self.assertIsInstance(shot, Model.Shot)
                 self.assertIsInstance(item, (Model.Act, Model.Line))
-        self.assertTrue(any(i.state for i in self.personae), [vars(i) for i in self.personae])
+        self.assertEqual(
+            1,
+            len([i.state for i in self.personae if i.state]),
+            [vars(i) for i in self.personae]
+        )
