@@ -31,16 +31,16 @@ class Pathfinder:
     @staticmethod
     def string_import(arg, relative=False):
         bits = arg.split(".")
-        index = max(n for n, i in enumerate(bits) if i and i[0].islower())
+        index = min(n for n, i in enumerate(bits) if i and i[0].isupper())
         start = 1 if relative else 0
-        modName = ".".join(bits[start:index + 1])
+        modName = ".".join(bits[start:index])
         try:
             mod = importlib.import_module(modName)
         except ImportError:
             return None
 
         obj = mod
-        for name in bits[index + 1:]:
+        for name in bits[index:]:
             obj = getattr(obj, name)
 
         return obj

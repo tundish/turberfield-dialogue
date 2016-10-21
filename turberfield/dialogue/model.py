@@ -37,7 +37,7 @@ import docutils
 class Model(docutils.nodes.GenericNodeVisitor):
 
     Shot = namedtuple("Shot", ["name", "scene", "items"])
-    Act = namedtuple("Act", ["persona", "node"])
+    Act = namedtuple("Act", ["persona", "object", "attr", "val"])
     Line = namedtuple("Line", ["persona", "text", "html"])
 
     def __init__(self, fP, document):
@@ -51,7 +51,12 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.speaker = None
 
     def __iter__(self):
-        yield from self.shots
+        for shot in self.shots:
+            for item in shot.items:
+                if isinstance(item, Model.Act):
+                    self.log.info("Setting {object}.{attr} to {val}".format(**item._asdict()))
+                    setattr(item.object, item.attr, item.val)
+                yield shot, item
 
     def default_visit(self, node):
         self.log.debug(node)
@@ -63,7 +68,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.section_level -= 1
 
     def visit_Setter(self, node):
-        self.shots[-1].items.append(Model.Act(self.speaker, node))
+        ref, attr = node["arguments"][0].split(".")
+        character = next(
+            character
+            for character in self.document.citations
+            if ref.lower() in character.attributes["names"])
+        val = node.string_import(node["arguments"][1])
+        self.shots[-1].items.append(Model.Act(self.speaker, character.persona, attr, val))
 
     def visit_title(self, node):
         if isinstance(node.parent, docutils.nodes.section):
