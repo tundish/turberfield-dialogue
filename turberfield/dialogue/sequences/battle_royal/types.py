@@ -42,5 +42,6 @@ class Furniture(Stateful):
 class Tool(Stateful):
 
     def __init__(self, id_, names):
-        self.id_, self.names = id_, names
+        self.id_, self._names = id_, names
+        self.name = " ".join(self._names)
         super().__init__()
