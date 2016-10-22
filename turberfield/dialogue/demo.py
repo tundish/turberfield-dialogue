@@ -21,7 +21,9 @@ import argparse
 import asyncio
 import logging
 import logging.handlers
+import shutil
 import sys
+import time
 import uuid
 import wave
 
@@ -55,6 +57,8 @@ def main(args):
             model = script.cast(script.select(personae)).run()
             for n, (shot, item) in enumerate(model):
                 print(item)
+        time.sleep(4)
+        print("\n" * shutil.get_terminal_size().lines, end='')
     except Exception as e:
         log.error(getattr(e, "args", e) or e) 
     finally:
