@@ -22,10 +22,14 @@ import asyncio
 import logging
 import logging.handlers
 import sys
+import uuid
 import wave
 
 import simpleaudio
 import turberfield.dialogue.cli
+from turberfield.dialogue.model import SceneScript
+from turberfield.dialogue.sequences.battle_royal.types import Animal
+from turberfield.dialogue.sequences.battle_royal.types import Tool
 from turberfield.utils.misc import log_setup
 
 __doc__ = """
@@ -38,34 +42,19 @@ def main(args):
     logName = log_setup(args, loop=loop)
     log = logging.getLogger(logName)
     try:
-        log.info(args)
-
-        data = wave.open(args.input, "rb")
-        nChannels = data.getnchannels()
-        bytesPerSample = data.getsampwidth()
-        sampleRate = data.getframerate()
-        nFrames = data.getnframes()
-        framesPerMilliSecond = nChannels * sampleRate // 1000
-
-        offset = framesPerMilliSecond * args.start
-        duration = nFrames - offset
-        if duration <= 0:
-            log.error("Start beyond limits.")
-            return 2
-        duration = min(
-            duration,
-            framesPerMilliSecond * args.duration if args.duration is not None else duration
+        personae = {
+            Animal(uuid.uuid4(), None, ("Itchy",)),
+            Animal(uuid.uuid4(), None, ("Scratchy",)),
+            Tool(uuid.uuid4(), ("Rusty", "Chopper",)),
+        }
+        folder = SceneScript.Folder(
+            "turberfield.dialogue.sequences.battle_royal", "demo", ["combat.rst"]
         )
-
-        data.readframes(offset)
-
-        frames = data.readframes(duration)
-        for i in range(args.loop):
-            waveObj = simpleaudio.WaveObject(frames, nChannels, bytesPerSample, sampleRate)
-            playObj = waveObj.play()
-            playObj.wait_done()
-            # playObj.is_playing()
-
+        scriptFile = next(SceneScript.scripts(**folder._asdict()))
+        with scriptFile as script:
+            model = script.cast(script.select(personae)).run()
+            for n, (shot, item) in enumerate(model):
+                print(item)
     except Exception as e:
         log.error(getattr(e, "args", e) or e) 
     finally:
