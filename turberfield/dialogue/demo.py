@@ -23,6 +23,7 @@ import logging
 import logging.handlers
 import shutil
 import sys
+import textwrap
 import time
 import uuid
 import wave
@@ -56,8 +57,12 @@ def main(args):
         with scriptFile as script:
             model = script.cast(script.select(personae)).run()
             for n, (shot, item) in enumerate(model):
-                print(item)
-        time.sleep(4)
+                if hasattr(item, "text"):
+                    print(item.persona.name)
+                    print(textwrap.indent(item.text, "    "))
+                    time.sleep(2)
+
+        time.sleep(6)
         print("\n" * shutil.get_terminal_size().lines, end='')
     except Exception as e:
         log.error(getattr(e, "args", e) or e) 
