@@ -32,6 +32,7 @@ import simpleaudio
 import turberfield.dialogue.cli
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.sequences.battle_royal.types import Animal
+from turberfield.dialogue.sequences.battle_royal.types import Availability
 from turberfield.dialogue.sequences.battle_royal.types import Tool
 from turberfield.utils.misc import log_setup
 
@@ -40,30 +41,39 @@ WAV file player.
 
 """
 
+def clear_screen():
+    n = shutil.get_terminal_size().lines
+    print("\n" * n, end="")
+    return n
+
 def main(args):
     loop = asyncio.get_event_loop()
     logName = log_setup(args, loop=loop)
     log = logging.getLogger(logName)
     try:
-        personae = {
+        cast = {
             Animal(uuid.uuid4(), None, ("Itchy",)),
             Animal(uuid.uuid4(), None, ("Scratchy",)),
-            Tool(uuid.uuid4(), ("Rusty", "Chopper",)),
+            Tool(uuid.uuid4(), ("Rusty", "Chopper",))
         }
-        folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "demo", ["combat.rst"]
-        )
-        scriptFile = next(SceneScript.scripts(**folder._asdict()))
-        with scriptFile as script:
-            model = script.cast(script.select(personae)).run()
-            for n, (shot, item) in enumerate(model):
-                if hasattr(item, "text"):
-                    print(item.persona.name)
-                    print(textwrap.indent(item.text, "    "))
-                    time.sleep(2)
+        while True:
+            personae = {
+                i for i in cast
+                if Availability.passive not in i.state.values()
+            }
+            folder = SceneScript.Folder(
+                "turberfield.dialogue.sequences.battle_royal", "demo", ["combat.rst"]
+            )
+            scriptFile = next(SceneScript.scripts(**folder._asdict()))
+            with scriptFile as script:
+                model = script.cast(script.select(personae)).run()
+                for n, (shot, item) in enumerate(model):
+                    if hasattr(item, "text"):
+                        print(item.persona.name)
+                        print(textwrap.indent(item.text, "    "))
+                        time.sleep(2)
 
-        time.sleep(6)
-        print("\n" * shutil.get_terminal_size().lines, end='')
+            time.sleep(4)
     except Exception as e:
         log.error(getattr(e, "args", e) or e) 
     finally:
