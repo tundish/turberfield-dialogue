@@ -86,7 +86,7 @@ class CastingTests(unittest.TestCase):
             self.setUp()
             with self.subTest(n=n), self.script as script:
                 casting = script.select(self.personae)
-                p, c = next((p, c) for p, c in casting.items() if "fighter_2" in c["names"])
+                c, p = next((c, p) for c, p in casting.items() if "fighter_2" in c["names"])
                 self.assertIsInstance(p, Animal, p)
 
     def test_run(self):

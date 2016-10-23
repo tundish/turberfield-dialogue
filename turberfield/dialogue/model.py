@@ -201,13 +201,13 @@ class SceneScript:
             spec = tuple(types) or (object, )
             persona = next((i for i in pool if isinstance(i, spec)), None)
             pool.remove(persona)
-            rv[persona] = c
+            rv[c] = persona
         return rv
 
     def cast(self, mapping):
         # See 'citation' method in
         # http://docutils.sourceforge.net/docutils/parsers/rst/states.py
-        for p, c in mapping.items():
+        for c, p in mapping.items():
             self.doc.note_citation(c)
             self.doc.note_explicit_target(c, c)
             c.persona = p
