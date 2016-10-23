@@ -188,7 +188,7 @@ class SceneScript:
     def __exit__(self, exc_type, exc_value, traceback):
         return False
 
-    def select(self, personae, relative=False):
+    def select(self, personae, relative=False, roles=1):
 
         def constrained(character):
             return len(character["options"])
@@ -200,8 +200,9 @@ class SceneScript:
             types = filter(None, (c.string_import(t, relative) for t in c["options"].get("types", [])))
             spec = tuple(types) or (object, )
             persona = next((i for i in pool if isinstance(i, spec)), None)
-            pool.remove(persona)
             rv[c] = persona
+            if list(rv.values()).count(persona) == roles:
+                pool.remove(persona)
         return rv
 
     def cast(self, mapping):
