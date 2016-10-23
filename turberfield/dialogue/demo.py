@@ -54,7 +54,7 @@ def main(args):
         cast = {
             Animal(uuid.uuid4(), None, ("Itchy",)),
             Animal(uuid.uuid4(), None, ("Scratchy",)),
-            Tool(uuid.uuid4(), ("Rusty", "Chopper",))
+            Tool(uuid.uuid4(), ("Rusty", "Chopper",)),
         }
         while True:
             personae = {
@@ -66,7 +66,7 @@ def main(args):
             )
             scriptFile = next(SceneScript.scripts(**folder._asdict()))
             with scriptFile as script:
-                model = script.cast(script.select(personae)).run()
+                model = script.cast(script.select(personae, roles=1)).run()
                 for n, (shot, item) in enumerate(model):
                     if hasattr(item, "text"):
                         print("\n")
@@ -75,7 +75,7 @@ def main(args):
                         time.sleep(2)
 
             time.sleep(4)
-    except ValueError as e:
+    except (AttributeError, ValueError) as e:
         # log.error(getattr(e, "args", e) or e)
         # No casting match
         log.info("No valid casting selection.")
