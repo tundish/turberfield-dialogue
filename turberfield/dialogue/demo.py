@@ -69,13 +69,16 @@ def main(args):
                 model = script.cast(script.select(personae)).run()
                 for n, (shot, item) in enumerate(model):
                     if hasattr(item, "text"):
+                        print("\n")
                         print(item.persona.name)
-                        print(textwrap.indent(item.text, "    "))
+                        print(textwrap.indent(item.text, " " * 16))
                         time.sleep(2)
 
             time.sleep(4)
-    except Exception as e:
-        log.error(getattr(e, "args", e) or e) 
+    except ValueError as e:
+        # log.error(getattr(e, "args", e) or e)
+        # No casting match
+        log.info("No valid casting selection.")
     finally:
         loop.close()
 
