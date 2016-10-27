@@ -19,6 +19,7 @@
 
 import argparse
 import asyncio
+from collections import OrderedDict
 import logging
 import logging.handlers
 import shutil
@@ -34,12 +35,22 @@ from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.sequences.battle_royal.types import Animal
 from turberfield.dialogue.sequences.battle_royal.types import Availability
 from turberfield.dialogue.sequences.battle_royal.types import Tool
+from turberfield.utils.misc import gather_installed
 from turberfield.utils.misc import log_setup
 
 __doc__ = """
 WAV file player.
 
 """
+
+def cast_menu(log):
+    print("Cast menu\n=========\n\n")
+    castList = OrderedDict(gather_installed("turberfield.interfaces.cast", log=log))
+    print(*["\t{0}: {1} ({2} members)".format(n, k, len(v)) for n, (k, v) in enumerate(castList.items())], sep="\n")
+    index = int(input("\nChoose a cast: "))
+    choice = list(castList.keys())[index]
+    log.info("Selected cast '{0}'.".format(choice))
+    return castList[choice]
 
 def clear_screen():
     n = shutil.get_terminal_size().lines
@@ -50,6 +61,9 @@ def main(args):
     loop = asyncio.get_event_loop()
     logName = log_setup(args, loop=loop)
     log = logging.getLogger(logName)
+
+    cast = cast_menu(log)
+
     try:
         cast = {
             Animal(uuid.uuid4(), None, ("Itchy",)),
