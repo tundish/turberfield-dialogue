@@ -44,13 +44,28 @@ WAV file player.
 """
 
 def cast_menu(log):
-    print("Cast menu\n=========\n\n")
+    log.info("Painting cast menu...")
     castList = OrderedDict(gather_installed("turberfield.interfaces.cast", log=log))
-    print(*["\t{0}: {1} ({2} members)".format(n, k, len(v)) for n, (k, v) in enumerate(castList.items())], sep="\n")
+    print("\n")
+    print(
+        *["\t{0}: {1} ({2} members)".format(n, k, len(v)) for n, (k, v) in enumerate(castList.items())],
+        sep="\n")
     index = int(input("\nChoose a cast: "))
     choice = list(castList.keys())[index]
     log.info("Selected cast '{0}'.".format(choice))
     return castList[choice]
+
+def seq_menu(log):
+    log.info("Painting sequence menu...")
+    seqList = OrderedDict(gather_installed("turberfield.interfaces.sequence", log=log))
+    print("\n")
+    print(
+        *["\t{0}: {1} ({2} members)".format(n, k, len(v.paths)) for n, (k, v) in enumerate(seqList.items())],
+        sep="\n")
+    index = int(input("\nChoose a sequence: "))
+    choice = list(seqList.keys())[index]
+    log.info("Selected sequence '{0}'.".format(choice))
+    return seqList[choice]
 
 def clear_screen():
     n = shutil.get_terminal_size().lines
@@ -62,6 +77,7 @@ def main(args):
     logName = log_setup(args, loop=loop)
     log = logging.getLogger(logName)
 
+    sequence = seq_menu(log)
     cast = cast_menu(log)
 
     try:
