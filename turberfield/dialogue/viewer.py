@@ -77,23 +77,15 @@ def main(args):
     logName = log_setup(args, loop=loop)
     log = logging.getLogger(logName)
 
-    sequence = seq_menu(log)
+    folder = seq_menu(log)
     cast = cast_menu(log)
 
     try:
-        cast = {
-            Animal(uuid.uuid4(), None, ("Itchy",)),
-            Animal(uuid.uuid4(), None, ("Scratchy",)),
-            Tool(uuid.uuid4(), ("Rusty", "Chopper",)),
-        }
         while True:
             personae = {
                 i for i in cast
                 if Availability.passive not in i.state.values()
             }
-            folder = SceneScript.Folder(
-                "turberfield.dialogue.sequences.battle_royal", "demo", ["combat.rst"]
-            )
             scriptFile = next(SceneScript.scripts(**folder._asdict()))
             with scriptFile as script:
                 model = script.cast(script.select(personae, roles=1)).run()
