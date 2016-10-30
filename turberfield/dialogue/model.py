@@ -195,6 +195,7 @@ class SceneScript:
 
         rv = OrderedDict()
         pool = list(personae)
+        self.log.debug(pool)
         characters = sorted(group_by_type(self.doc)[Character.Definition], key=constrained, reverse=True)
         for c in characters:
             types = filter(None, (c.string_import(t, relative) for t in c["options"].get("types", [])))

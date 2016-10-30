@@ -87,6 +87,7 @@ def main(args):
                 if Availability.passive not in i.state.values()
             }
             scriptFile = next(SceneScript.scripts(**folder._asdict()))
+            log.debug(scriptFile)
             with scriptFile as script:
                 model = script.cast(script.select(personae, roles=1)).run()
                 for n, (shot, item) in enumerate(model):
@@ -98,8 +99,7 @@ def main(args):
 
             time.sleep(4)
     except (AttributeError, ValueError) as e:
-        # log.error(getattr(e, "args", e) or e)
-        # No casting match
+        log.error(". ".join(getattr(e, "args", e) or e))
         log.info("No valid casting selection.")
     finally:
         loop.close()
