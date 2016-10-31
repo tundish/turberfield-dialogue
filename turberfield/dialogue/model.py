@@ -23,6 +23,7 @@ from collections import namedtuple
 from collections import OrderedDict
 import itertools
 import logging
+import operator
 import os.path
 import sys
 
@@ -96,12 +97,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 defn = self.document.substitution_defs[c.attributes["refname"]]
                 for tgt in defn.children:
                     if isinstance(tgt, Property.Getter):
-                        ref, attr = tgt["arguments"][0].split(".")
+                        ref, dot, attr = tgt["arguments"][0].partition(".")
                         character = next(
                             character
                             for character in self.document.citations
                             if ref.lower() in character.attributes["names"])
-                        val = getattr(character.persona, attr)
+
+                        val = operator.attrgetter(attr)(character.persona)
                         text.append(val)
                         html.append('<span class="ref">{0}</span>'.format(val))
             elif isinstance(c, docutils.nodes.strong):
