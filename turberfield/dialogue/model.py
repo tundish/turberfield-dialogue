@@ -44,7 +44,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def __init__(self, fP, document):
         super().__init__(document)
         self.fP = fP
-        self.optional = tuple(i.__name__ for i in (Character.Definition, Property.Getter))
+        self.optional = tuple(
+            i.__name__ for i in (Character.Definition, Property.Getter, Property.Setter))
         self.log = logging.getLogger("turberfield.dialogue.{0}".format(os.path.basename(self.fP)))
         self.section_level = 0
         self.scenes = []
@@ -55,12 +56,15 @@ class Model(docutils.nodes.GenericNodeVisitor):
         for shot in self.shots:
             for item in shot.items:
                 if isinstance(item, Model.Act):
-                    self.log.info("Setting {object}.{attr} to {val}".format(**item._asdict()))
+                    self.log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
                     setattr(item.object, item.attr, item.val)
                 yield shot, item
 
     def default_visit(self, node):
         self.log.debug(node)
+
+    def default_departure(self, node):
+        self.log.debug("Departed.")
 
     def visit_section(self, node):
         self.section_level += 1
@@ -78,6 +82,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.shots[-1].items.append(Model.Act(self.speaker, character.persona, attr, val))
 
     def visit_title(self, node):
+        self.log.debug(self.section_level)
         if isinstance(node.parent, docutils.nodes.section):
             if self.section_level == 1:
                 self.scenes.append(node.parent.attributes["names"][0])
@@ -222,6 +227,6 @@ class SceneScript:
 
     def run(self):
         model = Model(self.fP, self.doc)
-        self.doc.walk(model)
+        self.doc.walkabout(model)
         return model
 

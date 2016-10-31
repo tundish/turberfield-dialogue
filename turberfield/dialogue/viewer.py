@@ -81,25 +81,28 @@ def main(args):
     folder = seq_menu(log)
     cast = cast_menu(log)
     player = Player(name="Mr Tim Finch")
+    scripts = SceneScript.scripts(**folder._asdict())
 
     try:
-        while True:
-            personae = { player } | {
-                i for i in cast
-                if Availability.passive not in i.state.values()
-            }
+        for script in scripts:
+            personae = { player } | cast
             scriptFile = next(SceneScript.scripts(**folder._asdict()))
             log.debug(scriptFile)
-            with scriptFile as script:
-                model = script.cast(script.select(personae, roles=1)).run()
+            with script as dialogue:
+                model = dialogue.cast(dialogue.select(personae, roles=1)).run()
                 for n, (shot, item) in enumerate(model):
                     if hasattr(item, "text"):
                         print("\n")
-                        print(item.persona.name)
+                        print(item.persona.name.firstname, item.persona.name.surname, sep=" ")
                         print(textwrap.indent(item.text, " " * 16))
-                        time.sleep(2)
+                        time.sleep(3.5)
 
-            time.sleep(4)
+            time.sleep(2)
+            clear_screen()
+            for i in personae:
+                if Availability.mist in i.state.values():
+                    i.state = Availability.active
+
     except (AttributeError, ValueError) as e:
         log.error(". ".join(getattr(e, "args", e) or e))
         log.info("No valid casting selection.")

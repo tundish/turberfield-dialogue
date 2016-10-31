@@ -37,7 +37,7 @@ class PropertyDirectiveTests(unittest.TestCase):
             ~~~~~
 
             Shot
-            ~~~~
+            ----
 
             [P]_
 
@@ -54,14 +54,15 @@ class PropertyDirectiveTests(unittest.TestCase):
         self.assertEqual("Hi, I'm  William .", line.text)
 
     def test_nickname_getter(self):
-        content = textwrap.dedent("""
+        content = textwrap.dedent(
+            """
             .. character:: P
 
             Scene
             ~~~~~
 
             Shot
-            ~~~~
+            ----
 
             [P]_
 

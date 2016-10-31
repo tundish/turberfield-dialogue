@@ -44,10 +44,6 @@ class Persona(DataObject):
         return random.choice(self.name.nicknames)
 
 
-class Player(Persona):
-    pass
-
-
 class Stateful:
 
     def __init__(self, **kwargs):
@@ -65,3 +61,6 @@ class Stateful:
     @state.deleter
     def state(self):
         self.state = {}
+
+class Player(Stateful, Persona):
+    pass
