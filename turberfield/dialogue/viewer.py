@@ -35,6 +35,7 @@ from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.sequences.battle_royal.types import Animal
 from turberfield.dialogue.sequences.battle_royal.types import Availability
 from turberfield.dialogue.sequences.battle_royal.types import Tool
+from turberfield.dialogue.types import Player
 from turberfield.utils.misc import gather_installed
 from turberfield.utils.misc import log_setup
 
@@ -79,10 +80,11 @@ def main(args):
 
     folder = seq_menu(log)
     cast = cast_menu(log)
+    player = Player(name="Mr Tim Finch")
 
     try:
         while True:
-            personae = {
+            personae = { player } | {
                 i for i in cast
                 if Availability.passive not in i.state.values()
             }

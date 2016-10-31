@@ -213,7 +213,9 @@ class SceneScript:
             self.doc.note_citation(c)
             self.doc.note_explicit_target(c, c)
             c.persona = p
-            self.log.debug("{0} cast as {1}".format(p, c["names"][0]))
+            self.log.debug("{0} to be played by {1}".format(
+                c["names"][0].capitalize(), p)
+            )
         return self
 
     def run(self):
