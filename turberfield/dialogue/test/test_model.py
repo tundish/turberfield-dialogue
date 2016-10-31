@@ -52,3 +52,29 @@ class PropertyDirectiveTests(unittest.TestCase):
         self.assertEqual("scene", shot.scene)
         self.assertEqual("shot", shot.name)
         self.assertEqual("Hi, I'm  William .", line.text)
+
+    def test_nickname_getter(self):
+        content = textwrap.dedent("""
+            .. character:: P
+
+            Scene
+            ~~~~~
+
+            Shot
+            ~~~~
+
+            [P]_
+
+                You can call me |P_NICKNAME|.
+
+            .. |P_NICKNAME| property:: P.nickname
+            """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([self.player]))
+        model = script.run()
+        shot, line = next(iter(model))
+        self.assertEqual("scene", shot.scene)
+        self.assertEqual("shot", shot.name)
+        self.assertIn(line.text, (
+            "You can call me  Fuzzer .",
+            "You can call me  Q.A ."))
