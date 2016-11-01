@@ -5,12 +5,12 @@
 :author: D Haynes
 :date: 2016-10-15
 
-.. character:: FIGHTER_1
+.. entity:: FIGHTER_1
 
-.. character:: FIGHTER_2
+.. entity:: FIGHTER_2
    :types: turberfield.dialogue.sequences.battle_royal.types.Animal
 
-.. character:: WEAPON
+.. entity:: WEAPON
    :types: turberfield.dialogue.sequences.battle_royal.types.Furniture
            turberfield.dialogue.sequences.battle_royal.types.Tool
 

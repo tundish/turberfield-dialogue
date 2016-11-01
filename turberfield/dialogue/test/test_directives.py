@@ -21,13 +21,13 @@ import sys
 import textwrap
 import unittest
 
-from turberfield.dialogue.directives import Character
+from turberfield.dialogue.directives import Entity
 from turberfield.dialogue.model import SceneScript
 
 from turberfield.utils.misc import group_by_type
 
 
-class CharacterDirectiveTests(unittest.TestCase):
+class EntityDirectiveTests(unittest.TestCase):
 
     class Outer:
         class Inner:
@@ -38,23 +38,23 @@ class CharacterDirectiveTests(unittest.TestCase):
         "Testing relative import: Needs ~/py3.5/bin/python -m unittest discover turberfield"
     )
     def test_string_import_relative(self):
-        rv = Character.Definition.string_import(
-            ".dialogue.test.test_directives.CharacterDirectiveTests",
+        rv = Entity.Definition.string_import(
+            ".dialogue.test.test_directives.EntityDirectiveTests",
             relative=True
         )
-        self.assertIs(rv, CharacterDirectiveTests)
+        self.assertIs(rv, EntityDirectiveTests)
 
-        rv = Character.Definition.string_import(
-            ".dialogue.test.test_directives.CharacterDirectiveTests.Outer",
+        rv = Entity.Definition.string_import(
+            ".dialogue.test.test_directives.EntityDirectiveTests.Outer",
             relative=True
         )
-        self.assertIs(rv, CharacterDirectiveTests.Outer)
+        self.assertIs(rv, EntityDirectiveTests.Outer)
 
-        rv = Character.Definition.string_import(
-            ".dialogue.test.test_directives.CharacterDirectiveTests.Outer.Inner",
+        rv = Entity.Definition.string_import(
+            ".dialogue.test.test_directives.EntityDirectiveTests.Outer.Inner",
             relative=True
         )
-        self.assertIs(rv, CharacterDirectiveTests.Outer.Inner)
+        self.assertIs(rv, EntityDirectiveTests.Outer.Inner)
 
     @unittest.skipIf(
         "discover" in sys.argv,
@@ -62,52 +62,52 @@ class CharacterDirectiveTests(unittest.TestCase):
         "Needs ~/py3.5/bin/python -m unittest turberfield.dialogue.test.test_directives")
     )
     def test_string_import_namespace(self):
-        rv = Character.Definition.string_import(
-            "turberfield.dialogue.test.test_directives.CharacterDirectiveTests",
+        rv = Entity.Definition.string_import(
+            "turberfield.dialogue.test.test_directives.EntityDirectiveTests",
             relative=False
         )
-        self.assertIs(rv, CharacterDirectiveTests)
+        self.assertIs(rv, EntityDirectiveTests)
 
-        rv = Character.Definition.string_import(
-            "turberfield.dialogue.test.test_directives.CharacterDirectiveTests.Outer",
+        rv = Entity.Definition.string_import(
+            "turberfield.dialogue.test.test_directives.EntityDirectiveTests.Outer",
             relative=False
         )
-        self.assertIs(rv, CharacterDirectiveTests.Outer)
+        self.assertIs(rv, EntityDirectiveTests.Outer)
 
-        rv = Character.Definition.string_import(
-            "turberfield.dialogue.test.test_directives.CharacterDirectiveTests.Outer.Inner",
+        rv = Entity.Definition.string_import(
+            "turberfield.dialogue.test.test_directives.EntityDirectiveTests.Outer.Inner",
             relative=False
         )
 
-    def test_empty_characters(self):
+    def test_empty_entitys(self):
         content = textwrap.dedent("""
-            .. character:: FIGHTER_1
+            .. entity:: FIGHTER_1
 
-            .. character:: FIGHTER_2
+            .. entity:: FIGHTER_2
 
-            .. character:: WEAPON
+            .. entity:: WEAPON
 
             """)
         objs = SceneScript.read(content)
         groups = group_by_type(objs)
-        self.assertEqual(3, len(groups[Character.Definition]), groups)
+        self.assertEqual(3, len(groups[Entity.Definition]), groups)
 
-    def test_characters_with_options_and_content(self):
+    def test_entitys_with_options_and_content(self):
         content = textwrap.dedent("""
-            .. character:: FIGHTER_1
+            .. entity:: FIGHTER_1
 
-            .. character:: FIGHTER_2
+            .. entity:: FIGHTER_2
                :types: turberfield.dialogue.test.test_battle.CastingTests.Animal
                :states: active
 
-            .. character:: WEAPON
+            .. entity:: WEAPON
 
                A weapon which makes a noise in use. 
             """)
         doc = SceneScript.read(content)
         for n, obj in enumerate(doc):
             with self.subTest(n=n):
-                self.assertIsInstance(obj, Character.Definition)
+                self.assertIsInstance(obj, Entity.Definition)
                 self.assertTrue(obj["names"])
 
                 if n == 0:

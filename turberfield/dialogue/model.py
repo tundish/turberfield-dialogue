@@ -27,7 +27,7 @@ import operator
 import os.path
 import sys
 
-from turberfield.dialogue.directives import Character
+from turberfield.dialogue.directives import Entity
 from turberfield.dialogue.directives import Property
 from turberfield.utils.misc import group_by_type
 
@@ -45,7 +45,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         super().__init__(document)
         self.fP = fP
         self.optional = tuple(
-            i.__name__ for i in (Character.Definition, Property.Getter, Property.Setter))
+            i.__name__ for i in (Entity.Definition, Property.Getter, Property.Setter))
         self.log = logging.getLogger("turberfield.dialogue.{0}".format(os.path.basename(self.fP)))
         self.section_level = 0
         self.scenes = []
@@ -151,7 +151,7 @@ class SceneScript:
     )
 
     docutils.parsers.rst.directives.register_directive(
-        "character", Character
+        "entity", Entity
     )
 
     docutils.parsers.rst.directives.register_directive(
@@ -203,7 +203,7 @@ class SceneScript:
         rv = OrderedDict()
         pool = list(personae)
         self.log.debug(pool)
-        characters = sorted(group_by_type(self.doc)[Character.Definition], key=constrained, reverse=True)
+        characters = sorted(group_by_type(self.doc)[Entity.Definition], key=constrained, reverse=True)
         for c in characters:
             types = filter(None, (c.string_import(t, relative) for t in c["options"].get("types", [])))
             spec = tuple(types) or (object, )

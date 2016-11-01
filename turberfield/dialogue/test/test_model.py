@@ -31,7 +31,7 @@ class PropertyDirectiveTests(unittest.TestCase):
 
     def test_property_getter(self):
         content = textwrap.dedent("""
-            .. character:: P
+            .. entity:: P
 
             Scene
             ~~~~~
@@ -56,7 +56,7 @@ class PropertyDirectiveTests(unittest.TestCase):
     def test_nickname_getter(self):
         content = textwrap.dedent(
             """
-            .. character:: P
+            .. entity:: P
 
             Scene
             ~~~~~

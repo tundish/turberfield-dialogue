@@ -50,7 +50,7 @@ class Pathfinder:
         return arg.split()
 
 
-class Character(docutils.parsers.rst.Directive):
+class Entity(docutils.parsers.rst.Directive):
 
     # See http://docutils.sourceforge.net/docutils/parsers/rst/directives/parts.py
 
