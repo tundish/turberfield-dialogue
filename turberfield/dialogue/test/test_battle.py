@@ -96,7 +96,7 @@ class CastingTests(unittest.TestCase):
             model = script.cast(script.select(self.personae)).run()
             for n, (shot, item) in enumerate(model):
                 self.assertIsInstance(shot, Model.Shot)
-                self.assertIsInstance(item, (Model.Act, Model.Line, Model.Touch))
+                self.assertIsInstance(item, (Model.Property, Model.Line, Model.Memory))
         # Last item is a Touch
         self.assertIs(Outcome.defeated, item.state)
         self.assertTrue(item.text)

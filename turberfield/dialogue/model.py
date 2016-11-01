@@ -27,9 +27,9 @@ import operator
 import os.path
 import sys
 
-from turberfield.dialogue.directives import Entity
-from turberfield.dialogue.directives import Property
-from turberfield.dialogue.directives import Touch
+from turberfield.dialogue.directives import Entity as EntityDirective
+from turberfield.dialogue.directives import Property as PropertyDirective
+from turberfield.dialogue.directives import Memory as MemoryDirective
 from turberfield.utils.misc import group_by_type
 
 import pkg_resources
@@ -39,15 +39,19 @@ import docutils
 class Model(docutils.nodes.GenericNodeVisitor):
 
     Shot = namedtuple("Shot", ["name", "scene", "items"])
-    Act = namedtuple("Act", ["entity", "object", "attr", "val"])
-    Touch = namedtuple("Touch", ["subject", "object", "state", "text", "html"])
+    Property = namedtuple("Property", ["entity", "object", "attr", "val"])
+    Memory = namedtuple("Memory", ["subject", "object", "state", "text", "html"])
     Line = namedtuple("Line", ["persona", "text", "html"])
 
     def __init__(self, fP, document):
         super().__init__(document)
         self.fP = fP
         self.optional = tuple(
-            i.__name__ for i in (Entity.Declaration, Touch.Definition, Property.Getter, Property.Setter))
+            i.__name__ for i in (
+                EntityDirective.Declaration, MemoryDirective.Definition,
+                PropertyDirective.Getter, PropertyDirective.Setter
+            )
+        )
         self.log = logging.getLogger("turberfield.dialogue.{0}".format(os.path.basename(self.fP)))
         self.section_level = 0
         self.scenes = []
@@ -57,9 +61,6 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def __iter__(self):
         for shot in self.shots:
             for item in shot.items:
-                #if isinstance(item, Model.Act):
-                #    self.log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
-                #    setattr(item.object, item.attr, item.val)
                 yield shot, item
 
     def get_entity(self, ref):
@@ -85,13 +86,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
         ref, attr = node["arguments"][0].split(".")
         entity = self.get_entity(ref)
         val = node.string_import(node["arguments"][1])
-        self.shots[-1].items.append(Model.Act(self.speaker, entity.persona, attr, val))
+        self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
 
     def visit_Definition(self, node):
         state = node.string_import(node["arguments"][0])
         subj = self.get_entity(node["options"].get("subject"))
         obj = self.get_entity(node["options"].get("object"))
-        self.shots[-1].items.append(Model.Touch(subj.persona, obj.persona, state, None, None))
+        self.shots[-1].items.append(Model.Memory(subj.persona, obj.persona, state, None, None))
 
     def visit_title(self, node):
         self.log.debug(self.section_level)
@@ -113,7 +114,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             if isinstance(c, docutils.nodes.substitution_reference):
                 defn = self.document.substitution_defs[c.attributes["refname"]]
                 for tgt in defn.children:
-                    if isinstance(tgt, Property.Getter):
+                    if isinstance(tgt, PropertyDirective.Getter):
                         ref, dot, attr = tgt["arguments"][0].partition(".")
                         entity = self.get_entity(ref)
                         val = operator.attrgetter(attr)(entity.persona)
@@ -156,15 +157,15 @@ class SceneScript:
     )
 
     docutils.parsers.rst.directives.register_directive(
-        "entity", Entity
+        "entity", EntityDirective
     )
 
     docutils.parsers.rst.directives.register_directive(
-        "property", Property
+        "property", PropertyDirective
     )
 
     docutils.parsers.rst.directives.register_directive(
-        "memory", Touch
+        "memory", MemoryDirective
     )
 
     @classmethod
@@ -212,7 +213,7 @@ class SceneScript:
         rv = OrderedDict()
         pool = list(personae)
         self.log.debug(pool)
-        entities = sorted(group_by_type(self.doc)[Entity.Declaration], key=constrained, reverse=True)
+        entities = sorted(group_by_type(self.doc)[EntityDirective.Declaration], key=constrained, reverse=True)
         for e in entities:
             types = filter(None, (e.string_import(t, relative) for t in e["options"].get("types", [])))
             spec = tuple(types) or (object, )

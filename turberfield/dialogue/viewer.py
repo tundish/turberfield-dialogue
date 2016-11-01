@@ -31,6 +31,7 @@ import wave
 
 import simpleaudio
 import turberfield.dialogue.cli
+from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.sequences.battle_royal.types import Animal
 from turberfield.dialogue.sequences.battle_royal.types import Availability
@@ -91,6 +92,9 @@ def main(args):
             with script as dialogue:
                 model = dialogue.cast(dialogue.select(personae, roles=1)).run()
                 for n, (shot, item) in enumerate(model):
+                    if isinstance(item, Model.Property):
+                        self.log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
+                        setattr(item.object, item.attr, item.val)
                     if hasattr(item, "text"):
                         print("\n")
                         print(item.persona.name.firstname, item.persona.name.surname, sep=" ")

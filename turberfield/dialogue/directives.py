@@ -110,7 +110,7 @@ class Property(docutils.parsers.rst.Directive):
             node = Property.Setter(**kwargs)
         return [node]
 
-class Touch(docutils.parsers.rst.Directive):
+class Memory(docutils.parsers.rst.Directive):
 
     class Definition(Inline, TextElement, Pathfinder):
         pass
@@ -129,5 +129,5 @@ class Touch(docutils.parsers.rst.Directive):
                 "block_text", "state", "state_machine"
             )
         }
-        node = Touch.Definition(**kwargs)
+        node = Memory.Definition(**kwargs)
         return [node]
