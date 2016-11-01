@@ -39,14 +39,15 @@ import docutils
 class Model(docutils.nodes.GenericNodeVisitor):
 
     Shot = namedtuple("Shot", ["name", "scene", "items"])
-    Act = namedtuple("Act", ["persona", "object", "attr", "val"])
+    Act = namedtuple("Act", ["entity", "object", "attr", "val"])
+    Touch = namedtuple("Touch", ["subject", "object", "state", "text", "html"])
     Line = namedtuple("Line", ["persona", "text", "html"])
 
     def __init__(self, fP, document):
         super().__init__(document)
         self.fP = fP
         self.optional = tuple(
-            i.__name__ for i in (Entity.Definition, Property.Getter, Property.Setter))
+            i.__name__ for i in (Entity.Declaration, Touch.Definition, Property.Getter, Property.Setter))
         self.log = logging.getLogger("turberfield.dialogue.{0}".format(os.path.basename(self.fP)))
         self.section_level = 0
         self.scenes = []
@@ -60,6 +61,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
                     self.log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
                     setattr(item.object, item.attr, item.val)
                 yield shot, item
+
+    def get_entity(self, ref):
+        return next((
+            entity
+            for entity in self.document.citations
+            if ref.lower() in entity.attributes["names"]),
+            None)
 
     def default_visit(self, node):
         self.log.debug(node)
@@ -75,6 +83,15 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def visit_Setter(self, node):
         ref, attr = node["arguments"][0].split(".")
+        entity = self.get_entity(ref)
+        val = node.string_import(node["arguments"][1])
+        self.shots[-1].items.append(Model.Act(self.speaker, entity.persona, attr, val))
+
+    def visit_Definition(self, node):
+        print("definition")
+        return
+        ref, attr = node["arguments"][0].split(".")
+        entity = self.get_entity(ref)
         character = next(
             character
             for character in self.document.citations
@@ -104,12 +121,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 for tgt in defn.children:
                     if isinstance(tgt, Property.Getter):
                         ref, dot, attr = tgt["arguments"][0].partition(".")
-                        character = next(
-                            character
-                            for character in self.document.citations
-                            if ref.lower() in character.attributes["names"])
-
-                        val = operator.attrgetter(attr)(character.persona)
+                        entity = self.get_entity(ref)
+                        val = operator.attrgetter(attr)(entity.persona)
                         text.append(val)
                         html.append('<span class="ref">{0}</span>'.format(val))
             elif isinstance(c, docutils.nodes.strong):
@@ -123,11 +136,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
             self.shots[-1].items.append(Model.Line(self.speaker, " ".join(text), "\n".join(html)))
 
     def visit_citation_reference(self, node):
-        character = next(
-            character
-            for character in self.document.citations
-            if node.attributes["refname"] in character.attributes["names"])
-        self.speaker = character.persona
+        entity = self.get_entity(node.attributes["refname"])
+        self.speaker = entity.persona
 
 class SceneScript:
     """
@@ -202,18 +212,18 @@ class SceneScript:
 
     def select(self, personae, relative=False, roles=1):
 
-        def constrained(character):
-            return len(character["options"])
+        def constrained(entity):
+            return len(entity["options"])
 
         rv = OrderedDict()
         pool = list(personae)
         self.log.debug(pool)
-        characters = sorted(group_by_type(self.doc)[Entity.Definition], key=constrained, reverse=True)
-        for c in characters:
-            types = filter(None, (c.string_import(t, relative) for t in c["options"].get("types", [])))
+        entities = sorted(group_by_type(self.doc)[Entity.Declaration], key=constrained, reverse=True)
+        for e in entities:
+            types = filter(None, (e.string_import(t, relative) for t in e["options"].get("types", [])))
             spec = tuple(types) or (object, )
             persona = next((i for i in pool if isinstance(i, spec)), None)
-            rv[c] = persona
+            rv[e] = persona
             if list(rv.values()).count(persona) == roles:
                 pool.remove(persona)
         return rv

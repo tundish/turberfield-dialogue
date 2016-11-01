@@ -54,18 +54,18 @@ class Entity(docutils.parsers.rst.Directive):
 
     # See http://docutils.sourceforge.net/docutils/parsers/rst/directives/parts.py
 
-    class Definition(Pathfinder, General, BackLinkable, Element, Labeled, Targetable):
+    class Declaration(Pathfinder, General, BackLinkable, Element, Labeled, Targetable):
         pass
 
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = False
     option_spec = {
-        "states": Definition.string_split,
-        "types": Definition.string_split,
+        "states": Declaration.string_split,
+        "types": Declaration.string_split,
     }
     has_content = True
-    node_class = Definition
+    node_class = Declaration
 
 
     def run(self):

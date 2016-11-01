@@ -27,7 +27,7 @@ from turberfield.dialogue.model import SceneScript
 from turberfield.utils.misc import group_by_type
 
 
-class EntityDirectiveTests(unittest.TestCase):
+class EntityDeclarationTests(unittest.TestCase):
 
     class Outer:
         class Inner:
@@ -38,23 +38,23 @@ class EntityDirectiveTests(unittest.TestCase):
         "Testing relative import: Needs ~/py3.5/bin/python -m unittest discover turberfield"
     )
     def test_string_import_relative(self):
-        rv = Entity.Definition.string_import(
-            ".dialogue.test.test_directives.EntityDirectiveTests",
+        rv = Entity.Declaration.string_import(
+            ".dialogue.test.test_directives.EntityDeclarationTests",
             relative=True
         )
-        self.assertIs(rv, EntityDirectiveTests)
+        self.assertIs(rv, EntityDeclarationTests)
 
-        rv = Entity.Definition.string_import(
-            ".dialogue.test.test_directives.EntityDirectiveTests.Outer",
+        rv = Entity.Declaration.string_import(
+            ".dialogue.test.test_directives.EntityDeclarationTests.Outer",
             relative=True
         )
-        self.assertIs(rv, EntityDirectiveTests.Outer)
+        self.assertIs(rv, EntityDeclarationTests.Outer)
 
-        rv = Entity.Definition.string_import(
-            ".dialogue.test.test_directives.EntityDirectiveTests.Outer.Inner",
+        rv = Entity.Declaration.string_import(
+            ".dialogue.test.test_directives.EntityDeclarationTests.Outer.Inner",
             relative=True
         )
-        self.assertIs(rv, EntityDirectiveTests.Outer.Inner)
+        self.assertIs(rv, EntityDeclarationTests.Outer.Inner)
 
     @unittest.skipIf(
         "discover" in sys.argv,
@@ -62,20 +62,20 @@ class EntityDirectiveTests(unittest.TestCase):
         "Needs ~/py3.5/bin/python -m unittest turberfield.dialogue.test.test_directives")
     )
     def test_string_import_namespace(self):
-        rv = Entity.Definition.string_import(
-            "turberfield.dialogue.test.test_directives.EntityDirectiveTests",
+        rv = Entity.Declaration.string_import(
+            "turberfield.dialogue.test.test_directives.EntityDeclarationTests",
             relative=False
         )
-        self.assertIs(rv, EntityDirectiveTests)
+        self.assertIs(rv, EntityDeclarationTests)
 
-        rv = Entity.Definition.string_import(
-            "turberfield.dialogue.test.test_directives.EntityDirectiveTests.Outer",
+        rv = Entity.Declaration.string_import(
+            "turberfield.dialogue.test.test_directives.EntityDeclarationTests.Outer",
             relative=False
         )
-        self.assertIs(rv, EntityDirectiveTests.Outer)
+        self.assertIs(rv, EntityDeclarationTests.Outer)
 
-        rv = Entity.Definition.string_import(
-            "turberfield.dialogue.test.test_directives.EntityDirectiveTests.Outer.Inner",
+        rv = Entity.Declaration.string_import(
+            "turberfield.dialogue.test.test_directives.EntityDeclarationTests.Outer.Inner",
             relative=False
         )
 
@@ -90,7 +90,7 @@ class EntityDirectiveTests(unittest.TestCase):
             """)
         objs = SceneScript.read(content)
         groups = group_by_type(objs)
-        self.assertEqual(3, len(groups[Entity.Definition]), groups)
+        self.assertEqual(3, len(groups[Entity.Declaration]), groups)
 
     def test_entitys_with_options_and_content(self):
         content = textwrap.dedent("""
@@ -107,7 +107,7 @@ class EntityDirectiveTests(unittest.TestCase):
         doc = SceneScript.read(content)
         for n, obj in enumerate(doc):
             with self.subTest(n=n):
-                self.assertIsInstance(obj, Entity.Definition)
+                self.assertIsInstance(obj, Entity.Declaration)
                 self.assertTrue(obj["names"])
 
                 if n == 0:
