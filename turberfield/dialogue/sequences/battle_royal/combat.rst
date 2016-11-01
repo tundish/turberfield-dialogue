@@ -39,7 +39,7 @@ Action
 
 .. property:: FIGHTER_2.state turberfield.dialogue.sequences.battle_royal.types.Animation.dying
 
-.. touch:: turberfield.dialogue.sequences.battle_royal.types.Outcome.defeated
+.. memory:: turberfield.dialogue.sequences.battle_royal.types.Outcome.defeated
    :subject: FIGHTER_1
    :object: FIGHTER_2
 

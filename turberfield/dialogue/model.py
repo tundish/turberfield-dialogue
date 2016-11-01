@@ -160,7 +160,7 @@ class SceneScript:
     )
 
     docutils.parsers.rst.directives.register_directive(
-        "touch", Touch
+        "memory", Touch
     )
 
     @classmethod
