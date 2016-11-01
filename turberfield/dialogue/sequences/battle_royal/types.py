@@ -27,10 +27,9 @@ class Animation(enum.Enum):
     dying = 2
 
 @enum.unique
-class Availability(enum.Enum):
-    mist = 0
-    passive = 1
-    active = 2
+class Outcome(enum.Enum):
+    defeated = 0
+    victorious = 1
 
 class Animal(Stateful):
 

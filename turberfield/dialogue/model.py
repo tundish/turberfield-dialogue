@@ -29,6 +29,7 @@ import sys
 
 from turberfield.dialogue.directives import Entity
 from turberfield.dialogue.directives import Property
+from turberfield.dialogue.directives import Touch
 from turberfield.utils.misc import group_by_type
 
 import pkg_resources
@@ -156,6 +157,10 @@ class SceneScript:
 
     docutils.parsers.rst.directives.register_directive(
         "property", Property
+    )
+
+    docutils.parsers.rst.directives.register_directive(
+        "touch", Touch
     )
 
     @classmethod

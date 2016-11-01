@@ -27,7 +27,6 @@ Action
 
 [FIGHTER_1]_
 
-
     I hate the way you use me, |Fighter2| !
 
 [WEAPON]_
@@ -40,4 +39,12 @@ Action
 
 .. property:: FIGHTER_2.state turberfield.dialogue.sequences.battle_royal.types.Animation.dying
 
+.. touch:: turberfield.dialogue.sequences.battle_royal.types.Outcome.defeated
+   :subject: FIGHTER_1
+   :object: FIGHTER_2
+
+   |Fighter1| cruelly defeated |Fighter2| in a brutal surprise attack.
+
+   
+.. |Fighter1| property:: FIGHTER_1.name
 .. |Fighter2| property:: FIGHTER_2.name

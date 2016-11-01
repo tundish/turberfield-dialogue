@@ -109,3 +109,25 @@ class Property(docutils.parsers.rst.Directive):
         else:
             node = Property.Setter(**kwargs)
         return [node]
+
+class Touch(docutils.parsers.rst.Directive):
+
+    class Definition(Inline, TextElement, Pathfinder):
+        pass
+
+    required_arguments = 1
+    optional_arguments = 0
+    final_argument_whitespace = False
+    option_spec = {"subject": str, "object": str}
+    has_content = True
+
+    def run(self):
+        kwargs = {
+            i: getattr(self, i, None)
+            for i in (
+                "name", "arguments", "options", "content", "lineno", "content_offset",
+                "block_text", "state", "state_machine"
+            )
+        }
+        node = Touch.Definition(**kwargs)
+        return [node]
