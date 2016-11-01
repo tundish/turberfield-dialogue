@@ -28,6 +28,7 @@ import uuid
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.sequences.battle_royal.types import Animal
+from turberfield.dialogue.sequences.battle_royal.types import Outcome
 from turberfield.dialogue.sequences.battle_royal.types import Tool
 
 import pkg_resources
@@ -95,9 +96,8 @@ class CastingTests(unittest.TestCase):
             model = script.cast(script.select(self.personae)).run()
             for n, (shot, item) in enumerate(model):
                 self.assertIsInstance(shot, Model.Shot)
-                self.assertIsInstance(item, (Model.Act, Model.Line))
-        self.assertEqual(
-            1,
-            len([i.state for i in self.personae if i.state]),
-            [vars(i) for i in self.personae]
-        )
+                self.assertIsInstance(item, (Model.Act, Model.Line, Model.Touch))
+        # Last item is a Touch
+        self.assertIs(Outcome.defeated, item.state)
+        self.assertTrue(item.text)
+        self.assertTrue(item.html)

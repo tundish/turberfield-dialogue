@@ -57,9 +57,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def __iter__(self):
         for shot in self.shots:
             for item in shot.items:
-                if isinstance(item, Model.Act):
-                    self.log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
-                    setattr(item.object, item.attr, item.val)
+                #if isinstance(item, Model.Act):
+                #    self.log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
+                #    setattr(item.object, item.attr, item.val)
                 yield shot, item
 
     def get_entity(self, ref):
@@ -88,16 +88,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.shots[-1].items.append(Model.Act(self.speaker, entity.persona, attr, val))
 
     def visit_Definition(self, node):
-        print("definition")
-        return
-        ref, attr = node["arguments"][0].split(".")
-        entity = self.get_entity(ref)
-        character = next(
-            character
-            for character in self.document.citations
-            if ref.lower() in character.attributes["names"])
-        val = node.string_import(node["arguments"][1])
-        self.shots[-1].items.append(Model.Act(self.speaker, character.persona, attr, val))
+        state = node.string_import(node["arguments"][0])
+        subj = self.get_entity(node["options"].get("subject"))
+        obj = self.get_entity(node["options"].get("object"))
+        self.shots[-1].items.append(Model.Touch(subj.persona, obj.persona, state, None, None))
 
     def visit_title(self, node):
         self.log.debug(self.section_level)
