@@ -130,4 +130,5 @@ class Memory(docutils.parsers.rst.Directive):
             )
         }
         node = Memory.Definition(**kwargs)
+        self.state.nested_parse(self.content, self.content_offset, node)
         return [node]

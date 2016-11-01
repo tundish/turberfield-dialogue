@@ -97,7 +97,10 @@ class CastingTests(unittest.TestCase):
             for n, (shot, item) in enumerate(model):
                 self.assertIsInstance(shot, Model.Shot)
                 self.assertIsInstance(item, (Model.Property, Model.Line, Model.Memory))
-        # Last item is a Touch
+
+        # Last item is a Memory
         self.assertIs(Outcome.defeated, item.state)
         self.assertTrue(item.text)
+        self.assertFalse("|" in item.text)
         self.assertTrue(item.html)
+        self.assertFalse("|" in item.html)

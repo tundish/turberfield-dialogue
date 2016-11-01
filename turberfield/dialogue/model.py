@@ -57,6 +57,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.scenes = []
         self.shots = []
         self.speaker = None
+        self.memory = None
 
     def __iter__(self):
         for shot in self.shots:
@@ -92,7 +93,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         state = node.string_import(node["arguments"][0])
         subj = self.get_entity(node["options"].get("subject"))
         obj = self.get_entity(node["options"].get("object"))
-        self.shots[-1].items.append(Model.Memory(subj.persona, obj.persona, state, None, None))
+        self.memory = Model.Memory(subj.persona, obj.persona, state, None, None)
 
     def visit_title(self, node):
         self.log.debug(self.section_level)
@@ -106,8 +107,6 @@ class Model(docutils.nodes.GenericNodeVisitor):
                     []))
 
     def visit_paragraph(self, node):
-        if self.section_level != 2:
-            return
         text = []
         html = []
         for c in node.children:
@@ -127,7 +126,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 text.append(c.rawsource)
                 html.append('<span class="text">{0}</span>'.format(c.rawsource))
 
-        if (text or html) and self.section_level == 2:
+        if self.memory:
+            self.shots[-1].items.append(self.memory._replace(text=" ".join(text), html="\n".join(html)))
+            self.memory = None
+        elif (text or html) and self.section_level == 2:
             self.shots[-1].items.append(Model.Line(self.speaker, " ".join(text), "\n".join(html)))
 
     def visit_citation_reference(self, node):
