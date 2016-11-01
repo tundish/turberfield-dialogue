@@ -95,7 +95,7 @@ def main(args):
                         print("\n")
                         print(item.persona.name.firstname, item.persona.name.surname, sep=" ")
                         print(textwrap.indent(item.text, " " * 16))
-                        time.sleep(3.5)
+                        time.sleep(3.5) # TODO: According to length
 
             time.sleep(2)
             clear_screen()
