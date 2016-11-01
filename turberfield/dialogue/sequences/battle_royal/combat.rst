@@ -18,10 +18,15 @@
 Combat
 ~~~~~~
 
+
 Action
 ------
 
+.. property:: FIGHTER_1.animation turberfield.dialogue.sequences.battle_royal.types.Animation.angry
+.. property:: FIGHTER_2.animation turberfield.dialogue.sequences.battle_royal.types.Animation.passive
+
 [FIGHTER_1]_
+
 
     I hate the way you use me, |Fighter2| !
 
@@ -33,6 +38,6 @@ Action
 
     Uuurrggh!
 
-    .. property:: FIGHTER_2.state turberfield.dialogue.sequences.battle_royal.types.Availability.passive
+.. property:: FIGHTER_2.state turberfield.dialogue.sequences.battle_royal.types.Animation.dying
 
 .. |Fighter2| property:: FIGHTER_2.name

@@ -21,6 +21,12 @@ import enum
 from turberfield.dialogue.types import Stateful
 
 @enum.unique
+class Animation(enum.Enum):
+    angry = 0
+    passive = 1
+    dying = 2
+
+@enum.unique
 class Availability(enum.Enum):
     mist = 0
     passive = 1
