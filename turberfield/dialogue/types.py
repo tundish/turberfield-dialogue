@@ -20,6 +20,13 @@ from collections import namedtuple
 import enum
 import random
 
+@enum.unique
+class Presence(enum.Enum):
+    invisible = 0
+    visible = 1
+    shine = 2
+    fade = 3
+    throb = 4
 
 class DataObject:
 

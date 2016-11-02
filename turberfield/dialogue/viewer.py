@@ -44,7 +44,7 @@ WAV file player.
 
 def cast_menu(log):
     log.info("Painting cast menu...")
-    castList = OrderedDict(gather_installed("turberfield.interfaces.cast", log=log))
+    castList = OrderedDict(gather_installed("turberfield.interfaces.ensemble", log=log))
     print("\n")
     print(
         *["\t{0}: {1} ({2} members)".format(n, k, len(v)) for n, (k, v) in enumerate(castList.items())],
@@ -90,7 +90,7 @@ def main(args):
                 model = dialogue.cast(dialogue.select(personae, roles=1)).run()
                 for n, (shot, item) in enumerate(model):
                     if isinstance(item, Model.Property):
-                        self.log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
+                        log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
                         setattr(item.object, item.attr, item.val)
                     if hasattr(item, "text"):
                         print("\n")
