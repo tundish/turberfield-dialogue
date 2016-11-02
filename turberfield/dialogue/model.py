@@ -111,7 +111,11 @@ class Model(docutils.nodes.GenericNodeVisitor):
         html = []
         for c in node.children:
             if isinstance(c, docutils.nodes.substitution_reference):
-                defn = self.document.substitution_defs[c.attributes["refname"]]
+                try:
+                    defn = self.document.substitution_defs[c.attributes["refname"]]
+                except KeyError:
+                    self.log.warning("Bad substitution ref before line {0}: {1.rawsource}".format(node.line, c))
+                    raise
                 for tgt in defn.children:
                     if isinstance(tgt, PropertyDirective.Getter):
                         ref, dot, attr = tgt["arguments"][0].partition(".")

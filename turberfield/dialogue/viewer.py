@@ -33,9 +33,6 @@ import simpleaudio
 import turberfield.dialogue.cli
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
-from turberfield.dialogue.sequences.battle_royal.types import Animal
-from turberfield.dialogue.sequences.battle_royal.types import Availability
-from turberfield.dialogue.sequences.battle_royal.types import Tool
 from turberfield.dialogue.types import Player
 from turberfield.utils.misc import gather_installed
 from turberfield.utils.misc import log_setup
@@ -103,9 +100,6 @@ def main(args):
 
             time.sleep(2)
             clear_screen()
-            for i in personae:
-                if Availability.mist in i.state.values():
-                    i.state = Availability.active
 
     except (AttributeError, ValueError) as e:
         log.error(". ".join(getattr(e, "args", e) or e))
