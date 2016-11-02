@@ -42,16 +42,16 @@ WAV file player.
 
 """
 
-def cast_menu(log):
-    log.info("Painting cast menu...")
+def ensemble_menu(log):
+    log.info("Painting ensemble menu...")
     castList = OrderedDict(gather_installed("turberfield.interfaces.ensemble", log=log))
     print("\n")
     print(
         *["\t{0}: {1} ({2} members)".format(n, k, len(v)) for n, (k, v) in enumerate(castList.items())],
         sep="\n")
-    index = int(input("\nChoose a cast: "))
+    index = int(input("\nChoose an ensemble: "))
     choice = list(castList.keys())[index]
-    log.info("Selected cast '{0}'.".format(choice))
+    log.info("Selected ensemble '{0}'.".format(choice))
     return castList[choice]
 
 def seq_menu(log):
@@ -77,7 +77,7 @@ def main(args):
     log = logging.getLogger(logName)
 
     folder = seq_menu(log)
-    cast = cast_menu(log)
+    cast = ensemble_menu(log)
     player = Player(name="Mr Tim Finch")
     scripts = SceneScript.scripts(**folder._asdict())
 
@@ -96,7 +96,7 @@ def main(args):
                         print("\n")
                         print(item.persona.name.firstname, item.persona.name.surname, sep=" ")
                         print(textwrap.indent(item.text, " " * 16))
-                        time.sleep(3.5) # TODO: According to length
+                        time.sleep(1.5 + 0.2 * item.text.count(" "))
 
             time.sleep(2)
             clear_screen()
