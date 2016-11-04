@@ -21,12 +21,22 @@ import enum
 import random
 
 @enum.unique
+class Ownership(enum.Enum):
+    lost = 0
+    acquired = 1
+
+@enum.unique
 class Presence(enum.Enum):
     invisible = 0
     visible = 1
     shine = 2
     fade = 3
     throb = 4
+
+@enum.unique
+class Vocabulary(enum.Enum):
+    forgot = 0
+    learned = 1
 
 class DataObject:
 
