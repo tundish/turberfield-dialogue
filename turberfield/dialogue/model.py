@@ -148,7 +148,7 @@ class SceneScript:
 
     """
 
-    Folder = namedtuple("Folder", ["pkg", "doc", "paths"])
+    Folder = namedtuple("Folder", ["pkg", "doc", "paths", "interludes"])
 
     log = logging.getLogger("turberfield.dialogue.scenescript")
 
@@ -175,7 +175,7 @@ class SceneScript:
     )
 
     @classmethod
-    def scripts(cls, pkg, doc, paths=[]):
+    def scripts(cls, pkg, doc, paths=[], **kwargs):
         for path in paths:
             try:
                 fP = pkg_resources.resource_filename(pkg, path)

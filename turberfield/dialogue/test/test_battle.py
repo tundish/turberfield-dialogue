@@ -20,6 +20,7 @@
 import collections.abc
 from collections import namedtuple
 import enum
+import itertools
 import sys
 import textwrap
 import unittest
@@ -38,20 +39,22 @@ class LoaderTests(unittest.TestCase):
 
     def test_scripts(self):
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "test", ["combat.rst"]
+            "turberfield.dialogue.sequences.battle_royal", "test", ["combat.rst"], itertools.repeat(None)
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertEqual(1, len(rv))
         self.assertIsInstance(rv[0], SceneScript)
 
     def test_scripts_bad_pkg(self):
-        folder = SceneScript.Folder("turberfield.dialogue.sequences.not_there", "test", ["combat.rst"])
+        folder = SceneScript.Folder(
+            "turberfield.dialogue.sequences.not_there", "test", ["combat.rst"], itertools.repeat(None)
+        )
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertFalse(rv)
 
     def test_scripts_bad_scenefile(self):
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "test", ["not_there.rst"]
+            "turberfield.dialogue.sequences.battle_royal", "test", ["not_there.rst"], itertools.repeat(None)
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertFalse(rv)
@@ -68,7 +71,7 @@ class CastingTests(unittest.TestCase):
             Tool(uuid.uuid4(), ("Rusty", "Chopper",)),
         }
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "test", ["combat.rst"]
+            "turberfield.dialogue.sequences.battle_royal", "test", ["combat.rst"], itertools.repeat(None)
         )
         self.script = next(SceneScript.scripts(**folder._asdict()))
 
