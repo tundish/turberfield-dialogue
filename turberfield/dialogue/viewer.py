@@ -88,7 +88,7 @@ async def view(queue, log=None, loop=None):
             time.sleep(2)
             clear_screen()
 
-        if hasattr(item, "text"):
+        if isinstance(item, Model.Line):
             print("\n")
             print(item.persona.name.firstname, item.persona.name.surname, sep=" ")
             print(textwrap.indent(item.text, " " * 16))
@@ -116,6 +116,10 @@ async def run_through(folder, ensemble, queue, log=None, loop=None):
                 if isinstance(item, Model.Property):
                     log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
                     setattr(item.object, item.attr, item.val)
+                elif isinstance(item, Model.Memory):
+                    log.info("{subject} {state} {object}; {text}".format(**item._asdict()))
+                    pass
+
         rv = await interlude(folder, ensemble, log=log, loop=loop)
         if rv is not folder:
             log.info("Interlude branching to {0}".format(rv))

@@ -36,7 +36,7 @@ class Presence(enum.Enum):
 @enum.unique
 class Vocabulary(enum.Enum):
     forgot = 0
-    learned = 1
+    prompted = 1
 
 class DataObject:
 
