@@ -116,7 +116,7 @@ async def run_through(folder, ensemble, queue, log=None, loop=None):
                 if isinstance(item, Model.Property):
                     log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
                     setattr(item.object, item.attr, item.val)
-        rv = interlude(folder, ensemble, log=log, loop=loop)
+        rv = await interlude(folder, ensemble, log=log, loop=loop)
         if rv is not folder:
             log.info("Interlude branching to {0}".format(rv))
             return rv
