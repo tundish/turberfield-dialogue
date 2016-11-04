@@ -78,8 +78,12 @@ async def view(queue, log=None, loop=None):
     while True:
         try:
             shot, item = await queue.get()
-        except IndexError:
-            loop.stop()
+        except TypeError as e:
+            log.debug("Got sentinel.")
+            queue.task_done()
+            prev = None
+            return
+
         if prev and shot is not prev:
             time.sleep(2)
             clear_screen()
@@ -91,6 +95,7 @@ async def view(queue, log=None, loop=None):
             time.sleep(1.5 + 0.2 * item.text.count(" "))
 
         prev = shot
+        queue.task_done()
 
 async def run_through(folder, ensemble, queue, log=None, loop=None):
     log = log or logging.getLogger("turberfield.dialogue.run_through")
@@ -106,8 +111,8 @@ async def run_through(folder, ensemble, queue, log=None, loop=None):
 
             for n, (shot, item) in enumerate(model):
                 await queue.put((shot, item))
-                while not queue.empty():
-                    asyncio.sleep(0.1)
+                await queue.join()
+
                 if isinstance(item, Model.Property):
                     log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
                     setattr(item.object, item.attr, item.val)
@@ -128,12 +133,15 @@ def main(args):
     cast = ensemble_menu(log)
     player = Player(name="Mr Tim Finch")
     ensemble = { player } | cast
-    queue = asyncio.Queue(loop=loop)
+    queue = asyncio.Queue(maxsize=1, loop=loop)
     projectionist = loop.create_task(view(queue, loop=loop))
 
     try:
-        folder = loop.run_until_complete(run_through(folder, ensemble, queue, loop=loop))
+        while folder:
+            folder = loop.run_until_complete(run_through(folder, ensemble, queue, loop=loop))
     finally:
+        queue.put_nowait(None)
+        projectionist.cancel()
         loop.close()
 
     return 0
