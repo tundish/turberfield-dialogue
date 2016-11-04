@@ -71,6 +71,54 @@ def clear_screen():
     print("\n" * n, end="")
     return n
 
+async def view(queue, log=None, loop=None):
+    log = log or logging.getLogger("turberfield.dialogue.view")
+    loop = loop or ayncio.get_event_loop()
+    prev = None
+    while True:
+        try:
+            shot, item = await queue.get()
+        except IndexError:
+            loop.stop()
+        if prev and shot is not prev:
+            time.sleep(2)
+            clear_screen()
+
+        if hasattr(item, "text"):
+            print("\n")
+            print(item.persona.name.firstname, item.persona.name.surname, sep=" ")
+            print(textwrap.indent(item.text, " " * 16))
+            time.sleep(1.5 + 0.2 * item.text.count(" "))
+
+        prev = shot
+
+async def run_through(folder, ensemble, queue, log=None, loop=None):
+    log = log or logging.getLogger("turberfield.dialogue.run_through")
+    loop = loop or ayncio.get_event_loop()
+    scripts = SceneScript.scripts(**folder._asdict())
+    for script, interlude in zip(scripts, folder.interludes):
+        with script as dialogue:
+            try:
+                model = dialogue.cast(dialogue.select(ensemble, roles=1)).run()
+            except (AttributeError, ValueError) as e:
+                log.error(". ".join(getattr(e, "args", e) or e))
+                return
+
+            for n, (shot, item) in enumerate(model):
+                await queue.put((shot, item))
+                while not queue.empty():
+                    asyncio.sleep(0.1)
+                if isinstance(item, Model.Property):
+                    log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
+                    setattr(item.object, item.attr, item.val)
+        rv = interlude(folder, ensemble, log=log, loop=loop)
+        if rv is not folder:
+            log.info("Interlude branching to {0}".format(rv))
+            return rv
+
+    await queue.put(None)
+    return None
+
 def main(args):
     loop = asyncio.get_event_loop()
     logName = log_setup(args, loop=loop)
@@ -79,31 +127,12 @@ def main(args):
     folder = seq_menu(log)
     cast = ensemble_menu(log)
     player = Player(name="Mr Tim Finch")
-    scripts = SceneScript.scripts(**folder._asdict())
+    ensemble = { player } | cast
+    queue = asyncio.Queue(loop=loop)
+    projectionist = loop.create_task(view(queue, loop=loop))
 
     try:
-        for script in scripts:
-            personae = { player } | cast
-            scriptFile = next(SceneScript.scripts(**folder._asdict()))
-            log.debug(scriptFile)
-            with script as dialogue:
-                model = dialogue.cast(dialogue.select(personae, roles=1)).run()
-                for n, (shot, item) in enumerate(model):
-                    if isinstance(item, Model.Property):
-                        log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
-                        setattr(item.object, item.attr, item.val)
-                    if hasattr(item, "text"):
-                        print("\n")
-                        print(item.persona.name.firstname, item.persona.name.surname, sep=" ")
-                        print(textwrap.indent(item.text, " " * 16))
-                        time.sleep(1.5 + 0.2 * item.text.count(" "))
-
-            time.sleep(2)
-            clear_screen()
-
-    except (AttributeError, ValueError) as e:
-        log.error(". ".join(getattr(e, "args", e) or e))
-        log.info("No valid casting selection.")
+        folder = loop.run_until_complete(run_through(folder, ensemble, queue, loop=loop))
     finally:
         loop.close()
 
