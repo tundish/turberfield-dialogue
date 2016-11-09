@@ -20,6 +20,7 @@
 import argparse
 import asyncio
 from collections import OrderedDict
+import datetime
 import logging
 import logging.handlers
 import shutil
@@ -139,10 +140,13 @@ def main(args):
     ensemble = { player } | cast
     queue = asyncio.Queue(maxsize=1, loop=loop)
     projectionist = loop.create_task(view(queue, loop=loop))
+    then = datetime.datetime.now()
 
     try:
         while folder:
             folder = loop.run_until_complete(run_through(folder, ensemble, queue, loop=loop))
+        elapsed = datetime.datetime.now() - then
+        log.info("Elapsed time: {0}".format(elapsed))
     finally:
         queue.put_nowait(None)
         projectionist.cancel()
