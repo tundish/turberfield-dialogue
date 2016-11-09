@@ -86,6 +86,7 @@ async def view(queue, log=None, loop=None):
             return
 
         if prev and shot is not prev:
+            log.info("Pause...")
             time.sleep(2)
             clear_screen()
 
