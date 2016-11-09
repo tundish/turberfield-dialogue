@@ -103,6 +103,7 @@ async def run_through(folder, ensemble, queue, log=None, loop=None):
     loop = loop or ayncio.get_event_loop()
     scripts = SceneScript.scripts(**folder._asdict())
     for script, interlude in zip(scripts, folder.interludes):
+        then = datetime.datetime.now()
         with script as dialogue:
             try:
                 model = dialogue.cast(dialogue.select(ensemble, roles=1)).run()
@@ -121,6 +122,7 @@ async def run_through(folder, ensemble, queue, log=None, loop=None):
                     log.info("{subject} {state} {object}; {text}".format(**item._asdict()))
                     pass
 
+        log.info("Time: {0}".format(datetime.datetime.now() - then))
         rv = await interlude(folder, ensemble, log=log, loop=loop)
         if rv is not folder:
             log.info("Interlude branching to {0}".format(rv))
@@ -140,13 +142,13 @@ def main(args):
     ensemble = { player } | cast
     queue = asyncio.Queue(maxsize=1, loop=loop)
     projectionist = loop.create_task(view(queue, loop=loop))
-    then = datetime.datetime.now()
+    start = datetime.datetime.now()
 
     try:
         while folder:
             folder = loop.run_until_complete(run_through(folder, ensemble, queue, loop=loop))
-        elapsed = datetime.datetime.now() - then
-        log.info("Elapsed time: {0}".format(elapsed))
+        else:
+            log.info("Playing time: {0}".format(datetime.datetime.now() - start))
     finally:
         queue.put_nowait(None)
         projectionist.cancel()
