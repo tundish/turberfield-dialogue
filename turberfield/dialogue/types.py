@@ -20,6 +20,8 @@ from collections import namedtuple
 import enum
 import random
 
+Name = namedtuple("Name", ["title", "firstname", "nicknames", "surname"])
+
 @enum.unique
 class Ownership(enum.Enum):
     lost = 0
@@ -49,11 +51,13 @@ class DataObject:
 
 class Persona(DataObject):
 
-    Name = namedtuple("Name", ["title", "firstname", "nicknames", "surname"])
-
     def __init__(self, **kwargs):
-        bits = kwargs.pop("name").split()
-        self.name = Persona.Name(bits[0], bits[1], bits[2:-1], bits[-1])
+        val = kwargs.pop("name")
+        bits = val.split()
+        try:
+            self.name = Name(bits[0], bits[1], bits[2:-1], bits[-1])
+        except IndexError:
+            self.name = Name("", val, [], "")
         super().__init__(**kwargs)
 
     @property
