@@ -226,7 +226,10 @@ class SceneScript:
             persona = next((i for i in pool if isinstance(i, spec)), None)
             rv[e] = persona
             if list(rv.values()).count(persona) == roles:
-                pool.remove(persona)
+                try:
+                    pool.remove(persona)
+                except ValueError:
+                    self.log.info("No persona matches spec {0}".format(spec))
         return rv
 
     def cast(self, mapping):
