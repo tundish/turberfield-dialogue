@@ -22,13 +22,19 @@ import random
 
 Name = namedtuple("Name", ["title", "firstname", "nicknames", "surname"])
 
+class EnumFactory:
+
+    @classmethod
+    def factory(cls, name=None, **kwargs):
+        return cls[name]
+
 @enum.unique
-class Ownership(enum.Enum):
+class Ownership(EnumFactory, enum.Enum):
     lost = 0
     acquired = 1
 
 @enum.unique
-class Presence(enum.Enum):
+class Presence(EnumFactory, enum.Enum):
     invisible = 0
     visible = 1
     shine = 2
@@ -36,7 +42,7 @@ class Presence(enum.Enum):
     throb = 4
 
 @enum.unique
-class Vocabulary(enum.Enum):
+class Vocabulary(EnumFactory, enum.Enum):
     forgot = 0
     prompted = 1
 
