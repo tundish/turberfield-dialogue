@@ -30,7 +30,6 @@ import time
 import uuid
 import wave
 
-import simpleaudio
 import turberfield.dialogue.cli
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
