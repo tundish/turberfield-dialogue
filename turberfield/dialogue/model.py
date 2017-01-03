@@ -153,6 +153,7 @@ class SceneScript:
     log = logging.getLogger("turberfield.dialogue.scenescript")
 
     settings=argparse.Namespace(
+        character_level_inline_markup=False,
         debug = False, error_encoding="utf-8",
         error_encoding_error_handler="backslashreplace", halt_level=4,
         auto_id_prefix="", id_prefix="", language_code="en",
