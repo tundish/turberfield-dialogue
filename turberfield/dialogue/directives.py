@@ -110,6 +110,28 @@ class Property(docutils.parsers.rst.Directive):
             node = Property.Setter(**kwargs)
         return [node]
 
+class FX(docutils.parsers.rst.Directive):
+
+    class Definition(Element, Inline, Pathfinder):
+        pass
+
+    required_arguments = 2
+    optional_arguments = 0
+    final_argument_whitespace = False
+    option_spec = {}
+    has_content = False
+
+    def run(self):
+        kwargs = {
+            i: getattr(self, i, None)
+            for i in (
+                "name", "arguments", "options", "content", "lineno", "content_offset",
+                "block_text", "state", "state_machine"
+            )
+        }
+        node = FX.Definition(**kwargs)
+        return [node]
+
 class Memory(docutils.parsers.rst.Directive):
 
     class Definition(Inline, TextElement, Pathfinder):

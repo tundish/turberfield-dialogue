@@ -28,6 +28,7 @@ import os.path
 import sys
 
 from turberfield.dialogue.directives import Entity as EntityDirective
+from turberfield.dialogue.directives import FX as FXDirective
 from turberfield.dialogue.directives import Property as PropertyDirective
 from turberfield.dialogue.directives import Memory as MemoryDirective
 from turberfield.utils.misc import group_by_type
@@ -40,6 +41,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     Shot = namedtuple("Shot", ["name", "scene", "items"])
     Property = namedtuple("Property", ["entity", "object", "attr", "val"])
+    Audio = namedtuple("Audio", ["offset", "duration", "loop"])
     Memory = namedtuple("Memory", ["subject", "object", "state", "text", "html"])
     Line = namedtuple("Line", ["persona", "text", "html"])
 
@@ -169,6 +171,10 @@ class SceneScript:
 
     docutils.parsers.rst.directives.register_directive(
         "property", PropertyDirective
+    )
+
+    docutils.parsers.rst.directives.register_directive(
+        "fx", FXDirective
     )
 
     docutils.parsers.rst.directives.register_directive(

@@ -85,7 +85,7 @@ class FXDirectiveTests(unittest.TestCase):
     def test_fx(self):
         content = textwrap.dedent(
             """
-            .. fx:: turberfield.dialogue sequences/battle_royal/whack.wav
+            .. fx:: turberfield.dialogue.sequences.battle_royal whack.wav
                :offset: 0
                :duration: 3000
                :loop: 1
