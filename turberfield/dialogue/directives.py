@@ -118,7 +118,11 @@ class FX(docutils.parsers.rst.Directive):
     required_arguments = 2
     optional_arguments = 0
     final_argument_whitespace = False
-    option_spec = {}
+    option_spec = {
+        "offset": int,
+        "duration": int,
+        "loop": int,
+    }
     has_content = False
 
     def run(self):
