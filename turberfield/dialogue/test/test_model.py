@@ -99,5 +99,12 @@ class FXDirectiveTests(unittest.TestCase):
             """)
         script = SceneScript("inline", doc=SceneScript.read(content))
         model = script.run()
-        shot, line = next(iter(model))
-        print(shot, line)
+        shot, cue = next(iter(model))
+        self.assertEqual(
+            "turberfield.dialogue.sequences.battle_royal",
+            cue.package
+        )
+        self.assertEqual("whack.wav", cue.resource)
+        self.assertEqual(0, cue.offset)
+        self.assertEqual(3000, cue.duration)
+        self.assertEqual(1, cue.loop)
