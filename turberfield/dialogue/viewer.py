@@ -31,6 +31,7 @@ import uuid
 import wave
 
 import turberfield.dialogue.cli
+from turberfield.dialogue.directives import Pathfinder
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.types import Player
@@ -141,8 +142,15 @@ def main(args):
     logName = log_setup(args, loop=loop)
     log = logging.getLogger(logName)
 
-    folder = seq_menu(log)
-    cast = ensemble_menu(log)
+    if args.ensemble:
+        cast = Pathfinder.string_import(
+            args.ensemble, relative=False, sep=":"
+        )
+    else:
+        folder = seq_menu(log)
+        cast = ensemble_menu(log)
+
+    print(cast)
     player = Player(name="Mr Tim Finch")
     ensemble = { player } | cast
     queue = asyncio.Queue(maxsize=1, loop=loop)

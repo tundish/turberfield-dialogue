@@ -34,7 +34,7 @@ class Pathfinder:
         if sep is None:
             index = min(n for n, i in enumerate(bits) if i and i[0].isupper())
         else:
-            index = min(n for n, i in enumerate(bits) if i and sep in i)
+            index = min(n for n, i in enumerate(bits) if i and sep in i) + 1
             bits = arg.replace(sep, ".").split(".")
 
         start = 1 if relative else 0
