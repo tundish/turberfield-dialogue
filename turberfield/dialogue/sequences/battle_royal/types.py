@@ -17,6 +17,7 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 import enum
+import uuid
 
 from turberfield.dialogue.types import Stateful
 

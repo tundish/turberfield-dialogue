@@ -29,9 +29,14 @@ import docutils.parsers.rst
 class Pathfinder:
 
     @staticmethod
-    def string_import(arg, relative=False):
+    def string_import(arg, relative=False, sep=None):
         bits = arg.split(".")
-        index = min(n for n, i in enumerate(bits) if i and i[0].isupper())
+        if sep is None:
+            index = min(n for n, i in enumerate(bits) if i and i[0].isupper())
+        else:
+            index = min(n for n, i in enumerate(bits) if i and sep in i)
+            bits = arg.replace(sep, ".").split(".")
+
         start = 1 if relative else 0
         modName = ".".join(bits[start:index])
         try:

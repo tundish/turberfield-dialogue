@@ -57,6 +57,33 @@ class EntityDeclarationTests(unittest.TestCase):
         self.assertIs(rv, EntityDeclarationTests.Outer.Inner)
 
     @unittest.skipIf(
+        "discover" not in sys.argv,
+        "Testing relative import: Needs ~/py3.5/bin/python -m unittest discover turberfield"
+    )
+
+    def test_string_import_relative_with_separator(self):
+        rv = Entity.Declaration.string_import(
+            ".dialogue.test.test_directives:EntityDeclarationTests",
+            relative=True,
+            sep=":"
+        )
+        self.assertIs(rv, EntityDeclarationTests)
+
+        rv = Entity.Declaration.string_import(
+            ".dialogue.test.test_directives:EntityDeclarationTests.Outer",
+            relative=True,
+            sep=":"
+        )
+        self.assertIs(rv, EntityDeclarationTests.Outer)
+
+        rv = Entity.Declaration.string_import(
+            ".dialogue.test.test_directives:EntityDeclarationTests.Outer.Inner",
+            relative=True,
+            sep=":"
+        )
+        self.assertIs(rv, EntityDeclarationTests.Outer.Inner)
+
+    @unittest.skipIf(
         "discover" in sys.argv,
         ("Testing namespace import: "
         "Needs ~/py3.5/bin/python -m unittest turberfield.dialogue.test.test_directives")
@@ -78,6 +105,7 @@ class EntityDeclarationTests(unittest.TestCase):
             "turberfield.dialogue.test.test_directives.EntityDeclarationTests.Outer.Inner",
             relative=False
         )
+        self.assertIs(rv, EntityDeclarationTests.Outer.Inner)
 
     def test_empty_entitys(self):
         content = textwrap.dedent("""
