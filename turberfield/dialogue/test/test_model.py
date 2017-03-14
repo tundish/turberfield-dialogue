@@ -85,6 +85,12 @@ class FXDirectiveTests(unittest.TestCase):
     def test_fx(self):
         content = textwrap.dedent(
             """
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
             .. fx:: turberfield.dialogue.sequences.battle_royal whack.wav
                :offset: 0
                :duration: 3000
@@ -94,3 +100,4 @@ class FXDirectiveTests(unittest.TestCase):
         script = SceneScript("inline", doc=SceneScript.read(content))
         model = script.run()
         shot, line = next(iter(model))
+        print(shot, line)

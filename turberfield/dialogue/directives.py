@@ -112,7 +112,7 @@ class Property(docutils.parsers.rst.Directive):
 
 class FX(docutils.parsers.rst.Directive):
 
-    class Definition(Element, Inline, Pathfinder):
+    class Cue(Element, Inline, Pathfinder):
         pass
 
     required_arguments = 2
@@ -133,7 +133,7 @@ class FX(docutils.parsers.rst.Directive):
                 "block_text", "state", "state_machine"
             )
         }
-        node = FX.Definition(**kwargs)
+        node = FX.Cue(**kwargs)
         return [node]
 
 class Memory(docutils.parsers.rst.Directive):

@@ -41,7 +41,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     Shot = namedtuple("Shot", ["name", "scene", "items"])
     Property = namedtuple("Property", ["entity", "object", "attr", "val"])
-    Audio = namedtuple("Audio", ["offset", "duration", "loop"])
+    Audio = namedtuple("Audio", ["package", "resource", "offset", "duration", "loop"])
     Memory = namedtuple("Memory", ["subject", "object", "state", "text", "html"])
     Line = namedtuple("Line", ["persona", "text", "html"])
 
@@ -51,7 +51,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.optional = tuple(
             i.__name__ for i in (
                 EntityDirective.Declaration, MemoryDirective.Definition,
-                PropertyDirective.Getter, PropertyDirective.Setter
+                PropertyDirective.Getter, PropertyDirective.Setter,
+                FXDirective.Cue
             )
         )
         self.log = logging.getLogger("turberfield.dialogue.{0}".format(os.path.basename(self.fP)))
@@ -96,6 +97,15 @@ class Model(docutils.nodes.GenericNodeVisitor):
         subj = self.get_entity(node["options"].get("subject"))
         obj = self.get_entity(node["options"].get("object"))
         self.memory = Model.Memory(subj.persona, obj.persona, state, None, None)
+
+    def visit_Cue(self, node):
+        pkg = node["arguments"][0]
+        rsrc = node["arguments"][1]
+        offset = node["options"].get("offset")
+        duration = node["options"].get("duration")
+        loop = node["options"].get("loop")
+        item = Model.Audio(pkg, rsrc, offset, duration, loop)
+        self.shots[-1].items.append(item)
 
     def visit_title(self, node):
         self.log.debug(self.section_level)
