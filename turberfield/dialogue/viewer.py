@@ -44,6 +44,7 @@ Script viewer.
 Example:
 
 python -m turberfield.dialogue.viewer \
+--sequence=turberfield.dialogue.sequences.battle_royal:folder \
 --ensemble=turberfield.dialogue.sequences.battle_royal.types:ensemble
 
 """
@@ -142,17 +143,17 @@ def main(args):
     logName = log_setup(args, loop=loop)
     log = logging.getLogger(logName)
 
-    if args.ensemble:
-        cast = Pathfinder.string_import(
+    if args.sequence and args.ensemble:
+        folder = Pathfinder.string_import(
+            args.sequence, relative=False, sep=":"
+        )
+        ensemble = Pathfinder.string_import(
             args.ensemble, relative=False, sep=":"
         )
     else:
         folder = seq_menu(log)
-        cast = ensemble_menu(log)
+        ensemble = ensemble_menu(log)
 
-    print(cast)
-    player = Player(name="Mr Tim Finch")
-    ensemble = { player } | cast
     queue = asyncio.Queue(maxsize=1, loop=loop)
     projectionist = loop.create_task(view(queue, loop=loop))
     start = datetime.datetime.now()
