@@ -50,3 +50,10 @@ class Tool(Stateful):
         self.id_, self._names = id_, names
         self.name = " ".join(self._names)
         super().__init__()
+
+ensemble = [
+    Animal(uuid.uuid4(), None, ("Itchy",)),
+    Animal(uuid.uuid4(), None, ("Scratchy",)),
+    Tool(uuid.uuid4(), ("Rusty", "Chopper",)),
+    Furniture(uuid.uuid4(), ("Hat", "Stand",)),
+]

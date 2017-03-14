@@ -38,7 +38,12 @@ from turberfield.utils.misc import gather_installed
 from turberfield.utils.misc import log_setup
 
 __doc__ = """
-WAV file player.
+Script viewer.
+
+Example:
+
+python -m turberfield.dialogue.viewer \
+--ensemble=turberfield.dialogue.sequences.battle_royal.types:ensemble
 
 """
 
@@ -158,6 +163,14 @@ def main(args):
 
 def run():
     p = turberfield.dialogue.cli.parser()
+    p.add_argument(
+        "--ensemble", default=None,
+        help="Give an import path to a list of Personas."
+    )
+    p.add_argument(
+        "--sequence", default=None,
+        help="Give an import path to a SceneScript folder."
+    )
     args = p.parse_args()
     if args.version:
         sys.stdout.write(turberfield.dialogue.__version__ + "\n")
