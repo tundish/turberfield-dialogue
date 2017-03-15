@@ -50,6 +50,7 @@ class Vocabulary(EnumFactory, enum.Enum):
 class DataObject:
 
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         for k, v in kwargs.items():
             setattr(self, k, v)
 
