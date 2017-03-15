@@ -18,7 +18,39 @@
 
 
 import argparse
+from collections import OrderedDict
 import logging
+import shutil
+
+
+def ensemble_menu(log):
+    log.info("Painting ensemble menu...")
+    castList = OrderedDict(gather_installed("turberfield.interfaces.ensemble", log=log))
+    print("\n")
+    print(
+        *["\t{0}: {1} ({2} members)".format(n, k, len(v)) for n, (k, v) in enumerate(castList.items())],
+        sep="\n")
+    index = int(input("\nChoose an ensemble: "))
+    choice = list(castList.keys())[index]
+    log.info("Selected ensemble '{0}'.".format(choice))
+    return castList[choice]
+
+def seq_menu(log):
+    log.info("Painting sequence menu...")
+    seqList = OrderedDict(gather_installed("turberfield.interfaces.sequence", log=log))
+    print("\n")
+    print(
+        *["\t{0}: {1} ({2} members)".format(n, k, len(v.paths)) for n, (k, v) in enumerate(seqList.items())],
+        sep="\n")
+    index = int(input("\nChoose a sequence: "))
+    choice = list(seqList.keys())[index]
+    log.info("Selected sequence '{0}'.".format(choice))
+    return seqList[choice]
+
+def clear_screen():
+    n = shutil.get_terminal_size().lines
+    print("\n" * n, end="")
+    return n
 
 def parser(descr=__doc__):
     rv = argparse.ArgumentParser(description=descr)

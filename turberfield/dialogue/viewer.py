@@ -17,18 +17,13 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import argparse
 import asyncio
-from collections import OrderedDict
 import datetime
 import logging
 import logging.handlers
-import shutil
 import sys
 import textwrap
 import time
-import uuid
-import wave
 
 import turberfield.dialogue.cli
 from turberfield.dialogue.directives import Pathfinder
@@ -48,35 +43,6 @@ python -m turberfield.dialogue.viewer \
 --ensemble=turberfield.dialogue.sequences.battle_royal.types:ensemble
 
 """
-
-def ensemble_menu(log):
-    log.info("Painting ensemble menu...")
-    castList = OrderedDict(gather_installed("turberfield.interfaces.ensemble", log=log))
-    print("\n")
-    print(
-        *["\t{0}: {1} ({2} members)".format(n, k, len(v)) for n, (k, v) in enumerate(castList.items())],
-        sep="\n")
-    index = int(input("\nChoose an ensemble: "))
-    choice = list(castList.keys())[index]
-    log.info("Selected ensemble '{0}'.".format(choice))
-    return castList[choice]
-
-def seq_menu(log):
-    log.info("Painting sequence menu...")
-    seqList = OrderedDict(gather_installed("turberfield.interfaces.sequence", log=log))
-    print("\n")
-    print(
-        *["\t{0}: {1} ({2} members)".format(n, k, len(v.paths)) for n, (k, v) in enumerate(seqList.items())],
-        sep="\n")
-    index = int(input("\nChoose a sequence: "))
-    choice = list(seqList.keys())[index]
-    log.info("Selected sequence '{0}'.".format(choice))
-    return seqList[choice]
-
-def clear_screen():
-    n = shutil.get_terminal_size().lines
-    print("\n" * n, end="")
-    return n
 
 async def view(queue, log=None, loop=None):
     log = log or logging.getLogger("turberfield.dialogue.view")
@@ -151,8 +117,8 @@ def main(args):
             args.ensemble, relative=False, sep=":"
         )
     else:
-        folder = seq_menu(log)
-        ensemble = ensemble_menu(log)
+        folder = turberfield.dialogue.cli.seq_menu(log)
+        ensemble = turberfield.dialogue.cli.ensemble_menu(log)
 
     queue = asyncio.Queue(maxsize=1, loop=loop)
     projectionist = loop.create_task(view(queue, loop=loop))
