@@ -66,9 +66,9 @@ class CastingTests(unittest.TestCase):
 
     def setUp(self):
         self.personae = {
-            Animal(uuid.uuid4(), None, ("Itchy",)),
-            Animal(uuid.uuid4(), None, ("Scratchy",)),
-            Tool(uuid.uuid4(), ("Rusty", "Chopper",)),
+            Animal(name="Itchy"),
+            Animal(name="Scratchy"),
+            Tool(name="Rusty Chopper"),
         }
         folder = SceneScript.Folder(
             "turberfield.dialogue.sequences.battle_royal", "test", ["combat.rst"], itertools.repeat(None)

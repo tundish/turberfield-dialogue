@@ -19,6 +19,7 @@
 from collections import namedtuple
 import enum
 import random
+import uuid
 
 Name = namedtuple("Name", ["title", "firstname", "nicknames", "surname"])
 
@@ -57,7 +58,8 @@ class DataObject:
 
 class Persona(DataObject):
 
-    def __init__(self, **kwargs):
+    def __init__(self, id=None, **kwargs):
+        self.id = id or uuid.uuid4()
         val = kwargs.pop("name")
         bits = val.split()
         try:

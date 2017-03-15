@@ -76,7 +76,7 @@ async def run_through(folder, ensemble, queue, log=None, loop=None):
     log.debug(folder)
     log.debug(ensemble)
     for script, interlude in itertools.zip_longest(
-        scripts, folder.interludes
+        scripts, itertools.cycle(folder.interludes)
     ):
         then = datetime.datetime.now()
         with script as dialogue:

@@ -19,6 +19,7 @@
 import enum
 import uuid
 
+from turberfield.dialogue.types import Persona
 from turberfield.dialogue.types import Stateful
 
 @enum.unique
@@ -32,29 +33,18 @@ class Outcome(enum.Enum):
     defeated = 0
     victorious = 1
 
-class Animal(Stateful):
+class Animal(Persona, Stateful):
+    pass
 
-    def __init__(self, id_, title, names):
-        self.id_, self.title, self._names = id_, title, names
-        self.name = self._names[0]
-        super().__init__()
+class Furniture(Persona, Stateful):
+    pass
 
-class Furniture(Stateful):
-
-    def __init__(self, id_, names):
-        self.id_, self.names = id_, names
-        super().__init__()
-
-class Tool(Stateful):
-
-    def __init__(self, id_, names):
-        self.id_, self._names = id_, names
-        self.name = " ".join(self._names)
-        super().__init__()
+class Tool(Persona, Stateful):
+    pass
 
 ensemble = [
-    Animal(uuid.uuid4(), None, ("Itchy",)),
-    Animal(uuid.uuid4(), None, ("Scratchy",)),
-    Tool(uuid.uuid4(), ("Rusty", "Chopper",)),
-    Furniture(uuid.uuid4(), ("Hat", "Stand",)),
+    Animal(name="Itchy"),
+    Animal(name="Scratchy"),
+    Tool(name="Rusty Chopper"),
+    Furniture(name="Hat Stand"),
 ]
