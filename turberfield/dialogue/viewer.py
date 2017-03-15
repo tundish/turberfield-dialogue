@@ -22,7 +22,6 @@ import datetime
 import logging
 import logging.handlers
 import sys
-import textwrap
 import time
 
 import turberfield.dialogue.cli
@@ -63,10 +62,8 @@ async def view(queue, log=None, loop=None):
             clear_screen()
 
         if isinstance(item, Model.Line):
-            print("\n")
-            print(item.persona.name.firstname, item.persona.name.surname, sep=" ")
-            print(textwrap.indent(item.text, " " * 16))
-            time.sleep(1.5 + 0.2 * item.text.count(" "))
+            turberfield.dialogue.cli.line(shot, item)
+            asyncio.sleep(turberfield.dialogue.cli.pause(shot, item))
 
         prev = shot
         queue.task_done()
@@ -126,9 +123,13 @@ def main(args):
 
     try:
         while folder:
-            folder = loop.run_until_complete(run_through(folder, ensemble, queue, loop=loop))
+            folder = loop.run_until_complete(
+                run_through(folder, ensemble, queue, loop=loop)
+            )
         else:
-            log.info("Playing time: {0}".format(datetime.datetime.now() - start))
+            log.info("Playing time: {0}".format(
+                datetime.datetime.now() - start)
+            )
     finally:
         queue.put_nowait(None)
         projectionist.cancel()

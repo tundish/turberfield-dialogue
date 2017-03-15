@@ -21,8 +21,17 @@ import argparse
 from collections import OrderedDict
 import logging
 import shutil
+import textwrap
 
 
+def pause(shot, item, dwell=1.5, rate=1):
+    return dwell + rate * 0.2 * item.text.count(" ")
+
+def line(shot, item):
+    print("\n")
+    print(item.persona.name.firstname, item.persona.name.surname, sep=" ")
+    print(textwrap.indent(item.text, " " * 16))
+ 
 def ensemble_menu(log):
     log.info("Painting ensemble menu...")
     castList = OrderedDict(gather_installed("turberfield.interfaces.ensemble", log=log))
