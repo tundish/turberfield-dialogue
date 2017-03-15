@@ -19,6 +19,7 @@
 
 import asyncio
 import datetime
+import itertools
 import logging
 import logging.handlers
 import sys
@@ -72,7 +73,11 @@ async def run_through(folder, ensemble, queue, log=None, loop=None):
     log = log or logging.getLogger("turberfield.dialogue.run_through")
     loop = loop or ayncio.get_event_loop()
     scripts = SceneScript.scripts(**folder._asdict())
-    for script, interlude in zip(scripts, folder.interludes):
+    log.debug(folder)
+    log.debug(ensemble)
+    for script, interlude in itertools.zip_longest(
+        scripts, folder.interludes
+    ):
         then = datetime.datetime.now()
         with script as dialogue:
             try:
