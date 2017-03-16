@@ -78,7 +78,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.log.debug(node)
 
     def default_departure(self, node):
-        self.log.debug("Departed.")
+        pass
 
     def visit_section(self, node):
         self.section_level += 1

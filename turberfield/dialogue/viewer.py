@@ -64,7 +64,7 @@ async def view(queue, log=None, loop=None):
 
         if isinstance(item, Model.Line):
             turberfield.dialogue.cli.line(shot, item)
-            asyncio.sleep(turberfield.dialogue.cli.pause(shot, item))
+            time.sleep(turberfield.dialogue.cli.pause(shot, item))
 
         prev = shot
         queue.task_done()
@@ -73,8 +73,6 @@ async def run_through(folder, ensemble, queue, log=None, loop=None):
     log = log or logging.getLogger("turberfield.dialogue.run_through")
     loop = loop or ayncio.get_event_loop()
     scripts = SceneScript.scripts(**folder._asdict())
-    log.debug(folder)
-    log.debug(ensemble)
     for script, interlude in itertools.zip_longest(
         scripts, itertools.cycle(folder.interludes)
     ):
@@ -98,7 +96,11 @@ async def run_through(folder, ensemble, queue, log=None, loop=None):
                     pass
 
         log.info("Time: {0}".format(datetime.datetime.now() - then))
-        rv = await interlude(folder, ensemble, log=log, loop=loop)
+        if interlude is None:
+            rv = folder
+        else:
+            rv = await interlude(folder, ensemble, log=log, loop=loop)
+
         if rv is not folder:
             log.info("Interlude branching to {0}".format(rv))
             return rv

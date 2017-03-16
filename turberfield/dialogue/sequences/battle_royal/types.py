@@ -45,6 +45,6 @@ class Tool(Persona, Stateful):
 ensemble = [
     Animal(name="Itchy"),
     Animal(name="Scratchy"),
-    Tool(name="Rusty Chopper"),
-    Furniture(name="Hat Stand"),
+    Tool(name="Ol' Rusty Chopper"),
+    Furniture(name="Dr Hat Stand"),
 ]
