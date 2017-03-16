@@ -46,5 +46,5 @@ Action
    |Fighter1| cruelly defeated |Fighter2| in a brutal surprise attack.
 
    
-.. |Fighter1| property:: FIGHTER_1.name
-.. |Fighter2| property:: FIGHTER_2.name
+.. |Fighter1| property:: FIGHTER_1.name.firstname
+.. |Fighter2| property:: FIGHTER_2.name.firstname
