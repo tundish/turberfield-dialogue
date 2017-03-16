@@ -33,6 +33,11 @@ Action
 
     **Whack!**
 
+.. fx:: turberfield.dialogue.sequences.battle_royal slapwhack.wav
+   :offset: 0
+   :duration: 3000
+   :loop: 1
+
 [FIGHTER_2]_
 
     Uuurrggh!
@@ -45,6 +50,6 @@ Action
 
    |Fighter1| cruelly defeated |Fighter2| in a brutal surprise attack.
 
-   
+ 
 .. |Fighter1| property:: FIGHTER_1.name.firstname
 .. |Fighter2| property:: FIGHTER_2.name.firstname

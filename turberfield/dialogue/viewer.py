@@ -91,6 +91,8 @@ async def run_through(folder, ensemble, queue, log=None, loop=None):
                 if isinstance(item, Model.Property):
                     log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
                     setattr(item.object, item.attr, item.val)
+                elif isinstance(item, Model.Audio):
+                    log.info("Launnch {resource} from {package}.".format(**item._asdict()))
                 elif isinstance(item, Model.Memory):
                     log.info("{subject} {state} {object}; {text}".format(**item._asdict()))
                     pass
