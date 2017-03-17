@@ -1,169 +1,151 @@
 #!/usr/bin/env python3
-# encoding: UTF-8
+#   coding: UTF-8
 
-# This file is part of turberfield.
-#
-# Turberfield is free software: you can redistribute it and/or modify it
-# under the terms of the GNU General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Turberfield is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
-
-
-import asyncio
-import datetime
-import itertools
+import argparse
+import cgi
+import cgitb
+import http.server
 import logging
-import logging.handlers
+from logging.handlers import WatchedFileHandler
+import os.path
+import stat
 import sys
-import time
+import tempfile
+import urllib.parse
+import webbrowser
 
-import turberfield.dialogue.cli
-from turberfield.dialogue.directives import Pathfinder
-from turberfield.dialogue.model import Model
-from turberfield.dialogue.model import SceneScript
-from turberfield.dialogue.types import Player
-from turberfield.utils.misc import gather_installed
-from turberfield.utils.misc import log_setup
+try:
+    from blessings import Terminal
+except ImportError:
+    blessings = None
 
+import pkg_resources
+
+__version__ = "0.0.0"
 __doc__ = """
-Script viewer.
+An experimental script which can operate in CLI, web or terminal mode.
 
-Example:
+TODO:
 
-python -m turberfield.dialogue.viewer \
---sequence=turberfield.dialogue.sequences.battle_royal:folder \
---ensemble=turberfield.dialogue.sequences.battle_royal.types:ensemble
-
+https://medium.com/code-zen/python-generator-and-html-server-sent-events-3cdf14140e56#.k9y3ez6se
 """
 
-async def view(queue, log=None, loop=None):
-    log = log or logging.getLogger("turberfield.dialogue.view")
-    loop = loop or ayncio.get_event_loop()
-    prev = None
-    while True:
-        try:
-            shot, item = await queue.get()
-        except TypeError as e:
-            log.debug("Got sentinel.")
-            queue.task_done()
-            prev = None
-            return
+def build_logger(args, name="pyspike"):
+    log = logging.getLogger(name)
+    log.setLevel(args.log_level)
 
-        if prev and shot is not prev:
-            log.info("Pause...")
-            time.sleep(2)
-            clear_screen()
+    formatter = logging.Formatter(
+        "%(asctime)s %(levelname)-7s %(name)s|%(message)s")
+    ch = logging.StreamHandler()
 
-        if isinstance(item, Model.Line):
-            turberfield.dialogue.cli.line(shot, item)
-            time.sleep(turberfield.dialogue.cli.pause(shot, item))
+    if args.log_path is None:
+        ch.setLevel(args.log_level)
+    else:
+        fh = WatchedFileHandler(args.log_path)
+        fh.setLevel(args.log_level)
+        fh.setFormatter(formatter)
+        log.addHandler(fh)
+        ch.setLevel(logging.WARNING)
 
-        prev = shot
-        queue.task_done()
+    ch.setFormatter(formatter)
+    log.addHandler(ch)
+    return log
 
-async def run_through(folder, ensemble, queue, log=None, loop=None):
-    log = log or logging.getLogger("turberfield.dialogue.run_through")
-    loop = loop or ayncio.get_event_loop()
-    scripts = SceneScript.scripts(**folder._asdict())
-    for script, interlude in itertools.zip_longest(
-        scripts, itertools.cycle(folder.interludes)
-    ):
-        then = datetime.datetime.now()
-        with script as dialogue:
-            try:
-                model = dialogue.cast(dialogue.select(ensemble, roles=1)).run()
-            except (AttributeError, ValueError) as e:
-                log.error(". ".join(getattr(e, "args", e) or e))
-                return
+def hello(args):
+    print("Content-type:text/html")
+    print()
+    print("<html>")
+    print('<head>')
+    print('<title>SSE</title>')
+    print('</head>')
+    print('<body>')
+    form = cgi.FieldStorage()
+    for k in form.keys():
+        print('<p>{0}: {1}</p>'.format(k, form[k].value))
+    print('</body>')
+    print('</html>')
 
-            for n, (shot, item) in enumerate(model):
-                await queue.put((shot, item))
-                await queue.join()
-
-                if isinstance(item, Model.Property):
-                    log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
-                    setattr(item.object, item.attr, item.val)
-                elif isinstance(item, Model.Audio):
-                    log.info("Launnch {resource} from {package}.".format(**item._asdict()))
-                elif isinstance(item, Model.Memory):
-                    log.info("{subject} {state} {object}; {text}".format(**item._asdict()))
-                    pass
-
-        log.info("Time: {0}".format(datetime.datetime.now() - then))
-        if interlude is None:
-            rv = folder
-        else:
-            rv = await interlude(folder, ensemble, log=log, loop=loop)
-
-        if rv is not folder:
-            log.info("Interlude branching to {0}".format(rv))
-            return rv
-
-    await queue.put(None)
-    return None
+def greet(terminal):
+    with terminal.location(0, terminal.height - 1):
+        print("This is ", terminal.underline("pretty!"), file=terminal.stream)
 
 def main(args):
-    loop = asyncio.get_event_loop()
-    logName = log_setup(args, loop=loop)
-    log = logging.getLogger(logName)
-
-    if args.sequence and args.ensemble:
-        folder = Pathfinder.string_import(
-            args.sequence, relative=False, sep=":"
-        )
-        ensemble = Pathfinder.string_import(
-            args.ensemble, relative=False, sep=":"
-        )
-    else:
-        folder = turberfield.dialogue.cli.seq_menu(log)
-        ensemble = turberfield.dialogue.cli.ensemble_menu(log)
-
-    queue = asyncio.Queue(maxsize=1, loop=loop)
-    projectionist = loop.create_task(view(queue, loop=loop))
-    start = datetime.datetime.now()
-
-    try:
-        while folder:
-            folder = loop.run_until_complete(
-                run_through(folder, ensemble, queue, loop=loop)
-            )
+    log = build_logger(args)
+    if args.web:
+        perms = stat.S_IMODE(os.stat(__file__).st_mode)
+        if perms != 0o755:
+            log.warning("Bad permissions ({0}) for a CGI script".format(oct(perms)))
+            return 1
         else:
-            log.info("Playing time: {0}".format(
-                datetime.datetime.now() - start)
-            )
-    finally:
-        queue.put_nowait(None)
-        projectionist.cancel()
-        loop.close()
+            locn = os.path.abspath(pkg_resources.resource_filename(__name__, "."))
+            os.chdir(locn)
+            log.info("Web mode.")
 
+        fd, session = tempfile.mkstemp(text=True)
+        opts = urllib.parse.urlencode({"py": sys.executable, "session": session})
+        url = "http://localhost:8080/multimode.py" + "?" + opts
+        webbrowser.open_new_tab(url)
+        PORT = 8080
+        Handler = http.server.CGIHTTPRequestHandler
+        Handler.cgi_directories = ["/"]
+        httpd = http.server.HTTPServer(("", PORT), Handler)
+
+        log.info("serving at port {0}".format(PORT))
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            os.close(fd)
+            log.info("Shutdown.")
+            return 0
+
+    log.info(os.environ)
+    if "SERVER_NAME" in os.environ:
+        cgitb.enable()
+        hello(args)
+        log.info(args.cgi)
+    else:
+        term = Terminal()
+        greet(term)
     return 0
 
+def parser(description=__doc__):
+    rv =  argparse.ArgumentParser(
+        description,
+        fromfile_prefix_chars="@"
+    )
+    rv.add_argument(
+        "--version", action="store_true", default=False,
+        help="Print the current version number")
+    rv.add_argument(
+        "-v", "--verbose", required=False,
+        action="store_const", dest="log_level",
+        const=logging.DEBUG, default=logging.INFO,
+        help="Increase the verbosity of output")
+    rv.add_argument(
+        "--log", default=None, dest="log_path",
+        help="Set a file path for log output")
+    rv.add_argument(
+        "--web", action="store_true", default=False,
+        help="Activate the web interface")
+    rv.add_argument("cgi", nargs="*")
+    return rv
+
 def run():
-    p = turberfield.dialogue.cli.parser()
-    p.add_argument(
-        "--ensemble", default=None,
-        help="Give an import path to a list of Personas."
-    )
-    p.add_argument(
-        "--sequence", default=None,
-        help="Give an import path to a SceneScript folder."
-    )
+    p = parser()
     args = p.parse_args()
+ 
+    rv = 0
     if args.version:
-        sys.stdout.write(turberfield.dialogue.__version__ + "\n")
-        rv = 0
+        sys.stdout.write(__version__)
+        sys.stdout.write("\n")
     else:
         rv = main(args)
-    sys.exit(rv)
 
+    if rv == 2:
+        sys.stderr.write("\n Missing command.\n\n")
+        p.print_help()
+
+    sys.exit(rv)
 
 if __name__ == "__main__":
     run()
