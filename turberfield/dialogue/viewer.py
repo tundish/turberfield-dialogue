@@ -30,7 +30,7 @@ TODO:
 https://medium.com/code-zen/python-generator-and-html-server-sent-events-3cdf14140e56#.k9y3ez6se
 """
 
-def build_logger(args, name="pyspike"):
+def build_logger(args, name="turberfield"):
     log = logging.getLogger(name)
     log.setLevel(args.log_level)
 
@@ -83,7 +83,7 @@ def main(args):
 
         fd, session = tempfile.mkstemp(text=True)
         opts = urllib.parse.urlencode({"py": sys.executable, "session": session})
-        url = "http://localhost:8080/multimode.py" + "?" + opts
+        url = "http://localhost:8080/viewer.py" + "?" + opts
         webbrowser.open_new_tab(url)
         PORT = 8080
         Handler = http.server.CGIHTTPRequestHandler
