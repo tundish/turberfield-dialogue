@@ -57,10 +57,9 @@ def build_logger(args, name="turberfield"):
 
 def producer(args):
     log = logging.getLogger("turberfield.{0}".format(os.getpid()))
-    log.info(args)
     for i in itertools.count():
-        log.debug(i)
-        yield {val: i}
+        log.info(i)
+        yield {"val": i}
         time.sleep(1)
 
 def cgi_consumer(args):
