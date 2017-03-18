@@ -55,7 +55,7 @@ def build_logger(args, name="turberfield"):
     return log
 
 def producer(args):
-    log = build_logger(args, name="turberfield.{0}".format(os.getpid()))
+    log = logging.getLogger("turberfield.{0}".format(os.getpid()))
     log.info(args)
     for i in itertools.count():
         log.debug(i)
@@ -71,7 +71,7 @@ def cgi_consumer(args):
         Content-type:text/html
 
         <!doctype html>
-        <html lang="en" class="no-js">
+        <html lang="en">
         <head>
         <meta charset="utf-8" />
         <title>Rehearsal</title>
@@ -125,7 +125,7 @@ def greet(terminal):
         print("This is ", terminal.underline("pretty!"), file=terminal.stream)
 
 def main(args):
-    log = build_logger(args)
+    log = build_logger(args, name="turberfield.{0}".format(os.getpid()))
     if args.web:
         locn = "Scripts" if "windows" in platform.system().lower() else "bin"
         os.chdir(os.path.join(sys.prefix, locn))
@@ -154,10 +154,10 @@ def main(args):
         args = argparse.Namespace(**params)
         cgitb.enable()
         if args.session:
-            log.info("Launching consumer...")
+            log.info("Consumer view.")
             print(cgi_consumer(args))
         else:
-            log.info("Launching producer...")
+            log.info("Producer view.")
             cgi_producer(args)
     else:
         print(cgi_consumer(args))
