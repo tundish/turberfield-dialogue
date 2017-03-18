@@ -51,7 +51,7 @@ def build_logger(args, name="turberfield"):
     log.addHandler(ch)
     return log
 
-def hello(args):
+def cgi_consumer(args):
     log = build_logger(args, name="turberfield.{0}".format(os.getpid()))
     log.info(args)
     print("Content-type:text/html")
@@ -67,6 +67,9 @@ def hello(args):
     print('</body>')
     print('</html>')
 
+def cgi_producer(args):
+    pass
+
 def greet(terminal):
     with terminal.location(0, terminal.height - 1):
         print("This is ", terminal.underline("pretty!"), file=terminal.stream)
@@ -80,7 +83,7 @@ def main(args):
         fd, args.session = tempfile.mkstemp(text=True)
         params = {k: getattr(args, k) for k in ("log_level", "log_path", "session")}
         opts = urllib.parse.urlencode(params)
-        url = "http://localhost:8080/turberfield-rehearse" + "?" + opts
+        url = "http://localhost:{0}/turberfield-rehearse?{1}".format(args.port, opts)
         webbrowser.open_new_tab(url)
         Handler = http.server.CGIHTTPRequestHandler
         Handler.cgi_directories = ["/"]
@@ -91,6 +94,7 @@ def main(args):
             httpd.serve_forever()
         except KeyboardInterrupt:
             os.close(fd)
+            os.remove(args.session)
             log.info("Shutdown.")
             return 0
 
@@ -99,7 +103,10 @@ def main(args):
         params = {key: form[key].value if key in form else None for key in vars(args).keys()}
         args = argparse.Namespace(**params)
         cgitb.enable()
-        hello(args)
+        if args.session:
+            cgi_consumer(args)
+        else:
+            cgi_producer(args)
     else:
         term = Terminal()
         greet(term)
