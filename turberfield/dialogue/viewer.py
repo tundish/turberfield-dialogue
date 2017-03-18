@@ -32,17 +32,17 @@ https://medium.com/code-zen/python-generator-and-html-server-sent-events-3cdf141
 
 def build_logger(args, name="turberfield"):
     log = logging.getLogger(name)
-    log.setLevel(args.log_level)
+    log.setLevel(int(args.log_level))
 
     formatter = logging.Formatter(
         "%(asctime)s %(levelname)-7s %(name)s|%(message)s")
     ch = logging.StreamHandler()
 
     if args.log_path is None:
-        ch.setLevel(args.log_level)
+        ch.setLevel(int(args.log_level))
     else:
         fh = WatchedFileHandler(args.log_path)
-        fh.setLevel(args.log_level)
+        fh.setLevel(int(args.log_level))
         fh.setFormatter(formatter)
         log.addHandler(fh)
         ch.setLevel(logging.WARNING)
@@ -52,6 +52,8 @@ def build_logger(args, name="turberfield"):
     return log
 
 def hello(args):
+    log = build_logger(args, name="turberfield.{0}".format(os.getpid()))
+    log.info(args)
     print("Content-type:text/html")
     print()
     print("<html>")
@@ -75,8 +77,9 @@ def main(args):
         locn = "Scripts" if "windows" in platform.system().lower() else "bin"
         os.chdir(os.path.join(sys.prefix, locn))
         log.warning("Web mode: running scripts from directory {0}".format(os.getcwd()))
-        fd, session = tempfile.mkstemp(text=True)
-        opts = urllib.parse.urlencode({"session": session})
+        fd, args.session = tempfile.mkstemp(text=True)
+        params = {k: getattr(args, k) for k in ("log_level", "log_path", "session")}
+        opts = urllib.parse.urlencode(params)
         url = "http://localhost:8080/turberfield-rehearse" + "?" + opts
         webbrowser.open_new_tab(url)
         Handler = http.server.CGIHTTPRequestHandler
@@ -91,10 +94,12 @@ def main(args):
             log.info("Shutdown.")
             return 0
 
-    if "SERVER_NAME" in os.environ:
+    elif "SERVER_NAME" in os.environ:
+        form = cgi.FieldStorage()
+        params = {key: form[key].value if key in form else None for key in vars(args).keys()}
+        args = argparse.Namespace(**params)
         cgitb.enable()
         hello(args)
-        log.info(args.cgi)
     else:
         term = Terminal()
         greet(term)
@@ -120,9 +125,11 @@ def parser(description=__doc__):
         "--web", action="store_true", default=False,
         help="Activate the web interface")
     rv.add_argument(
+        "--session", required=False, default=None,
+        help="Internal session path")
+    rv.add_argument(
         "--port", type=int, default=DFLT_PORT,
         help="Set the port number of the web interface [{}]".format(DFLT_PORT))
-    rv.add_argument("cgi", nargs="*")
     return rv
 
 def run():
