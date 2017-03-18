@@ -5,12 +5,15 @@ import argparse
 import cgi
 import cgitb
 import http.server
+import itertools
 import logging
 from logging.handlers import WatchedFileHandler
 import os.path
 import platform
 import sys
 import tempfile
+import textwrap
+import time
 import urllib.parse
 import webbrowser
 
@@ -51,24 +54,71 @@ def build_logger(args, name="turberfield"):
     log.addHandler(ch)
     return log
 
-def cgi_consumer(args):
+def producer(args):
     log = build_logger(args, name="turberfield.{0}".format(os.getpid()))
     log.info(args)
-    print("Content-type:text/html")
-    print()
-    print("<html>")
-    print('<head>')
-    print('<title>SSE</title>')
-    print('</head>')
-    print('<body>')
-    form = cgi.FieldStorage()
-    for k in form.keys():
-        print('<p>{0}: {1}</p>'.format(k, form[k].value))
-    print('</body>')
-    print('</html>')
+    for i in itertools.count():
+        log.debug(i)
+        yield {val: i}
+        time.sleep(1)
+
+def cgi_consumer(args):
+    params = vars(args)
+    params["session"] = None
+    opts = urllib.parse.urlencode(params)
+    url = "http://localhost:{0}/turberfield-rehearse?{1}".format(args.port, opts)
+    rv = textwrap.dedent("""
+        Content-type:text/html
+
+        <!doctype html>
+        <html lang="en" class="no-js">
+        <head>
+        <meta charset="utf-8" />
+        <title>Rehearsal</title>
+        </head>
+        <body class="loading">
+        <h1>...</h1>
+        <div id="data"></div>
+        <script>
+            $(window).load(function(){{
+                var slot = document.getElementById("data");
+
+                if (!!window.EventSource) {{
+                    var source = new EventSource("{url}");
+                }} else {{
+                    alert("Your browser does not support Server-sent events! Please upgrade it!");
+                }}
+
+                source.addEventListener("message", function(e) {{
+                    console.log(e.data);
+                }}, false);
+
+                source.addEventListener("open", function(e) {{
+                    console.log("Connection was opened.");
+                }}, false);
+
+                source.addEventListener("error", function(e) {{
+                    console.log("Error - connection was lost.");
+                }}, false);
+
+                source.addEventListener("dict", function(e) {{
+                    slot.innerHTML = e.data
+                    console.log("Price UP - " + e.data);
+                }}, false);
+            }});
+        </script>
+        </body>
+        </html>
+    """).format(url=url).lstrip()
+    return rv
 
 def cgi_producer(args):
-    pass
+    print("Content-type:text/event-stream")
+    print()
+    for n, item in enumerate(producer(args)):
+        print("id: {0}".format(type(item)), end="\n")
+        print("data: {0}\n".format(item), end="\n")
+    return n
 
 def greet(terminal):
     with terminal.location(0, terminal.height - 1):
@@ -104,10 +154,13 @@ def main(args):
         args = argparse.Namespace(**params)
         cgitb.enable()
         if args.session:
-            cgi_consumer(args)
+            log.info("Launching consumer...")
+            print(cgi_consumer(args))
         else:
+            log.info("Launching producer...")
             cgi_producer(args)
     else:
+        print(cgi_consumer(args))
         term = Terminal()
         greet(term)
     return 0
