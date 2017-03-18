@@ -15,6 +15,7 @@ import tempfile
 import textwrap
 import time
 import urllib.parse
+import uuid
 import webbrowser
 
 from blessings import Terminal
@@ -64,7 +65,7 @@ def producer(args):
 
 def cgi_consumer(args):
     params = vars(args)
-    params["session"] = None
+    params["session"] = uuid.uuid4().hex
     opts = urllib.parse.urlencode(params)
     url = "http://localhost:{0}/turberfield-rehearse?{1}".format(args.port, opts)
     rv = textwrap.dedent("""
@@ -80,32 +81,30 @@ def cgi_consumer(args):
         <h1>...</h1>
         <div id="data"></div>
         <script>
-            $(window).load(function(){{
-                var slot = document.getElementById("data");
+            var slot = document.getElementById("data");
 
-                if (!!window.EventSource) {{
-                    var source = new EventSource("{url}");
-                }} else {{
-                    alert("Your browser does not support Server-sent events! Please upgrade it!");
-                }}
+            if (!!window.EventSource) {{
+                var source = new EventSource("{url}");
+            }} else {{
+                alert("Your browser does not support Server-sent events! Please upgrade it!");
+            }}
 
-                source.addEventListener("message", function(e) {{
-                    console.log(e.data);
-                }}, false);
+            source.addEventListener("message", function(e) {{
+                console.log(e.data);
+            }}, false);
 
-                source.addEventListener("open", function(e) {{
-                    console.log("Connection was opened.");
-                }}, false);
+            source.addEventListener("open", function(e) {{
+                console.log("Connection was opened.");
+            }}, false);
 
-                source.addEventListener("error", function(e) {{
-                    console.log("Error - connection was lost.");
-                }}, false);
+            source.addEventListener("error", function(e) {{
+                console.log("Error - connection was lost.");
+            }}, false);
 
-                source.addEventListener("dict", function(e) {{
-                    slot.innerHTML = e.data
-                    console.log("Price UP - " + e.data);
-                }}, false);
-            }});
+            source.addEventListener("dict", function(e) {{
+                slot.innerHTML = e.data
+                console.log("Price UP - " + e.data);
+            }}, false);
         </script>
         </body>
         </html>
@@ -130,8 +129,7 @@ def main(args):
         locn = "Scripts" if "windows" in platform.system().lower() else "bin"
         os.chdir(os.path.join(sys.prefix, locn))
         log.warning("Web mode: running scripts from directory {0}".format(os.getcwd()))
-        fd, args.session = tempfile.mkstemp(text=True)
-        params = {k: getattr(args, k) for k in ("log_level", "log_path", "session")}
+        params = {k: getattr(args, k) for k in ("log_level", "log_path", "port", "session")}
         opts = urllib.parse.urlencode(params)
         url = "http://localhost:{0}/turberfield-rehearse?{1}".format(args.port, opts)
         webbrowser.open_new_tab(url)
@@ -143,17 +141,15 @@ def main(args):
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            os.close(fd)
-            os.remove(args.session)
             log.info("Shutdown.")
             return 0
 
     elif "SERVER_NAME" in os.environ:
         form = cgi.FieldStorage()
-        params = {key: form[key].value if key in form else None for key in vars(args).keys()}
+        params = {key: form[key].value if key in form else "" for key in vars(args).keys()}
         args = argparse.Namespace(**params)
         cgitb.enable()
-        if args.session:
+        if not args.session:
             log.info("Consumer view.")
             print(cgi_consumer(args))
         else:
@@ -185,7 +181,7 @@ def parser(description=__doc__):
         "--web", action="store_true", default=False,
         help="Activate the web interface")
     rv.add_argument(
-        "--session", required=False, default=None,
+        "--session", required=False, default="",
         help="Internal session path")
     rv.add_argument(
         "--port", type=int, default=DFLT_PORT,
