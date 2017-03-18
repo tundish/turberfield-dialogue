@@ -8,20 +8,20 @@ import http.server
 import logging
 from logging.handlers import WatchedFileHandler
 import os.path
-import stat
+import platform
 import sys
 import tempfile
 import urllib.parse
 import webbrowser
 
-try:
-    from blessings import Terminal
-except ImportError:
-    blessings = None
-
+from blessings import Terminal
 import pkg_resources
 
-__version__ = "0.0.0"
+from turberfield.dialogue import __version__
+
+DFLT_PORT = 8080
+DFLT_DB = ":memory:"
+
 __doc__ = """
 An experimental script which can operate in CLI, web or terminal mode.
 
@@ -72,25 +72,18 @@ def greet(terminal):
 def main(args):
     log = build_logger(args)
     if args.web:
-        perms = stat.S_IMODE(os.stat(__file__).st_mode)
-        if perms != 0o755:
-            log.warning("Bad permissions ({0}) for a CGI script".format(oct(perms)))
-            return 1
-        else:
-            locn = os.path.abspath(pkg_resources.resource_filename(__name__, "."))
-            os.chdir(locn)
-            log.info("Web mode.")
-
+        locn = "Scripts" if "windows" in platform.system().lower() else "bin"
+        os.chdir(os.path.join(sys.prefix, locn))
+        log.warning("Web mode: running scripts from directory {0}".format(os.getcwd()))
         fd, session = tempfile.mkstemp(text=True)
-        opts = urllib.parse.urlencode({"py": sys.executable, "session": session})
-        url = "http://localhost:8080/viewer.py" + "?" + opts
+        opts = urllib.parse.urlencode({"session": session})
+        url = "http://localhost:8080/turberfield-rehearse" + "?" + opts
         webbrowser.open_new_tab(url)
-        PORT = 8080
         Handler = http.server.CGIHTTPRequestHandler
         Handler.cgi_directories = ["/"]
-        httpd = http.server.HTTPServer(("", PORT), Handler)
+        httpd = http.server.HTTPServer(("", args.port), Handler)
 
-        log.info("serving at port {0}".format(PORT))
+        log.info("serving at port {0}".format(args.port))
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
@@ -98,7 +91,6 @@ def main(args):
             log.info("Shutdown.")
             return 0
 
-    log.info(os.environ)
     if "SERVER_NAME" in os.environ:
         cgitb.enable()
         hello(args)
@@ -127,6 +119,9 @@ def parser(description=__doc__):
     rv.add_argument(
         "--web", action="store_true", default=False,
         help="Activate the web interface")
+    rv.add_argument(
+        "--port", type=int, default=DFLT_PORT,
+        help="Set the port number of the web interface [{}]".format(DFLT_PORT))
     rv.add_argument("cgi", nargs="*")
     return rv
 
