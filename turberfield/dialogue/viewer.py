@@ -87,7 +87,7 @@ def cgi_consumer(args):
                 alert("Your browser does not support Server-sent events! Please upgrade it!");
             }}
 
-            source.addEventListener("message", function(e) {{
+            source.addEventListener("dict", function(e) {{
                 console.log(e.data);
             }}, false);
 
