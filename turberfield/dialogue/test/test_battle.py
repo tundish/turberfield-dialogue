@@ -31,6 +31,7 @@ from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.sequences.battle_royal.types import Animal
 from turberfield.dialogue.sequences.battle_royal.types import Outcome
 from turberfield.dialogue.sequences.battle_royal.types import Tool
+import turberfield.dialogue.viewer
 
 import pkg_resources
 
@@ -93,13 +94,23 @@ class CastingTests(unittest.TestCase):
                 c, p = next((c, p) for c, p in casting.items() if "fighter_2" in c["names"])
                 self.assertIsInstance(p, Animal, p)
 
+    def test_cgi(self):
+        # TODO:  test_viewer
+        p = turberfield.dialogue.viewer.parser()
+        ns = p.parse_args("")
+        self.fail(turberfield.dialogue.viewer.cgi_producer(ns))
+        
+
     def test_run(self):
         self.assertFalse(any(i.state for i in self.personae))
         with self.script as script:
             model = script.cast(script.select(self.personae)).run()
             for n, (shot, item) in enumerate(model):
                 self.assertIsInstance(shot, Model.Shot)
-                self.assertIsInstance(item, (Model.Property, Model.Line, Model.Memory))
+                self.assertIsInstance(
+                    item,
+                    (Model.Audio, Model.Property, Model.Line, Model.Memory)
+                )
 
         # Last item is a Memory
         self.assertIs(Outcome.defeated, item.state)

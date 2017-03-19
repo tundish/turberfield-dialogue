@@ -11,7 +11,6 @@ from logging.handlers import WatchedFileHandler
 import os.path
 import platform
 import sys
-import tempfile
 import textwrap
 import time
 import urllib.parse
@@ -100,10 +99,6 @@ def cgi_consumer(args):
                 console.log("Error - connection was lost.");
             }}, false);
 
-            source.addEventListener("dict", function(e) {{
-                slot.innerHTML = e.data
-                console.log("Price UP - " + e.data);
-            }}, false);
         </script>
         </body>
         </html>
@@ -111,11 +106,14 @@ def cgi_consumer(args):
     return rv
 
 def cgi_producer(args):
+    log = logging.getLogger("turberfield.{0}".format(os.getpid()))
     print("Content-type:text/event-stream")
     print()
     for n, item in enumerate(producer(args)):
-        print("id: {0}".format(type(item)), end="\n")
-        print("data: {0}\n".format(item), end="\n")
+        print("event: {0}".format(type(item).__name__), end="\n")
+        print("data: {0};\n".format(item), end="\n")
+        sys.stdout.flush()
+
     return n
 
 def greet(terminal):
