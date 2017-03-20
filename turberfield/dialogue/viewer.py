@@ -54,8 +54,53 @@ def build_logger(args, name="turberfield"):
     log.addHandler(ch)
     return log
 
+def run_through(script, ensemble, log, roles=1):
+    then = datetime.datetime.now()
+    with script as dialogue:
+        try:
+            model = dialogue.cast(
+                dialogue.select(ensemble, roles=roles)
+            ).run()
+        except (AttributeError, ValueError) as e:
+            log.error(". ".join(getattr(e, "args", e) or e))
+            return
+
+        for n, (shot, item) in enumerate(model):
+            yield (shot, item)
+
+def rehearsal(folder, ensemble, log=None):
+    # TODO: This function drives terminal
+    log = log or logging.getLogger(
+        "{0}.turberfield".format(os.getpid())
+    )
+    scripts = SceneScript.scripts(**folder._asdict())
+    for script, interlude in itertools.zip_longest(
+        scripts, itertools.cycle(folder.interludes)
+    ):
+        prev = None
+        seq = run_through(script, ensemble, log)
+        for n, (shot, item) in enumerate(seq):
+            if isinstance(item, Model.Property):
+                log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
+                setattr(item.object, item.attr, item.val)
+            elif isinstance(item, Model.Audio):
+                log.info("Launch {resource} from {package}.".format(**item._asdict()))
+            elif isinstance(item, Model.Memory):
+                log.info("{subject} {state} {object}; {text}".format(**item._asdict()))
+                pass
+
+        log.info("Time: {0}".format(datetime.datetime.now() - then))
+        if interlude is None:
+            rv = folder
+        else:
+            rv = await interlude(folder, ensemble, log=log, loop=loop)
+
+        if rv is not folder:
+            log.info("Interlude branching to {0}".format(rv))
+            return rv
+
 def producer(args):
-    log = logging.getLogger("turberfield.{0}".format(os.getpid()))
+    log = logging.getLogger("{0}.turberfield".format(os.getpid()))
     for i in itertools.count():
         log.info(i)
         yield {"val": i}
@@ -106,7 +151,7 @@ def cgi_consumer(args):
     return rv
 
 def cgi_producer(args):
-    log = logging.getLogger("turberfield.{0}".format(os.getpid()))
+    log = logging.getLogger("{0}.turberfield".format(os.getpid()))
     print("Content-type:text/event-stream")
     print()
     for n, item in enumerate(producer(args)):
@@ -121,7 +166,7 @@ def greet(terminal):
         print("This is ", terminal.underline("pretty!"), file=terminal.stream)
 
 def main(args):
-    log = build_logger(args, name="turberfield.{0}".format(os.getpid()))
+    log = build_logger(args, name="{0}.turberfield".format(os.getpid()))
     if args.web:
         locn = "Scripts" if "windows" in platform.system().lower() else "bin"
         os.chdir(os.path.join(sys.prefix, locn))
