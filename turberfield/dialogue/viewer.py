@@ -28,9 +28,7 @@ DFLT_DB = ":memory:"
 __doc__ = """
 An experimental script which can operate in CLI, web or terminal mode.
 
-TODO:
-
-https://medium.com/code-zen/python-generator-and-html-server-sent-events-3cdf14140e56#.k9y3ez6se
+turberfield-rehearse @turberfield/dialogue/demo.cli
 """
 
 def build_logger(args, name="turberfield"):
@@ -93,18 +91,26 @@ def rehearsal(folder, ensemble, log=None):
         if interlude is None:
             rv = folder
         else:
-            rv = await interlude(folder, ensemble, log=log, loop=loop)
+            pass
+            #rv = await interlude(folder, ensemble, log=log, loop=loop)
 
         if rv is not folder:
             log.info("Interlude branching to {0}".format(rv))
             return rv
 
 def producer(args):
-    log = logging.getLogger("{0}.turberfield".format(os.getpid()))
-    for i in itertools.count():
-        log.info(i)
-        yield {"val": i}
-        time.sleep(1)
+    log = log or logging.getLogger(
+        "{0}.turberfield".format(os.getpid())
+    )
+    scripts = SceneScript.scripts(**folder._asdict())
+    for script, interlude in itertools.zip_longest(
+        scripts, itertools.cycle(folder.interludes)
+    ):
+        prev = None
+        seq = run_through(script, ensemble, log)
+        for n, (shot, item) in enumerate(seq):
+            yield item._asdict()
+            time.sleep(1)
 
 def cgi_consumer(args):
     params = vars(args)
@@ -219,6 +225,14 @@ def parser(description=__doc__):
     rv.add_argument(
         "--log", default=None, dest="log_path",
         help="Set a file path for log output")
+    rv.add_argument(
+        "--ensemble", default=None, required=True,
+        help="Give an import path to a list of Personae."
+    )
+    rv.add_argument(
+        "--sequence", default=None, required=True,
+        help="Give an import path to a SceneScript folder."
+    )
     rv.add_argument(
         "--web", action="store_true", default=False,
         help="Activate the web interface")
