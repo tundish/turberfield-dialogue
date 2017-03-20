@@ -177,7 +177,13 @@ def main(args):
         locn = "Scripts" if "windows" in platform.system().lower() else "bin"
         os.chdir(os.path.join(sys.prefix, locn))
         log.warning("Web mode: running scripts from directory {0}".format(os.getcwd()))
-        params = {k: getattr(args, k) for k in ("log_level", "log_path", "port", "session")}
+        params = {
+            k: getattr(args, k)
+            for k in (
+                "log_level", "log_path", "port",
+                "session", "ensemble", "sequence"
+            )
+        }
         opts = urllib.parse.urlencode(params)
         url = "http://localhost:{0}/turberfield-rehearse?{1}".format(args.port, opts)
         webbrowser.open_new_tab(url)
@@ -226,11 +232,11 @@ def parser(description=__doc__):
         "--log", default=None, dest="log_path",
         help="Set a file path for log output")
     rv.add_argument(
-        "--ensemble", default=None, required=True,
+        "--ensemble", default="",
         help="Give an import path to a list of Personae."
     )
     rv.add_argument(
-        "--sequence", default=None, required=True,
+        "--sequence", default="",
         help="Give an import path to a SceneScript folder."
     )
     rv.add_argument(
