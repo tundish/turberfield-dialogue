@@ -50,4 +50,4 @@ ensemble = [
     Furniture(name="Dr Hat Stand"),
 ]
 
-Assembly.register(Animal, Furniture, Tool)
+Assembly.register(Animal, Animation, Furniture, Tool, type(uuid.uuid4()))
