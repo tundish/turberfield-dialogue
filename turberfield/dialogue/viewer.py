@@ -24,6 +24,7 @@ import pkg_resources
 from turberfield.dialogue import __version__
 from turberfield.dialogue.directives import Pathfinder
 from turberfield.dialogue.model import SceneScript
+from turberfield.utils.assembly import Assembly
 
 DFLT_PORT = 8080
 DFLT_DB = ":memory:"
@@ -171,7 +172,7 @@ def cgi_producer(args):
     print()
     for n, item in enumerate(producer(args, log=log)):
         print("event: {0}".format(type(item).__name__), end="\n")
-        print("data: {0};\n".format(item), end="\n")
+        print("data: {0}\n".format(Assembly.dumps(item)), end="\n")
         sys.stdout.flush()
 
     return n

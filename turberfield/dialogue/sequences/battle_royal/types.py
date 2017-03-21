@@ -21,6 +21,7 @@ import uuid
 
 from turberfield.dialogue.types import Persona
 from turberfield.dialogue.types import Stateful
+from turberfield.utils.assembly import Assembly
 
 @enum.unique
 class Animation(enum.Enum):
@@ -48,3 +49,5 @@ ensemble = [
     Tool(name="Ol' Rusty Chopper"),
     Furniture(name="Dr Hat Stand"),
 ]
+
+Assembly.register(Animal, Furniture, Tool)

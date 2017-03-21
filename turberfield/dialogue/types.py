@@ -21,6 +21,8 @@ import enum
 import random
 import uuid
 
+from turberfield.utils.assembly import Assembly
+
 Name = namedtuple("Name", ["title", "firstname", "nicknames", "surname"])
 
 class EnumFactory:
@@ -94,3 +96,5 @@ class Stateful:
 
 class Player(Stateful, Persona):
     pass
+
+Assembly.register(Name)
