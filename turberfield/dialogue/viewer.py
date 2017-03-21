@@ -4,6 +4,7 @@
 import argparse
 import cgi
 import cgitb
+import datetime
 import http.server
 import itertools
 import logging
@@ -21,6 +22,8 @@ from blessings import Terminal
 import pkg_resources
 
 from turberfield.dialogue import __version__
+from turberfield.dialogue.directives import Pathfinder
+from turberfield.dialogue.model import SceneScript
 
 DFLT_PORT = 8080
 DFLT_DB = ":memory:"
@@ -98,9 +101,15 @@ def rehearsal(folder, ensemble, log=None):
             log.info("Interlude branching to {0}".format(rv))
             return rv
 
-def producer(args):
+def producer(args, log=None):
     log = log or logging.getLogger(
         "{0}.turberfield".format(os.getpid())
+    )
+    folder = Pathfinder.string_import(
+        args.sequence, relative=False, sep=":"
+    )
+    ensemble = Pathfinder.string_import(
+        args.ensemble, relative=False, sep=":"
     )
     scripts = SceneScript.scripts(**folder._asdict())
     for script, interlude in itertools.zip_longest(
@@ -160,7 +169,7 @@ def cgi_producer(args):
     log = logging.getLogger("{0}.turberfield".format(os.getpid()))
     print("Content-type:text/event-stream")
     print()
-    for n, item in enumerate(producer(args)):
+    for n, item in enumerate(producer(args, log=log)):
         print("event: {0}".format(type(item).__name__), end="\n")
         print("data: {0};\n".format(item), end="\n")
         sys.stdout.flush()
