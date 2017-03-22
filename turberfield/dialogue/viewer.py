@@ -31,14 +31,18 @@ DFLT_PORT = 8080
 DFLT_DB = ":memory:"
 
 __doc__ = """
-An experimental script which can operate in CLI, web or terminal mode.
+A utility to run through a sequence of dialogue.
 
-turberfield-rehearse @turberfield/dialogue/demo.cli
+The rehearsal can be viewed in a terminal or by web browser.
+
+Eg::
+
+    turberfield-rehearse @turberfield/dialogue/demo.cli
+
 """
 
 
 def run_through(script, ensemble, log, roles=1):
-    log.info("Hi!")
     then = datetime.datetime.now()
     with script as dialogue:
         try:
