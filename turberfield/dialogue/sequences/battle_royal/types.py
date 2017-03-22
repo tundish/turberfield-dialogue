@@ -33,6 +33,10 @@ class Outcome(enum.Enum):
     defeated = 0
     victorious = 1
 
+    @classmethod
+    def factory(cls, name=None, **kwargs):
+        return cls[name]
+
 class Animal(Persona, Stateful):
     pass
 
@@ -49,4 +53,4 @@ ensemble = [
     Furniture(name="Dr Hat Stand"),
 ]
 
-Assembly.register(Animal, Animation, Furniture, Tool)
+Assembly.register(Animal, Animation, Furniture, Outcome, Tool)

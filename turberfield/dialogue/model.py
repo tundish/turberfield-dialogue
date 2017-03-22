@@ -31,6 +31,7 @@ from turberfield.dialogue.directives import Entity as EntityDirective
 from turberfield.dialogue.directives import FX as FXDirective
 from turberfield.dialogue.directives import Property as PropertyDirective
 from turberfield.dialogue.directives import Memory as MemoryDirective
+from turberfield.utils.assembly import Assembly
 from turberfield.utils.misc import group_by_type
 
 import pkg_resources
@@ -266,3 +267,4 @@ class SceneScript:
         self.doc.walkabout(model)
         return model
 
+Assembly.register(Model.Audio, Model.Line, Model.Memory, Model.Property)

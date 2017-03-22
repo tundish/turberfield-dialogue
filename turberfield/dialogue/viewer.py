@@ -97,7 +97,7 @@ def producer(args, log=None):
         prev = None
         seq = run_through(script, ensemble, log)
         for n, (shot, item) in enumerate(seq):
-            yield item._asdict()
+            yield item
             time.sleep(1)
 
 def cgi_consumer(args):
@@ -148,7 +148,7 @@ def cgi_producer(args):
     print("Content-type:text/event-stream")
     print()
     for n, item in enumerate(producer(args)):
-        print("event: {0}".format(type(item).__name__), end="\n")
+        print("event: {0}".format(type(item).__name__.lower()), end="\n")
         print("data: {0}\n".format(Assembly.dumps(item)), end="\n")
         sys.stdout.flush()
 
