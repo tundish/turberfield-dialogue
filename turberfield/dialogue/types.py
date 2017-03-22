@@ -97,4 +97,4 @@ class Stateful:
 class Player(Stateful, Persona):
     pass
 
-Assembly.register(Name)
+Assembly.register(Name, type(uuid.uuid4()))

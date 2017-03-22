@@ -25,6 +25,7 @@ from turberfield.dialogue import __version__
 from turberfield.dialogue.directives import Pathfinder
 from turberfield.dialogue.model import SceneScript
 from turberfield.utils.assembly import Assembly
+from turberfield.utils.misc import log_setup
 
 DFLT_PORT = 8080
 DFLT_DB = ":memory:"
@@ -35,28 +36,9 @@ An experimental script which can operate in CLI, web or terminal mode.
 turberfield-rehearse @turberfield/dialogue/demo.cli
 """
 
-def build_logger(args, name="turberfield"):
-    log = logging.getLogger(name)
-    log.setLevel(int(args.log_level))
-
-    formatter = logging.Formatter(
-        "%(asctime)s %(levelname)-7s %(name)s|%(message)s")
-    ch = logging.StreamHandler()
-
-    if args.log_path is None:
-        ch.setLevel(int(args.log_level))
-    else:
-        fh = WatchedFileHandler(args.log_path)
-        fh.setLevel(int(args.log_level))
-        fh.setFormatter(formatter)
-        log.addHandler(fh)
-        ch.setLevel(logging.WARNING)
-
-    ch.setFormatter(formatter)
-    log.addHandler(ch)
-    return log
 
 def run_through(script, ensemble, log, roles=1):
+    log.info("Hi!")
     then = datetime.datetime.now()
     with script as dialogue:
         try:
@@ -72,9 +54,7 @@ def run_through(script, ensemble, log, roles=1):
 
 def rehearsal(folder, ensemble, log=None):
     # TODO: This function drives terminal
-    log = log or logging.getLogger(
-        "{0}.turberfield".format(os.getpid())
-    )
+    log = log or logging.getLogger("turberfield")
     scripts = SceneScript.scripts(**folder._asdict())
     for script, interlude in itertools.zip_longest(
         scripts, itertools.cycle(folder.interludes)
@@ -103,9 +83,7 @@ def rehearsal(folder, ensemble, log=None):
             return rv
 
 def producer(args, log=None):
-    log = log or logging.getLogger(
-        "{0}.turberfield".format(os.getpid())
-    )
+    log = log or logging.getLogger("turberfield")
     folder = Pathfinder.string_import(
         args.sequence, relative=False, sep=":"
     )
@@ -167,10 +145,9 @@ def cgi_consumer(args):
     return rv
 
 def cgi_producer(args):
-    log = logging.getLogger("{0}.turberfield".format(os.getpid()))
     print("Content-type:text/event-stream")
     print()
-    for n, item in enumerate(producer(args, log=log)):
+    for n, item in enumerate(producer(args)):
         print("event: {0}".format(type(item).__name__), end="\n")
         print("data: {0}\n".format(Assembly.dumps(item)), end="\n")
         sys.stdout.flush()
@@ -182,7 +159,7 @@ def greet(terminal):
         print("This is ", terminal.underline("pretty!"), file=terminal.stream)
 
 def main(args):
-    log = build_logger(args, name="{0}.turberfield".format(os.getpid()))
+    log = logging.getLogger(log_setup(args))
     if args.web:
         locn = "Scripts" if "windows" in platform.system().lower() else "bin"
         os.chdir(os.path.join(sys.prefix, locn))

@@ -17,7 +17,6 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 import enum
-import uuid
 
 from turberfield.dialogue.types import Persona
 from turberfield.dialogue.types import Stateful
@@ -50,4 +49,4 @@ ensemble = [
     Furniture(name="Dr Hat Stand"),
 ]
 
-Assembly.register(Animal, Animation, Furniture, Tool, type(uuid.uuid4()))
+Assembly.register(Animal, Animation, Furniture, Tool)
