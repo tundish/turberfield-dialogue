@@ -122,15 +122,32 @@ def cgi_consumer(args):
         <h1>...</h1>
         <div id="data"></div>
         <script>
-            var slot = document.getElementById("data");
+            var fx;
 
             if (!!window.EventSource) {{
                 var source = new EventSource("{url}");
             }} else {{
-                alert("Your browser does not support Server-sent events! Please upgrade it!");
+                alert("Your browser does not support Server-Sent Events.");
             }}
 
-            source.addEventListener("dict", function(e) {{
+            source.addEventListener("audio", function(e) {{
+                var obj = JSON.parse(e.data)
+                var url = ("/" + obj.package.replace(/\./g, "/") + "/" + obj.resource);
+                fx = document.createElement("audio");
+                fx.setAttribute("src", url);
+                fx.play();
+                console.log(url);
+            }}, false);
+
+            source.addEventListener("line", function(e) {{
+                console.log(e.data);
+            }}, false);
+
+            source.addEventListener("memory", function(e) {{
+                console.log(e.data);
+            }}, false);
+
+            source.addEventListener("property", function(e) {{
                 console.log(e.data);
             }}, false);
 
@@ -139,7 +156,7 @@ def cgi_consumer(args):
             }}, false);
 
             source.addEventListener("error", function(e) {{
-                console.log("Error - connection was lost.");
+                console.log("Error: connection lost.");
             }}, false);
 
         </script>
