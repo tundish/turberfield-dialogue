@@ -23,6 +23,7 @@ import pkg_resources
 
 from turberfield.dialogue import __version__
 from turberfield.dialogue.directives import Pathfinder
+from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.utils.assembly import Assembly
 from turberfield.utils.misc import log_setup
@@ -108,7 +109,9 @@ def cgi_consumer(args):
     params = vars(args)
     params["session"] = uuid.uuid4().hex
     opts = urllib.parse.urlencode(params)
-    url = "http://localhost:{0}/turberfield-rehearse?{1}".format(args.port, opts)
+    url = "http://localhost:{0}/{1}/turberfield-rehearse?{2}".format(
+        args.port, args.locn, opts
+    )
     rv = textwrap.dedent("""
         Content-type:text/html
 
@@ -131,12 +134,12 @@ def cgi_consumer(args):
             }}
 
             source.addEventListener("audio", function(e) {{
-                var obj = JSON.parse(e.data)
-                var url = ("/" + obj.package.replace(/\./g, "/") + "/" + obj.resource);
+                // var obj = JSON.parse(e.data)
+                // var url = ("/" + obj.package.replace(/\./g, "/") + "/" + obj.resource);
                 fx = document.createElement("audio");
-                fx.setAttribute("src", url);
+                fx.setAttribute("src", e.data);
                 fx.play();
-                console.log(url);
+                console.log(e.data);
             }}, false);
 
             source.addEventListener("line", function(e) {{
@@ -170,7 +173,11 @@ def cgi_producer(args):
     print()
     for n, item in enumerate(producer(args)):
         print("event: {0}".format(type(item).__name__.lower()), end="\n")
-        print("data: {0}\n".format(Assembly.dumps(item)), end="\n")
+        if isinstance(item, Model.Audio):
+            path = pkg_resources.resource_filename(item.package, item.resource)
+            print("data: {0}\n".format(path[len(sys.prefix):]), end="\n")
+        else:
+            print("data: {0}\n".format(Assembly.dumps(item)), end="\n")
         sys.stdout.flush()
 
     return n
@@ -182,21 +189,22 @@ def greet(terminal):
 def main(args):
     log = logging.getLogger(log_setup(args))
     if args.web:
-        locn = "Scripts" if "windows" in platform.system().lower() else "bin"
-        os.chdir(os.path.join(sys.prefix, locn))
+        os.chdir(sys.prefix)
         log.warning("Web mode: running scripts from directory {0}".format(os.getcwd()))
         params = {
             k: getattr(args, k)
             for k in (
                 "log_level", "log_path", "port",
-                "session", "ensemble", "sequence"
+                "session", "locn", "ensemble", "sequence"
             )
         }
         opts = urllib.parse.urlencode(params)
-        url = "http://localhost:{0}/turberfield-rehearse?{1}".format(args.port, opts)
+        url = "http://localhost:{0}/{1}/turberfield-rehearse?{2}".format(
+            args.port, args.locn, opts
+        )
         webbrowser.open_new_tab(url)
         Handler = http.server.CGIHTTPRequestHandler
-        Handler.cgi_directories = ["/"]
+        Handler.cgi_directories = ["/{0}".format(args.locn)]
         httpd = http.server.HTTPServer(("", args.port), Handler)
 
         log.info("serving at port {0}".format(args.port))
@@ -253,6 +261,10 @@ def parser(description=__doc__):
     rv.add_argument(
         "--session", required=False, default="",
         help="Internal session path")
+    rv.add_argument(
+        "--locn", required=False,
+        default="Scripts" if "windows" in platform.system().lower() else "bin",
+        help="Internal script location")
     rv.add_argument(
         "--port", type=int, default=DFLT_PORT,
         help="Set the port number of the web interface [{}]".format(DFLT_PORT))
