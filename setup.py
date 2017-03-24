@@ -58,6 +58,7 @@ setup(
             ],
         "turberfield.dialogue.sequences.battle_royal": [
             "*.rst",
+            "*.wav",
         ]
     },
     install_requires=[
