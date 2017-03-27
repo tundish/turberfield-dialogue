@@ -63,12 +63,12 @@ class Persona(DataObject):
 
     def __init__(self, id=None, **kwargs):
         self.id = id or uuid.uuid4()
-        val = kwargs.pop("name")
-        bits = val.split()
+        self._name = kwargs.pop("name")
+        bits = self._name.split()
         try:
             self.name = Name(bits[0], bits[1], bits[2:-1], bits[-1])
         except IndexError:
-            self.name = Name("", val, [], "")
+            self.name = Name("", self._name, [], "")
         super().__init__(**kwargs)
 
     @property

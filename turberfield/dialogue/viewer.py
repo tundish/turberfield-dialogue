@@ -87,20 +87,20 @@ def rehearsal(folder, ensemble, log=None):
             log.info("Interlude branching to {0}".format(rv))
             return rv
 
-def producer(args, log=None):
+def producer(sequence, ensemble, log=None):
     log = log or logging.getLogger("turberfield")
     folder = Pathfinder.string_import(
-        args.sequence, relative=False, sep=":"
+        sequence, relative=False, sep=":"
     )
-    ensemble = Pathfinder.string_import(
-        args.ensemble, relative=False, sep=":"
+    personae = Pathfinder.string_import(
+        ensemble, relative=False, sep=":"
     )
     scripts = SceneScript.scripts(**folder._asdict())
     for script, interlude in itertools.zip_longest(
         scripts, itertools.cycle(folder.interludes)
     ):
         prev = None
-        seq = run_through(script, ensemble, log)
+        seq = run_through(script, personae, log)
         for n, (shot, item) in enumerate(seq):
             yield item
             time.sleep(1)
@@ -120,10 +120,25 @@ def cgi_consumer(args):
         <head>
         <meta charset="utf-8" />
         <title>Rehearsal</title>
+        <style>
+        #line {{
+            font-family: "monospace";
+        }}
+        #line .persona::after {{
+            content: ": ";
+        }}
+        #event {{
+            font-style: italic;
+        }}
+        </style>
         </head>
         <body class="loading">
         <h1>...</h1>
-        <div id="data"></div>
+        <blockquote id="line">
+        <header class="persona"></header>
+        <p class="data"></p>
+        </blockquote>
+        <span id="event"></span>
         <script>
             var fx;
 
@@ -134,24 +149,43 @@ def cgi_consumer(args):
             }}
 
             source.addEventListener("audio", function(e) {{
-                // var obj = JSON.parse(e.data)
-                // var url = ("/" + obj.package.replace(/\./g, "/") + "/" + obj.resource);
+                var event = document.getElementById("event");
+                event.innerHTML = "";
                 fx = document.createElement("audio");
                 fx.setAttribute("src", e.data);
                 fx.play();
-                console.log(e.data);
             }}, false);
 
             source.addEventListener("line", function(e) {{
-                console.log(e.data);
+                var event = document.getElementById("event");
+                event.innerHTML = "";
+                var obj = JSON.parse(e.data);
+                var quote = document.getElementById("line");
+                var speaker = quote.getElementsByClassName("persona")[0];
+                var line = quote.getElementsByClassName("data")[0];
+
+                speaker.innerHTML = obj.persona.name.firstname;
+                speaker.innerHTML += " ";
+                speaker.innerHTML += obj.persona.name.surname;
+                line.innerHTML = obj.html;
+                
             }}, false);
 
             source.addEventListener("memory", function(e) {{
-                console.log(e.data);
+                var obj = JSON.parse(e.data);
+                var event = document.getElementById("event");
+                event.innerHTML = obj.html;
             }}, false);
 
             source.addEventListener("property", function(e) {{
-                console.log(e.data);
+                var obj = JSON.parse(e.data);
+                var event = document.getElementById("event");
+                event.innerHTML = "<";
+                event.innerHTML += obj.object._name;
+                event.innerHTML += ">.";
+                event.innerHTML += obj.attr;
+                event.innerHTML += " = ";
+                event.innerHTML += obj.val.name;
             }}, false);
 
             source.addEventListener("open", function(e) {{
@@ -171,7 +205,7 @@ def cgi_consumer(args):
 def cgi_producer(args):
     print("Content-type:text/event-stream")
     print()
-    for n, item in enumerate(producer(args)):
+    for n, item in enumerate(producer(args.sequence, args.ensemble)):
         print("event: {0}".format(type(item).__name__.lower()), end="\n")
         if isinstance(item, Model.Audio):
             path = pkg_resources.resource_filename(item.package, item.resource)
