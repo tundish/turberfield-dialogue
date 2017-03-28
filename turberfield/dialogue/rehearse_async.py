@@ -44,6 +44,8 @@ python -m turberfield.dialogue.viewer \
 
 """
 
+# TODO: add async_consumer and async_producer
+
 async def view(queue, log=None, loop=None):
     log = log or logging.getLogger("turberfield.dialogue.view")
     loop = loop or ayncio.get_event_loop()
