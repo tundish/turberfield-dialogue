@@ -140,8 +140,6 @@ def cgi_consumer(args):
         </blockquote>
         <span id="event"></span>
         <script>
-            var fx;
-
             if (!!window.EventSource) {{
                 var source = new EventSource("{url}");
             }} else {{
@@ -149,11 +147,37 @@ def cgi_consumer(args):
             }}
 
             source.addEventListener("audio", function(e) {{
-                var event = document.getElementById("event");
-                event.innerHTML = "";
-                fx = document.createElement("audio");
-                fx.setAttribute("src", e.data);
-                fx.play();
+                var fx = new Promise(function(resolve, reject) {{
+                    var src = e.data;
+                    var repeat = false;
+                    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    var track = audioCtx.createBufferSource();
+                    var request = new XMLHttpRequest();
+
+                    request.open("GET", src, true);
+                    request.responseType = "arraybuffer";
+
+                    request.onload = function() {{
+                        var audioData = request.response;
+
+                        audioCtx.decodeAudioData(audioData, function(buffer) {{
+                            var myBuffer = buffer;
+                            track.buffer = myBuffer;
+                            track.connect(audioCtx.destination);
+                            track.loop = repeat;
+                            resolve(track);
+                          }},
+
+                          function(e){{reject(e)}});
+
+                    }}
+                    request.send();
+                }});
+
+                fx.then(function(result){{
+                    result.start(0);
+                }});
+
             }}, false);
 
             source.addEventListener("line", function(e) {{
