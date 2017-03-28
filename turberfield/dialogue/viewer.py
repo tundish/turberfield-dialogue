@@ -240,9 +240,10 @@ def cgi_producer(args):
 
     return n
 
-def greet(terminal):
-    with terminal.location(0, terminal.height - 1):
-        print("This is ", terminal.underline("pretty!"), file=terminal.stream)
+def consumer(args, terminal):
+    for n, item in enumerate(producer(args.sequence, args.ensemble)):
+        with terminal.location(0, terminal.height - 1):
+            print(n, terminal.underline(repr(item)), file=terminal.stream)
 
 def main(args):
     log = logging.getLogger(log_setup(args))
@@ -284,9 +285,8 @@ def main(args):
             log.info("Producer view.")
             cgi_producer(args)
     else:
-        print(cgi_consumer(args))
         term = Terminal()
-        greet(term)
+        consumer(args, term)
     return 0
 
 def parser(description=__doc__):
