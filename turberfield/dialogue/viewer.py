@@ -53,8 +53,8 @@ def run_through(script, ensemble, log, roles=1):
         except (AttributeError, ValueError) as e:
             log.error(". ".join(getattr(e, "args", e) or e))
             return
-
-        yield from model
+        else:
+            yield from model
 
 def rehearsal(folder, ensemble, log=None):
     # TODO: This function drives terminal
