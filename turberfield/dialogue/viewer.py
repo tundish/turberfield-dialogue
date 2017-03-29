@@ -99,10 +99,10 @@ def rehearse(sequence, ensemble, log=None):
         scripts, itertools.cycle(folder.interludes)
     ):
         prev = None
+        pause = 1
         seq = run_through(script, personae, log)
-        for n, (shot, item) in enumerate(seq):
-            yield item
-            time.sleep(1)
+        for shot, item in seq:
+            yield shot, item, pause
 
 def cgi_consumer(args):
     params = vars(args)
@@ -228,8 +228,10 @@ def cgi_consumer(args):
 def cgi_producer(args):
     print("Content-type:text/event-stream")
     print()
-    for item in rehearse(args.sequence, args.ensemble):
+    for shot, item, pause in rehearse(args.sequence, args.ensemble):
         print("event: {0}".format(type(item).__name__.lower()), end="\n")
+        time.sleep(pause)
+        #TODO: dispatch handler
         if isinstance(item, Model.Audio):
             path = pkg_resources.resource_filename(item.package, item.resource)
             print("data: {0}\n".format(path[len(sys.prefix):]), end="\n")
@@ -239,9 +241,10 @@ def cgi_producer(args):
         yield item
 
 def presenter(args, terminal):
-    for item in rehearse(args.sequence, args.ensemble):
+    for shot, item, pause in rehearse(args.sequence, args.ensemble):
         with terminal.location(0, terminal.height - 1):
             print(terminal.underline(repr(item)), file=terminal.stream)
+        time.sleep(pause)
         yield item
     terminal.clear()
 
