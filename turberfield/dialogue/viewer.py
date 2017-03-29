@@ -54,8 +54,7 @@ def run_through(script, ensemble, log, roles=1):
             log.error(". ".join(getattr(e, "args", e) or e))
             return
 
-        for n, (shot, item) in enumerate(model):
-            yield (shot, item)
+        yield from model
 
 def rehearsal(folder, ensemble, log=None):
     # TODO: This function drives terminal
@@ -87,7 +86,7 @@ def rehearsal(folder, ensemble, log=None):
             log.info("Interlude branching to {0}".format(rv))
             return rv
 
-def producer(sequence, ensemble, log=None):
+def rehearse(sequence, ensemble, log=None):
     log = log or logging.getLogger("turberfield")
     folder = Pathfinder.string_import(
         sequence, relative=False, sep=":"
@@ -229,7 +228,7 @@ def cgi_consumer(args):
 def cgi_producer(args):
     print("Content-type:text/event-stream")
     print()
-    for n, item in enumerate(producer(args.sequence, args.ensemble)):
+    for item in rehearse(args.sequence, args.ensemble):
         print("event: {0}".format(type(item).__name__.lower()), end="\n")
         if isinstance(item, Model.Audio):
             path = pkg_resources.resource_filename(item.package, item.resource)
@@ -237,13 +236,14 @@ def cgi_producer(args):
         else:
             print("data: {0}\n".format(Assembly.dumps(item)), end="\n")
         sys.stdout.flush()
+        yield item
 
-    return n
-
-def consumer(args, terminal):
-    for n, item in enumerate(producer(args.sequence, args.ensemble)):
+def presenter(args, terminal):
+    for item in rehearse(args.sequence, args.ensemble):
         with terminal.location(0, terminal.height - 1):
-            print(n, terminal.underline(repr(item)), file=terminal.stream)
+            print(terminal.underline(repr(item)), file=terminal.stream)
+        yield item
+    terminal.clear()
 
 def main(args):
     log = logging.getLogger(log_setup(args))
@@ -283,10 +283,10 @@ def main(args):
             print(cgi_consumer(args))
         else:
             log.info("Producer view.")
-            cgi_producer(args)
+            list(cgi_producer(args))
     else:
         term = Terminal()
-        consumer(args, term)
+        list(presenter(args, term))
     return 0
 
 def parser(description=__doc__):
