@@ -5,6 +5,7 @@ import argparse
 import cgi
 import cgitb
 import datetime
+import functools
 import http.server
 import itertools
 import logging
@@ -42,6 +43,19 @@ Eg::
 
 """
 
+
+class TerminalHandler:
+
+    @staticmethod
+    @functools.singledispatch
+    def handle_(obj):
+        return obj
+
+    def __init__(self, terminal):
+        self.terminal = terminal
+
+    def __call__(self, obj):
+        return self.__class__.handle_(obj)
 
 def run_through(script, ensemble, log, roles=1):
     then = datetime.datetime.now()
@@ -86,7 +100,7 @@ def rehearsal(folder, ensemble, log=None):
             log.info("Interlude branching to {0}".format(rv))
             return rv
 
-def rehearse(sequence, ensemble, log=None):
+def rehearse(sequence, ensemble, handler=str, log=None, pause=1.5, dwell=0.2):
     log = log or logging.getLogger("turberfield")
     folder = Pathfinder.string_import(
         sequence, relative=False, sep=":"
@@ -98,11 +112,13 @@ def rehearse(sequence, ensemble, log=None):
     for script, interlude in itertools.zip_longest(
         scripts, itertools.cycle(folder.interludes)
     ):
-        prev = None
-        pause = 1
-        seq = run_through(script, personae, log)
+        seq = list(run_through(script, personae, log))
+        interval = pause
         for shot, item in seq:
-            yield shot, item, pause
+            #interval = pause + dwell * items[-1].text.count(" ")
+            yield handler(shot)
+            yield handler(item)
+            yield handler(interval)
 
 def cgi_consumer(args):
     params = vars(args)
@@ -240,13 +256,18 @@ def cgi_producer(args):
         sys.stdout.flush()
         yield item
 
-def presenter(args, terminal):
-    for shot, item, pause in rehearse(args.sequence, args.ensemble):
-        with terminal.location(0, terminal.height - 1):
-            print(terminal.underline(repr(item)), file=terminal.stream)
-        time.sleep(pause)
-        yield item
-    terminal.clear()
+def presenter(args, handler):
+    for obj in rehearse(args.sequence, args.ensemble):
+        with handler.terminal.location(0, handler.terminal.height - 1):
+            print(
+                "{t.dim}{obj}".format(
+                    obj=obj, t=handler.terminal
+                ),
+                file=handler.terminal.stream
+            )
+        yield obj
+        #time.sleep(interval) in handler
+    print(handler.terminal.clear_eos())
 
 def main(args):
     log = logging.getLogger(log_setup(args))
@@ -289,7 +310,10 @@ def main(args):
             list(cgi_producer(args))
     else:
         term = Terminal()
-        list(presenter(args, term))
+        handler = TerminalHandler(term)
+        with term.fullscreen():
+            for line in presenter(args, handler):
+                log.debug(line)
     return 0
 
 def parser(description=__doc__):
