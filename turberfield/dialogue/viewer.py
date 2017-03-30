@@ -17,10 +17,12 @@ import textwrap
 import time
 import urllib.parse
 import uuid
+import wave
 import webbrowser
 
 from blessings import Terminal
 import pkg_resources
+import simpleaudio
 
 from turberfield.dialogue import __version__
 from turberfield.dialogue.directives import Pathfinder
@@ -51,6 +53,31 @@ class TerminalHandler:
         return obj
 
     @staticmethod
+    def handle_audio(obj):
+        fp = pkg_resources.resource_filename(obj.package, obj.resource)
+        data = wave.open(fp, "rb")
+        nChannels = data.getnchannels()
+        bytesPerSample = data.getsampwidth()
+        sampleRate = data.getframerate()
+        nFrames = data.getnframes()
+        framesPerMilliSecond = nChannels * sampleRate // 1000
+
+        offset = framesPerMilliSecond * obj.offset
+        duration = nFrames - offset
+        duration = min(
+            duration,
+            framesPerMilliSecond * obj.duration if obj.duration is not None else duration
+        )
+
+        data.readframes(offset)
+        frames = data.readframes(duration)
+        for i in range(obj.loop):
+            waveObj = simpleaudio.WaveObject(frames, nChannels, bytesPerSample, sampleRate)
+            playObj = waveObj.play()
+            playObj.wait_done()
+        return obj
+
+    @staticmethod
     def handle_number(obj):
         time.sleep(obj)
         return obj
@@ -72,6 +99,8 @@ class TerminalHandler:
             return self.handle_number(obj)
         elif isinstance(obj, Model.Line):
             return self.handle_line(obj)
+        elif isinstance(obj, Model.Audio):
+            return self.handle_audio(obj)
         else:
             return self.handle(obj)
 
