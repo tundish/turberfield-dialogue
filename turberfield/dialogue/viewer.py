@@ -55,12 +55,23 @@ class TerminalHandler:
         time.sleep(obj)
         return obj
 
+    def handle_line(self, obj):
+        print(
+            "{t.normal}{obj.text}".format(
+                obj=obj, t=self.terminal
+            ),
+            file=self.terminal.stream
+        )
+        return obj
+
     def __init__(self, terminal):
         self.terminal = terminal
 
     def __call__(self, obj):
         if isinstance(obj, Number):
             return self.handle_number(obj)
+        elif isinstance(obj, Model.Line):
+            return self.handle_line(obj)
         else:
             return self.handle(obj)
 
@@ -119,13 +130,17 @@ def rehearse(sequence, ensemble, handler=str, log=None, pause=1.5, dwell=0.2):
     for script, interlude in itertools.zip_longest(
         scripts, itertools.cycle(folder.interludes)
     ):
+        yield handler(script)
         seq = list(run_through(script, personae, log))
-        interval = pause
         for shot, item in seq:
-            #interval = pause + dwell * items[-1].text.count(" ")
+            try:
+                interval = pause + dwell * item.text.count(" ")
+            except AttributeError:
+                interval = pause
             yield handler(shot)
             yield handler(item)
             yield handler(interval)
+        yield handler(interlude)
 
 def cgi_consumer(args):
     params = vars(args)
@@ -263,18 +278,10 @@ def cgi_producer(args):
         sys.stdout.flush()
         yield item
 
-def presenter(args, handler):
-    for obj in rehearse(args.sequence, args.ensemble, handler):
-        with handler.terminal.location(0, handler.terminal.height - 1):
-            print(
-                "{t.bold}{obj}".format(
-                    obj=obj, t=handler.terminal
-                ),
-                file=handler.terminal.stream
-            )
-        yield obj
-        #time.sleep(interval) in handler
-    #print(handler.terminal.clear_eos())
+def presenter(args):
+    handler = TerminalHandler(Terminal())
+    with handler.terminal.fullscreen():
+        yield from rehearse(args.sequence, args.ensemble, handler)
 
 def main(args):
     log = logging.getLogger(log_setup(args))
@@ -316,10 +323,7 @@ def main(args):
             log.info("Producer view.")
             list(cgi_producer(args))
     else:
-        term = Terminal()
-        handler = TerminalHandler(term)
-        #with term.fullscreen():
-        for line in presenter(args, handler):
+        for line in presenter(args):
             log.debug(line)
     return 0
 
