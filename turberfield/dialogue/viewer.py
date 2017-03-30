@@ -5,11 +5,11 @@ import argparse
 import cgi
 import cgitb
 import datetime
-import functools
 import http.server
 import itertools
 import logging
 from logging.handlers import WatchedFileHandler
+from numbers import Number
 import os.path
 import platform
 import sys
@@ -47,15 +47,22 @@ Eg::
 class TerminalHandler:
 
     @staticmethod
-    @functools.singledispatch
-    def handle_(obj):
+    def handle(obj):
+        return obj
+
+    @staticmethod
+    def handle_number(obj):
+        time.sleep(obj)
         return obj
 
     def __init__(self, terminal):
         self.terminal = terminal
 
     def __call__(self, obj):
-        return self.__class__.handle_(obj)
+        if isinstance(obj, Number):
+            return self.handle_number(obj)
+        else:
+            return self.handle(obj)
 
 def run_through(script, ensemble, log, roles=1):
     then = datetime.datetime.now()
@@ -257,17 +264,17 @@ def cgi_producer(args):
         yield item
 
 def presenter(args, handler):
-    for obj in rehearse(args.sequence, args.ensemble):
+    for obj in rehearse(args.sequence, args.ensemble, handler):
         with handler.terminal.location(0, handler.terminal.height - 1):
             print(
-                "{t.dim}{obj}".format(
+                "{t.bold}{obj}".format(
                     obj=obj, t=handler.terminal
                 ),
                 file=handler.terminal.stream
             )
         yield obj
         #time.sleep(interval) in handler
-    print(handler.terminal.clear_eos())
+    #print(handler.terminal.clear_eos())
 
 def main(args):
     log = logging.getLogger(log_setup(args))
@@ -311,9 +318,9 @@ def main(args):
     else:
         term = Terminal()
         handler = TerminalHandler(term)
-        with term.fullscreen():
-            for line in presenter(args, handler):
-                log.debug(line)
+        #with term.fullscreen():
+        for line in presenter(args, handler):
+            log.debug(line)
     return 0
 
 def parser(description=__doc__):
