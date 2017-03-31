@@ -9,7 +9,6 @@ import http.server
 import itertools
 import logging
 from logging.handlers import WatchedFileHandler
-from numbers import Number
 import os.path
 import platform
 import sys
@@ -77,11 +76,6 @@ class TerminalHandler:
             playObj.wait_done()
         return obj
 
-    @staticmethod
-    def handle_number(obj):
-        time.sleep(obj)
-        return obj
-
     def handle_line(self, obj):
         print(
             "{t.normal}{obj.text}".format(
@@ -89,18 +83,61 @@ class TerminalHandler:
             ),
             file=self.terminal.stream
         )
+        interval = self.pause + self.dwell * obj.text.count(" ")
+        time.sleep(interval)
         return obj
 
-    def __init__(self, terminal):
+    def handle_scene(self, obj):
+        print(
+            "{t.dim}{scene}".format(
+                scene=obj.scene.capitalize(), t=self.terminal
+            ),
+            file=self.terminal.stream
+        )
+        time.sleep(self.pause)
+        return obj
+
+    def handle_scenescript(self, obj):
+        with self.terminal.location(0, self.terminal.height - 1):
+            print(
+                "{t.dim}{obj.fP}".format(
+                    obj=obj, t=self.terminal
+                ),
+                file=self.terminal.stream
+            )
+        return obj
+
+    def handle_shot(self, obj):
+        print(
+            "{t.dim}{obj}".format(
+                obj=obj, t=self.terminal
+            ),
+            file=self.terminal.stream
+        )
+        return obj
+
+    def __init__(self, terminal, pause=1.5, dwell=0.2):
         self.terminal = terminal
+        self.pause = pause
+        self.dwell = dwell
+        self.shot = None
 
     def __call__(self, obj):
-        if isinstance(obj, Number):
-            return self.handle_number(obj)
-        elif isinstance(obj, Model.Line):
+        if isinstance(obj, Model.Line):
             return self.handle_line(obj)
         elif isinstance(obj, Model.Audio):
             return self.handle_audio(obj)
+        elif isinstance(obj, Model.Shot):
+            if obj.scene != getattr(self.shot, "scene", None):
+                rv = self.handle_scene(obj)
+            elif obj.name != self.shot.name:
+                rv = self.handle_shot(obj)
+            else:
+                rv = obj
+            self.shot = obj
+            return rv
+        elif isinstance(obj, SceneScript):
+            return self.handle_scenescript(obj)
         else:
             return self.handle(obj)
 
@@ -147,7 +184,7 @@ def rehearsal(folder, ensemble, log=None):
             log.info("Interlude branching to {0}".format(rv))
             return rv
 
-def rehearse(sequence, ensemble, handler=str, log=None, pause=1.5, dwell=0.2):
+def rehearse(sequence, ensemble, handler=str, log=None):
     log = log or logging.getLogger("turberfield")
     folder = Pathfinder.string_import(
         sequence, relative=False, sep=":"
@@ -162,13 +199,9 @@ def rehearse(sequence, ensemble, handler=str, log=None, pause=1.5, dwell=0.2):
         yield handler(script)
         seq = list(run_through(script, personae, log))
         for shot, item in seq:
-            try:
-                interval = pause + dwell * item.text.count(" ")
-            except AttributeError:
-                interval = pause
             yield handler(shot)
             yield handler(item)
-            yield handler(interval)
+
         yield handler(interlude)
 
 def cgi_consumer(args):
