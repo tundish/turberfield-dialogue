@@ -89,7 +89,7 @@ class TerminalHandler:
 
     def handle_scene(self, obj):
         print(
-            "{t.dim}{scene}".format(
+            "{t.dim}{scene}{t.normal}".format(
                 scene=obj.scene.capitalize(), t=self.terminal
             ),
             file=self.terminal.stream
@@ -100,7 +100,7 @@ class TerminalHandler:
     def handle_scenescript(self, obj):
         with self.terminal.location(0, self.terminal.height - 1):
             print(
-                "{t.dim}{obj.fP}".format(
+                "{t.dim}{obj.fP}{t.normal}".format(
                     obj=obj, t=self.terminal
                 ),
                 file=self.terminal.stream
@@ -109,8 +109,8 @@ class TerminalHandler:
 
     def handle_shot(self, obj):
         print(
-            "{t.dim}{obj}".format(
-                obj=obj, t=self.terminal
+            "{t.dim}{shot}{t.normal}".format(
+                shot=obj.name.capitalize(), t=self.terminal
             ),
             file=self.terminal.stream
         )
@@ -122,24 +122,23 @@ class TerminalHandler:
         self.dwell = dwell
         self.shot = None
 
-    def __call__(self, obj):
+    def __call__(self, obj, *args, loop, **kwargs):
         if isinstance(obj, Model.Line):
-            return self.handle_line(obj)
+            yield self.handle_line(obj)
         elif isinstance(obj, Model.Audio):
-            return self.handle_audio(obj)
+            yield self.handle_audio(obj)
         elif isinstance(obj, Model.Shot):
-            if obj.scene != getattr(self.shot, "scene", None):
-                rv = self.handle_scene(obj)
-            elif obj.name != self.shot.name:
-                rv = self.handle_shot(obj)
+            if self.shot is None or obj.scene != self.shot.scene:
+                yield self.handle_scene(obj)
+            if self.shot is None or obj.name != self.shot.name:
+                yield self.handle_shot(obj)
             else:
-                rv = obj
+                yield obj
             self.shot = obj
-            return rv
         elif isinstance(obj, SceneScript):
-            return self.handle_scenescript(obj)
+            yield self.handle_scenescript(obj)
         else:
-            return self.handle(obj)
+            yield self.handle(obj)
 
 def run_through(script, ensemble, log, roles=1):
     then = datetime.datetime.now()
@@ -184,7 +183,7 @@ def rehearsal(folder, ensemble, log=None):
             log.info("Interlude branching to {0}".format(rv))
             return rv
 
-def rehearse(sequence, ensemble, handler=str, log=None):
+def rehearse(sequence, ensemble, handler, log=None, loop=None):
     log = log or logging.getLogger("turberfield")
     folder = Pathfinder.string_import(
         sequence, relative=False, sep=":"
@@ -196,13 +195,13 @@ def rehearse(sequence, ensemble, handler=str, log=None):
     for script, interlude in itertools.zip_longest(
         scripts, itertools.cycle(folder.interludes)
     ):
-        yield handler(script)
+        yield from handler(script, loop=loop)
         seq = list(run_through(script, personae, log))
         for shot, item in seq:
-            yield handler(shot)
-            yield handler(item)
+            yield from handler(shot, loop=loop)
+            yield from handler(item, loop=loop)
 
-        yield handler(interlude)
+        yield from handler(interlude, loop=loop)
 
 def cgi_consumer(args):
     params = vars(args)
@@ -342,7 +341,10 @@ def cgi_producer(args):
 
 def presenter(args):
     handler = TerminalHandler(Terminal())
-    with handler.terminal.fullscreen():
+    if args.log_level != logging.DEBUG:
+        with handler.terminal.fullscreen():
+            yield from rehearse(args.sequence, args.ensemble, handler)
+    else:
         yield from rehearse(args.sequence, args.ensemble, handler)
 
 def main(args):
