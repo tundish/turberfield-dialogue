@@ -84,6 +84,7 @@ class TerminalHandler:
                 ),
                 " " * 2
             ),
+            end="\n",
             file=self.terminal.stream
         )
         print(
@@ -93,11 +94,26 @@ class TerminalHandler:
                 ),
                 " " * 10
             ),
-            end="\n\n",
+            end="\n" * 2,
             file=self.terminal.stream
         )
         interval = self.pause + self.dwell * obj.text.count(" ")
         time.sleep(interval)
+        return obj
+
+    def handle_memory(self, obj):
+        print("MEMORY")
+        return obj
+
+    def handle_property(self, obj):
+        setattr(obj.object, obj.attr, obj.val)
+        print(
+            "{t.dim}{obj.object._name}.{obj.attr} = {obj.val}{t.normal}".format(
+                obj=obj, t=self.terminal
+            ),
+            end="\n" * 2,
+            file=self.terminal.stream
+        )
         return obj
 
     def handle_scene(self, obj):
@@ -142,6 +158,10 @@ class TerminalHandler:
             yield self.handle_line(obj)
         elif isinstance(obj, Model.Audio):
             yield self.handle_audio(obj)
+        elif isinstance(obj, Model.Memory):
+            yield self.handle_memory(obj)
+        elif isinstance(obj, Model.Property):
+            yield self.handle_property(obj)
         elif isinstance(obj, Model.Shot):
             if self.shot is None or obj.scene != self.shot.scene:
                 yield self.handle_scene(obj)
@@ -359,6 +379,7 @@ def presenter(args):
     if args.log_level != logging.DEBUG:
         with handler.terminal.fullscreen():
             yield from rehearse(args.sequence, args.ensemble, handler)
+            input("Press return.")
     else:
         yield from rehearse(args.sequence, args.ensemble, handler)
 
