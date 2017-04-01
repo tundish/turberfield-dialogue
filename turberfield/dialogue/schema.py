@@ -23,7 +23,7 @@ from turberfield.utils.db import Table
 from turberfield.utils.misc import gather_installed
 
 
-schema = OrderedDict(
+tables = OrderedDict(
     (table.name, table) for table in [
     Table(
         "entity",

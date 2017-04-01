@@ -27,7 +27,11 @@ from turberfield.dialogue import __version__
 from turberfield.dialogue.directives import Pathfinder
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
+import turberfield.dialogue.schema
 from turberfield.utils.assembly import Assembly
+from turberfield.utils.db import Connection
+from turberfield.utils.db import Creation
+from turberfield.utils.db import Insertion
 from turberfield.utils.misc import log_setup
 
 DFLT_PORT = 8080
@@ -218,7 +222,7 @@ def rehearsal(folder, ensemble, log=None):
             log.info("Interlude branching to {0}".format(rv))
             return rv
 
-def rehearse(sequence, ensemble, handler, log=None, loop=None):
+def rehearse(sequence, ensemble, handler, db=None, log=None, loop=None):
     log = log or logging.getLogger("turberfield")
     folder = Pathfinder.string_import(
         sequence, relative=False, sep=":"
@@ -227,6 +231,22 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
         ensemble, relative=False, sep=":"
     )
     scripts = SceneScript.scripts(**folder._asdict())
+
+    con = Connection(**Connection.options(db))
+    with con as db:
+        for table in turberfield.dialogue.schema.tables.values():
+            rv = Creation(table).run(db)
+
+        for person in personae:
+            rv = Insertion(
+                turberfield.dialogue.schema.tables["entity"],
+                data={
+                    "session": "1",
+                    "name": person._name
+                }
+            ).run(db)
+            print(rv)
+
     for script, interlude in itertools.zip_longest(
         scripts, itertools.cycle(folder.interludes)
     ):
