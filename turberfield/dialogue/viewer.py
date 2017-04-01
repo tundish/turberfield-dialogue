@@ -78,9 +78,22 @@ class TerminalHandler:
 
     def handle_line(self, obj):
         print(
-            "{t.normal}{obj.text}".format(
-                obj=obj, t=self.terminal
+            textwrap.indent(
+                "{t.normal}{obj.persona._name}".format(
+                    obj=obj, t=self.terminal
+                ),
+                " " * 2
             ),
+            file=self.terminal.stream
+        )
+        print(
+            textwrap.indent(
+                "{t.normal}{obj.text}".format(
+                    obj=obj, t=self.terminal
+                ),
+                " " * 10
+            ),
+            end="\n\n",
             file=self.terminal.stream
         )
         interval = self.pause + self.dwell * obj.text.count(" ")
@@ -92,6 +105,7 @@ class TerminalHandler:
             "{t.dim}{scene}{t.normal}".format(
                 scene=obj.scene.capitalize(), t=self.terminal
             ),
+            end="\n" * 3,
             file=self.terminal.stream
         )
         time.sleep(self.pause)
@@ -112,6 +126,7 @@ class TerminalHandler:
             "{t.dim}{shot}{t.normal}".format(
                 shot=obj.name.capitalize(), t=self.terminal
             ),
+            end="\n" * 3,
             file=self.terminal.stream
         )
         return obj
