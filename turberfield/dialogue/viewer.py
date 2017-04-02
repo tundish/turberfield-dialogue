@@ -245,7 +245,13 @@ def rehearse(sequence, ensemble, handler, db=None, log=None, loop=None):
                     "name": person._name
                 }
             ).run(db)
-            print(rv)
+
+        op = turberfield.dialogue.schema.Selection(
+            turberfield.dialogue.schema.tables["entity"]
+        )
+        print(op.sql)
+        rv = op.run(db)
+        print(rv)
 
     for script, interlude in itertools.zip_longest(
         scripts, itertools.cycle(folder.interludes)

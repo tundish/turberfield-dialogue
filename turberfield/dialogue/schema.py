@@ -19,6 +19,7 @@
 from collections import OrderedDict
 import enum
 
+from turberfield.utils.db import SQLOperation
 from turberfield.utils.db import Table
 from turberfield.utils.misc import gather_installed
 
@@ -62,3 +63,23 @@ class Ownershipstate(enum.IntEnum):
 class Visibility(enum.IntEnum):
     invisible = 0
     visible = 1
+
+
+class Selection(SQLOperation):
+
+    @property
+    def sql(self):
+        lines = []
+        for table in self.tables:
+            lines.append(
+                "select {columns} from {table.name}".format(
+                    table=table,
+                    columns=", ".join(i.name for i in table.cols),
+                )
+            )
+        return (";\n".join(lines), self.data)
+
+    def run(self, con, log=None):
+        cur = super().run(con)
+        return cur.fetchall()
+
