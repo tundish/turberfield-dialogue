@@ -25,7 +25,7 @@ from turberfield.utils.db import Creation
 from turberfield.utils.db import Insertion
 from turberfield.utils.db import Table
 from turberfield.utils.misc import gather_installed
-from turberfield.dialogue.schema import schema
+import turberfield.dialogue.schema
 from turberfield.utils.test.test_db import DBTests
 
 
@@ -40,7 +40,7 @@ class SQLTests(unittest.TestCase):
             "UNIQUE(session, name)",
             ")"
         ))
-        rv = Creation(schema["entity"]).sql
+        rv = Creation(turberfield.dialogue.schema.tables["entity"]).sql
         self.assertEqual(2, len(rv))
         self.assertEqual(expected, rv[0])
 
@@ -50,7 +50,7 @@ class SQLTests(unittest.TestCase):
             {"session": "1234567890", "name": "qwerty"}
         )
         rv = Insertion(
-            schema["entity"],
+            turberfield.dialogue.schema.tables["entity"],
             data=dict(
                 session="1234567890",
                 name="qwerty"
@@ -67,7 +67,7 @@ class SQLTests(unittest.TestCase):
             "FOREIGN KEY (objct) REFERENCES entity(id)",
             ")"
         ))
-        rv = Creation(schema["touch"]).sql
+        rv = Creation(turberfield.dialogue.schema.tables["touch"]).sql
         self.assertEqual(2, len(rv))
         self.assertEqual(expected, rv[0])
 
@@ -108,6 +108,8 @@ class TableTests(DBTests, unittest.TestCase):
         states = dict(gather_installed("turberfield.dialogue.states"))
         con = Connection(**Connection.options())
         with con as db:
-            rv = Creation(*schema.values()).run(db)
+            rv = Creation(
+                *turberfield.dialogue.schema.tables.values()
+            ).run(db)
             tables = self.get_tables(db)
             self.assertIn("state", [t.get("name") for t in tables])

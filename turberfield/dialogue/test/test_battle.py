@@ -95,14 +95,13 @@ class CastingTests(unittest.TestCase):
                 self.assertIsInstance(p, Animal, p)
 
     def test_cgi(self):
-        # TODO:  test_viewer
+        # TODO: CGI to use handler
         p = turberfield.dialogue.viewer.parser()
         ns = p.parse_args([
             "--ensemble", "turberfield.dialogue.sequences.battle_royal.types:ensemble",
             "--sequence", "turberfield.dialogue.sequences.battle_royal:folder"
         ])
-        self.fail(turberfield.dialogue.viewer.cgi_producer(ns))
-        
+        rv = list(turberfield.dialogue.viewer.cgi_producer(ns))
 
     def test_run(self):
         self.assertFalse(any(i.state for i in self.personae))
