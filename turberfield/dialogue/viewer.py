@@ -5,6 +5,7 @@ import argparse
 import cgi
 import cgitb
 import datetime
+import functools
 import http.server
 import itertools
 import logging
@@ -132,13 +133,18 @@ class TerminalHandler:
         return obj
 
     def handle_scenescript(self, obj):
-        with self.terminal.location(0, self.terminal.height - 1):
-            print(
-                "{t.dim}{obj.fP}{t.normal}".format(
-                    obj=obj, t=self.terminal
-                ),
-                file=self.terminal.stream
-            )
+        display = functools.partial(
+            print,
+            "{t.dim}{obj.fP}{t.normal}".format(
+                obj=obj, t=self.terminal
+            ),
+            file=self.terminal.stream
+        )
+        if self.terminal.is_a_tty:
+            with self.terminal.location(0, self.terminal.height - 1):
+                display()
+        else:
+            display()
         return obj
 
     def handle_shot(self, obj):
@@ -236,6 +242,7 @@ def rehearse(sequence, ensemble, handler, db=None, log=None, loop=None):
     with con as db:
         for table in turberfield.dialogue.schema.tables.values():
             rv = Creation(table).run(db)
+            print(rv[0])
 
         for person in personae:
             rv = Insertion(
