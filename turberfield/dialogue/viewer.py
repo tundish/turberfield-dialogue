@@ -2,6 +2,7 @@
 #   coding: UTF-8
 
 import argparse
+from collections import OrderedDict
 import cgi
 import cgitb
 import datetime
@@ -228,7 +229,7 @@ def rehearsal(folder, ensemble, log=None):
             log.info("Interlude branching to {0}".format(rv))
             return rv
 
-def rehearse(sequence, ensemble, handler, db=None, log=None, loop=None):
+def rehearse(sequence, ensemble, handler, dbPath=None, log=None, loop=None):
     log = log or logging.getLogger("turberfield")
     folder = Pathfinder.string_import(
         sequence, relative=False, sep=":"
@@ -238,12 +239,26 @@ def rehearse(sequence, ensemble, handler, db=None, log=None, loop=None):
     )
     scripts = SceneScript.scripts(**folder._asdict())
 
-    con = Connection(**Connection.options(db))
-    with con as db:
-        for table in turberfield.dialogue.schema.tables.values():
-            rv = Creation(table).run(db)
-            print(rv[0])
+    def get_tables(con):
+        cur = con.cursor()
+        try:
+            cur.execute("select * from sqlite_master where type='table'")
+            return [
+                OrderedDict([(k, v)
+                for k, v in zip(i.keys(), i)])
+                for i in cur.fetchall()
+            ]
+        finally:
+            cur.close()
 
+    con = Connection(**Connection.options(dbPath))
+    with con as db:
+        rv = Creation(
+            *turberfield.dialogue.schema.tables.values()
+        ).run(db)
+
+        tables = get_tables(db)
+        print(tables)
         for person in personae:
             rv = Insertion(
                 turberfield.dialogue.schema.tables["entity"],
@@ -253,6 +268,9 @@ def rehearse(sequence, ensemble, handler, db=None, log=None, loop=None):
                 }
             ).run(db)
 
+        cur = db.cursor()
+        cur.execute("select * from entity")
+        print(*(tuple(i) for i in cur.fetchall()))
         op = turberfield.dialogue.schema.Selection(
             turberfield.dialogue.schema.tables["entity"]
         )
@@ -487,6 +505,9 @@ def parser(description=__doc__):
     rv.add_argument(
         "--web", action="store_true", default=False,
         help="Activate the web interface")
+    rv.add_argument(
+        "--db", required=False, default=None,
+        help="Database URL.")
     rv.add_argument(
         "--session", required=False, default="",
         help="Internal session path")
