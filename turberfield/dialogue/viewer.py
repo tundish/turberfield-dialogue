@@ -239,26 +239,12 @@ def rehearse(sequence, ensemble, handler, dbPath=None, log=None, loop=None):
     )
     scripts = SceneScript.scripts(**folder._asdict())
 
-    def get_tables(con):
-        cur = con.cursor()
-        try:
-            cur.execute("select * from sqlite_master where type='table'")
-            return [
-                OrderedDict([(k, v)
-                for k, v in zip(i.keys(), i)])
-                for i in cur.fetchall()
-            ]
-        finally:
-            cur.close()
-
     con = Connection(**Connection.options(dbPath))
     with con as db:
         rv = Creation(
             *turberfield.dialogue.schema.tables.values()
         ).run(db)
 
-        tables = get_tables(db)
-        print(tables)
         for person in personae:
             rv = Insertion(
                 turberfield.dialogue.schema.tables["entity"],
@@ -267,16 +253,6 @@ def rehearse(sequence, ensemble, handler, dbPath=None, log=None, loop=None):
                     "name": person._name
                 }
             ).run(db)
-
-        cur = db.cursor()
-        cur.execute("select * from entity")
-        print(*(tuple(i) for i in cur.fetchall()))
-        op = turberfield.dialogue.schema.Selection(
-            turberfield.dialogue.schema.tables["entity"]
-        )
-        print(op.sql)
-        rv = op.run(db)
-        print(rv)
 
     for script, interlude in itertools.zip_longest(
         scripts, itertools.cycle(folder.interludes)

@@ -77,7 +77,7 @@ class Selection(SQLOperation):
                     columns=", ".join(i.name for i in table.cols),
                 )
             )
-        return (";\n".join(lines), self.data)
+        return (";\n".join(lines), {})
 
     def run(self, con, log=None):
         cur = super().run(con)
