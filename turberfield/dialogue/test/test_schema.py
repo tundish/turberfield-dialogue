@@ -179,11 +179,11 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
             self.assertEqual(3, rv)
 
             cur.execute("select * from entity")
+            print(*(tuple(i) for i in cur.fetchall()))
             self.assertEqual(
                 {"apple", "ball", "cat"},
                 {row["name"] for row in cur.fetchall()}
             )
-            print(*(tuple(i) for i in cur.fetchall()))
 
     def test_populate_duplicates(self):
 

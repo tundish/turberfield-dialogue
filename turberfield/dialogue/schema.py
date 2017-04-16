@@ -29,6 +29,8 @@ from turberfield.utils.misc import gather_installed
 
 class SchemaBase:
 
+    session = uuid.uuid4().hex
+
     tables = OrderedDict(
         (table.name, table) for table in [
         Table(
@@ -58,7 +60,7 @@ class SchemaBase:
     ])
 
     @classmethod
-    def populate(cls, con, items, session=uuid.uuid4().hex, log=None):
+    def populate(cls, con, items, session=session, log=None):
         states = [i for i in items if type(i) is enum.EnumMeta]
         entities = [i for i in items if i not in states]
         rv = 0
