@@ -169,11 +169,13 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
                 [SchemaBaseTests.Ownership, SchemaBaseTests.Visibility]
             )
 
-            rv = SchemaBase.reference(
+            rv = list(SchemaBase.reference(
                 con,
-                [SchemaBaseTests.Ownership, SchemaBaseTests.Visibility]
-            )
+                [SchemaBaseTests.Ownership.lost, SchemaBaseTests.Visibility.visible]
+            ))
             self.assertEqual(2, len(rv))
+            self.assertEqual(SchemaBaseTests.Ownership.lost.value, rv[0]["value"])
+            self.assertEqual(SchemaBaseTests.Visibility.visible.value, rv[1]["value"])
 
     def test_populate(self):
 
@@ -197,6 +199,23 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
                 {"apple", "ball", "cat"},
                 {row["name"] for row in cur.fetchall()}
             )
+
+    def test_reference_entity(self):
+
+        Thing = namedtuple("Thing", ["name"])
+        with self.db as con:
+            rv = SchemaBase.populate(
+                con, [
+                    Thing("apple"), Thing("ball"), Thing("cat")
+                ]
+            )
+            rv = list(SchemaBase.reference(
+                con,
+                [Thing("ball"), Thing("dog")]
+            ))
+            self.assertEqual(2, len(rv))
+            self.assertEqual("ball", rv[0]["name"])
+            self.assertIs(None, rv[1])
 
     def test_populate_duplicates(self):
 

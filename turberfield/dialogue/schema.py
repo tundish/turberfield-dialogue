@@ -98,8 +98,22 @@ class SchemaBase:
         return rv
 
     @classmethod
-    def reference(cls, con, session=session, *kwargs):
-        pass
+    def reference(cls, con, items, session=session):
+        states = [i for i in items if isinstance(i, enum.Enum)]
+        entities = [i for i in items if i not in states]
+        cur = con.cursor()
+        for obj in states:
+            cur.execute(
+                "select * from state where class=:cls and name=:name",
+                {"cls": obj.__objclass__.__name__, "name": obj.name}
+            )
+            yield cur.fetchone()
+        for obj in entities:
+            cur.execute(
+                "select * from entity where session=:session and name=:name",
+                {"session": session, "name": obj.name}
+            )
+            yield cur.fetchone()
 
 
 class Selection(SQLOperation):
