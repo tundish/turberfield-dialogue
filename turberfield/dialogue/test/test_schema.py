@@ -161,6 +161,20 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
                 {row["class"] for row in cur.fetchall()}
             )
 
+    def test_reference_states(self):
+
+        with self.db as con:
+            SchemaBase.populate(
+                con,
+                [SchemaBaseTests.Ownership, SchemaBaseTests.Visibility]
+            )
+
+            rv = SchemaBase.reference(
+                con,
+                [SchemaBaseTests.Ownership, SchemaBaseTests.Visibility]
+            )
+            self.assertEqual(2, len(rv))
+
     def test_populate(self):
 
         Thing = namedtuple("Thing", ["name"])
@@ -179,7 +193,6 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
             self.assertEqual(3, rv)
 
             cur.execute("select * from entity")
-            print(*(tuple(i) for i in cur.fetchall()))
             self.assertEqual(
                 {"apple", "ball", "cat"},
                 {row["name"] for row in cur.fetchall()}

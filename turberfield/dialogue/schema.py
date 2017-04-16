@@ -98,7 +98,7 @@ class SchemaBase:
         return rv
 
     @classmethod
-    def reference(cls, db, *kwargs):
+    def reference(cls, con, session=session, *kwargs):
         pass
 
 
