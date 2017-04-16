@@ -117,6 +117,17 @@ class TableTests(DBTests, unittest.TestCase):
 
 class SchemaBaseTests(DBTests, unittest.TestCase):
 
+    @enum.unique
+    class Ownership(enum.IntEnum):
+        lost = 0
+        acquired = 1
+
+
+    @enum.unique
+    class Visibility(enum.IntEnum):
+        invisible = 0
+        visible = 1
+
     def setUp(self):
         self.db = Connection(**Connection.options())
         with self.db as con:
@@ -131,23 +142,37 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
 
     def test_populate(self):
 
-        @enum.unique
-        class Ownership(enum.IntEnum):
-            lost = 0
-            acquired = 1
-
-
-        @enum.unique
-        class Visibility(enum.IntEnum):
-            invisible = 0
-            visible = 1
-
-
         with self.db as con:
-            rv = SchemaBase.populate(con, Ownership, Visibility)
-            self.assertEqual(2, rv)
+            rv = SchemaBase.populate(con, SchemaBaseTests.Ownership, SchemaBaseTests.Visibility)
+            self.assertEqual(4, rv)
 
             cur = con.cursor()
             cur.execute("select count(*) from state")
             rv = tuple(cur.fetchone())[0]
-            self.assertEqual(2, rv)
+            self.assertEqual(4, rv)
+
+            cur.execute("select * from state")
+            self.assertEqual(
+                {"Ownership", "Visibility"},
+                {row["class"] for row in cur.fetchall()}
+            )
+
+    def test_populate_duplicates(self):
+
+        with self.db as con:
+            rv = SchemaBase.populate(
+                con,
+                SchemaBaseTests.Ownership, SchemaBaseTests.Visibility, SchemaBaseTests.Visibility
+            )
+            self.assertEqual(4, rv)
+
+            cur = con.cursor()
+            cur.execute("select count(*) from state")
+            rv = tuple(cur.fetchone())[0]
+            self.assertEqual(4, rv)
+
+            cur.execute("select * from state")
+            self.assertEqual(
+                {"Ownership", "Visibility"},
+                {row["class"] for row in cur.fetchall()}
+            )

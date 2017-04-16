@@ -18,7 +18,9 @@
 
 from collections import OrderedDict
 import enum
+import sqlite3
 
+from turberfield.utils.db import Insertion
 from turberfield.utils.db import SQLOperation
 from turberfield.utils.db import Table
 from turberfield.utils.misc import gather_installed
@@ -55,14 +57,29 @@ class SchemaBase:
     ])
 
     @classmethod
-    def populate(cls, db, *args):
-        states = [i for i in args if isinstance(i, enum.Enum)]
+    def populate(cls, con, *args, log=None):
+        states = [i for i in args if issubclass(i, enum.Enum)]
         entities = [i for i in args if i not in states]
+        rv = 0
         for state in states:
-            pass
+            for defn in state:
+                try:
+                    cur = Insertion(
+                        cls.tables["state"],
+                        data={
+                            "class": defn.__objclass__.__name__,
+                            "name": defn.name,
+                            "value": defn.value
+                        }
+                    ).run(con)
+                except sqlite3.IntegrityError as e:
+                    if log is not None:
+                        log.warning(e)
+                else:
+                    rv += 1
         for entity in entities:
             pass
-        return 0
+        return rv
 
     @classmethod
     def reference(cls, db, *kwargs):
