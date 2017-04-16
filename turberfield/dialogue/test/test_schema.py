@@ -63,9 +63,12 @@ class SQLTests(unittest.TestCase):
     def test_create_touch(self):
         expected = "\n".join((
             "create table if not exists touch(",
+            "ts timestamp  NOT NULL,",
             "sbjct INTEGER  NOT NULL,",
+            "state INTEGER  NOT NULL,",
             "objct INTEGER,",
             "FOREIGN KEY (sbjct) REFERENCES entity(id)",
+            "FOREIGN KEY (state) REFERENCES state(id)",
             "FOREIGN KEY (objct) REFERENCES entity(id)",
             ")"
         ))
@@ -238,3 +241,65 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
                 {"Ownership", "Visibility"},
                 {row["class"] for row in cur.fetchall()}
             )
+
+    def test_touch_intransitive(self):
+
+        Thing = namedtuple("Thing", ["name"])
+        with self.db as con:
+            rv = SchemaBase.populate(
+                con, [
+                    SchemaBaseTests.Visibility,
+                    Thing("cat")
+                ]
+            )
+
+            rv = SchemaBase.touch(
+                con,
+                Thing("cat"),
+                SchemaBaseTests.Visibility.visible
+            )
+
+            cur = con.cursor()
+            cur.execute("select count(*) from touch")
+            rv = tuple(cur.fetchone())[0]
+            self.assertEqual(1, rv)
+
+            cur.execute(
+                "select s.name, state.name, o.name "
+                "from state join touch on state.id = touch.state "
+                "join entity as s on touch.sbjct = s.id "
+                "left outer join entity as o on touch.objct = o.id"
+            )
+            self.assertEqual(("cat", "visible", None), tuple(cur.fetchone()))
+
+    def test_touch_transitive(self):
+
+        Thing = namedtuple("Thing", ["name"])
+        with self.db as con:
+            rv = SchemaBase.populate(
+                con, [
+                    SchemaBaseTests.Ownership,
+                    Thing("cat"),
+                    Thing("hat")
+                ]
+            )
+
+            rv = SchemaBase.touch(
+                con,
+                Thing("cat"),
+                SchemaBaseTests.Ownership.acquired,
+                Thing("hat"),
+            )
+
+            cur = con.cursor()
+            cur.execute("select count(*) from touch")
+            rv = tuple(cur.fetchone())[0]
+            self.assertEqual(1, rv)
+
+            cur.execute(
+                "select s.name, state.name, o.name "
+                "from state join touch on state.id = touch.state "
+                "join entity as s on touch.sbjct = s.id "
+                "left outer join entity as o on touch.objct = o.id"
+            )
+            self.assertEqual(("cat", "acquired", "hat"), tuple(cur.fetchone()))

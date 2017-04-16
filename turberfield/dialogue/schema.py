@@ -17,6 +17,7 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import OrderedDict
+import datetime
 import enum
 import sqlite3
 import uuid
@@ -53,7 +54,9 @@ class SchemaBase:
         Table(
             "touch",
             cols=[
+              Table.Column("ts", datetime.datetime, False, False, False, None, None),
               Table.Column("sbjct", int, False, False, False, None, "entity"),
+              Table.Column("state", int, False, False, False, None, "state"),
               Table.Column("objct", int, False, True, False, None, "entity"),
             ]
         )
@@ -99,22 +102,44 @@ class SchemaBase:
 
     @classmethod
     def reference(cls, con, items, session=session):
-        states = [i for i in items if isinstance(i, enum.Enum)]
-        entities = [i for i in items if i not in states]
         cur = con.cursor()
-        for obj in states:
-            cur.execute(
-                "select * from state where class=:cls and name=:name",
-                {"cls": obj.__objclass__.__name__, "name": obj.name}
-            )
-            yield cur.fetchone()
-        for obj in entities:
-            cur.execute(
-                "select * from entity where session=:session and name=:name",
-                {"session": session, "name": obj.name}
-            )
-            yield cur.fetchone()
+        for item in items:
+            if isinstance(item, enum.Enum):
+                cur.execute(
+                    "select * from state where class=:cls and name=:name",
+                    {"cls": item.__objclass__.__name__, "name": item.name}
+                )
+                yield cur.fetchone()
 
+            else:
+                cur.execute(
+                    "select * from entity where session=:session and name=:name",
+                    dict(
+                        session=getattr(item, "session", session),
+                        name=getattr(item, "name", None)
+                    )
+                )
+                yield cur.fetchone()
+        cur.close()
+
+    @classmethod
+    def touch(cls, con, sbjct, state, objct=None, ts=None, session=session, log=None):
+        refs = list(cls.reference(con, [sbjct, state, objct]))
+        op = Insertion(
+            cls.tables["touch"],
+            data={
+                "ts": ts or datetime.datetime.utcnow(),
+                "sbjct": refs[0]["id"],
+                "state": refs[1]["id"],
+                "objct": refs[2] and refs[2]["id"]
+            }
+        )
+        if log is not None:
+            log.debug(op.sql)
+        cur = op.run(con)
+        rv = cur.lastrowid
+        cur.close()
+        return rv
 
 class Selection(SQLOperation):
 
