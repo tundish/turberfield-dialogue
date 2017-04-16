@@ -18,14 +18,15 @@
 
 from collections import OrderedDict
 import datetime
+import enum
 import unittest
 
+from turberfield.dialogue.schema import SchemaBase
 from turberfield.utils.db import Connection
 from turberfield.utils.db import Creation
 from turberfield.utils.db import Insertion
 from turberfield.utils.db import Table
 from turberfield.utils.misc import gather_installed
-import turberfield.dialogue.schema
 from turberfield.utils.test.test_db import DBTests
 
 
@@ -40,7 +41,7 @@ class SQLTests(unittest.TestCase):
             "UNIQUE(session, name)",
             ")"
         ))
-        rv = Creation(turberfield.dialogue.schema.tables["entity"]).sql
+        rv = Creation(SchemaBase.tables["entity"]).sql
         self.assertEqual(2, len(rv))
         self.assertEqual(expected, rv[0])
 
@@ -50,7 +51,7 @@ class SQLTests(unittest.TestCase):
             {"session": "1234567890", "name": "qwerty"}
         )
         rv = Insertion(
-            turberfield.dialogue.schema.tables["entity"],
+            SchemaBase.tables["entity"],
             data=dict(
                 session="1234567890",
                 name="qwerty"
@@ -67,7 +68,7 @@ class SQLTests(unittest.TestCase):
             "FOREIGN KEY (objct) REFERENCES entity(id)",
             ")"
         ))
-        rv = Creation(turberfield.dialogue.schema.tables["touch"]).sql
+        rv = Creation(SchemaBase.tables["touch"]).sql
         self.assertEqual(2, len(rv))
         self.assertEqual(expected, rv[0])
 
@@ -109,7 +110,44 @@ class TableTests(DBTests, unittest.TestCase):
         con = Connection(**Connection.options())
         with con as db:
             rv = Creation(
-                *turberfield.dialogue.schema.tables.values()
+                *SchemaBase.tables.values()
             ).run(db)
             tables = self.get_tables(db)
             self.assertIn("state", [t.get("name") for t in tables])
+
+class SchemaBaseTests(DBTests, unittest.TestCase):
+
+    def setUp(self):
+        self.db = Connection(**Connection.options())
+        with self.db as con:
+            with con as change:
+                rv = Creation(
+                    *SchemaBase.tables.values()
+                ).run(change)
+
+    def tearDown(self):
+        with self.db as con:
+            con.close()
+
+    def test_populate(self):
+
+        @enum.unique
+        class Ownership(enum.IntEnum):
+            lost = 0
+            acquired = 1
+
+
+        @enum.unique
+        class Visibility(enum.IntEnum):
+            invisible = 0
+            visible = 1
+
+
+        with self.db as con:
+            rv = SchemaBase.populate(con, Ownership, Visibility)
+            self.assertEqual(2, rv)
+
+            cur = con.cursor()
+            cur.execute("select count(*) from state")
+            rv = tuple(cur.fetchone())[0]
+            self.assertEqual(2, rv)

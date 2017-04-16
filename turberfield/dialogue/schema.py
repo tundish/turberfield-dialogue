@@ -24,45 +24,49 @@ from turberfield.utils.db import Table
 from turberfield.utils.misc import gather_installed
 
 
-tables = OrderedDict(
-    (table.name, table) for table in [
-    Table(
-        "entity",
-        cols=[
-          Table.Column("id", int, True, False, False, None, None),
-          Table.Column("session", str, False, False, True, None, None),
-          Table.Column("name", str, False, False, True, None, None),
-        ]
-    ),
-    Table(
-        "state",
-        cols=[
-          Table.Column("id", int, True, False, False, None, None),
-          Table.Column("class", str, False, False, True, None, None),
-          Table.Column("name", str, False, False, True, None, None),
-          Table.Column("value", int, False, False, False, None, None),
-        ]
-    ),
-    Table(
-        "touch",
-        cols=[
-          Table.Column("sbjct", int, False, False, False, None, "entity"),
-          Table.Column("objct", int, False, True, False, None, "entity"),
-        ]
-    )
-])
+class SchemaBase:
 
+    tables = OrderedDict(
+        (table.name, table) for table in [
+        Table(
+            "entity",
+            cols=[
+              Table.Column("id", int, True, False, False, None, None),
+              Table.Column("session", str, False, False, True, None, None),
+              Table.Column("name", str, False, False, True, None, None),
+            ]
+        ),
+        Table(
+            "state",
+            cols=[
+              Table.Column("id", int, True, False, False, None, None),
+              Table.Column("class", str, False, False, True, None, None),
+              Table.Column("name", str, False, False, True, None, None),
+              Table.Column("value", int, False, False, False, None, None),
+            ]
+        ),
+        Table(
+            "touch",
+            cols=[
+              Table.Column("sbjct", int, False, False, False, None, "entity"),
+              Table.Column("objct", int, False, True, False, None, "entity"),
+            ]
+        )
+    ])
 
-@enum.unique
-class Ownershipstate(enum.IntEnum):
-    lost = 0
-    acquired = 1
+    @classmethod
+    def populate(cls, db, *args):
+        states = [i for i in args if isinstance(i, enum.Enum)]
+        entities = [i for i in args if i not in states]
+        for state in states:
+            pass
+        for entity in entities:
+            pass
+        return 0
 
-
-@enum.unique
-class Visibility(enum.IntEnum):
-    invisible = 0
-    visible = 1
+    @classmethod
+    def reference(cls, db, *kwargs):
+        pass
 
 
 class Selection(SQLOperation):
@@ -82,4 +86,3 @@ class Selection(SQLOperation):
     def run(self, con, log=None):
         cur = super().run(con)
         return cur.fetchall()
-
