@@ -57,9 +57,9 @@ class SchemaBase:
     ])
 
     @classmethod
-    def populate(cls, con, *args, log=None):
-        states = [i for i in args if issubclass(i, enum.Enum)]
-        entities = [i for i in args if i not in states]
+    def populate(cls, con, items, log=None):
+        states = [i for i in items if type(i) is enum.EnumMeta]
+        entities = [i for i in items if i not in states]
         rv = 0
         for state in states:
             for defn in state:

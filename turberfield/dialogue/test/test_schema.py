@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
+from collections import namedtuple
 from collections import OrderedDict
 import datetime
 import enum
@@ -140,10 +141,13 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
         with self.db as con:
             con.close()
 
-    def test_populate(self):
+    def test_populate_states(self):
 
         with self.db as con:
-            rv = SchemaBase.populate(con, SchemaBaseTests.Ownership, SchemaBaseTests.Visibility)
+            rv = SchemaBase.populate(
+                con,
+                [SchemaBaseTests.Ownership, SchemaBaseTests.Visibility]
+            )
             self.assertEqual(4, rv)
 
             cur = con.cursor()
@@ -157,12 +161,37 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
                 {row["class"] for row in cur.fetchall()}
             )
 
+    def test_populate(self):
+
+        Thing = namedtuple("Thing", ["name"])
+        with self.db as con:
+            rv = SchemaBase.populate(
+                con, [
+                    SchemaBaseTests.Ownership, SchemaBaseTests.Visibility,
+                    Thing("apple"), Thing("ball"), Thing("cat")
+                ]
+            )
+            self.assertEqual(7, rv)
+
+            cur = con.cursor()
+            cur.execute("select count(*) from entity")
+            rv = tuple(cur.fetchone())[0]
+            self.assertEqual(3, rv)
+
+            cur.execute("select * from entity")
+            self.assertEqual(
+                {"apple", "ball", "cat"},
+                {row["name"] for row in cur.fetchall()}
+            )
+
     def test_populate_duplicates(self):
 
         with self.db as con:
             rv = SchemaBase.populate(
-                con,
-                SchemaBaseTests.Ownership, SchemaBaseTests.Visibility, SchemaBaseTests.Visibility
+                con, [
+                    SchemaBaseTests.Ownership, SchemaBaseTests.Visibility,
+                    SchemaBaseTests.Visibility
+                ]
             )
             self.assertEqual(4, rv)
 
