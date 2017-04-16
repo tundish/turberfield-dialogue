@@ -183,6 +183,7 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
                 {"apple", "ball", "cat"},
                 {row["name"] for row in cur.fetchall()}
             )
+            print(*(tuple(i) for i in cur.fetchall()))
 
     def test_populate_duplicates(self):
 

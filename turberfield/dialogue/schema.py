@@ -19,6 +19,7 @@
 from collections import OrderedDict
 import enum
 import sqlite3
+import uuid
 
 from turberfield.utils.db import Insertion
 from turberfield.utils.db import SQLOperation
@@ -57,7 +58,7 @@ class SchemaBase:
     ])
 
     @classmethod
-    def populate(cls, con, items, log=None):
+    def populate(cls, con, items, session=uuid.uuid4().hex, log=None):
         states = [i for i in items if type(i) is enum.EnumMeta]
         entities = [i for i in items if i not in states]
         rv = 0
@@ -77,8 +78,21 @@ class SchemaBase:
                         log.warning(e)
                 else:
                     rv += 1
+
         for entity in entities:
-            pass
+            try:
+                cur = Insertion(
+                    cls.tables["entity"],
+                    data={
+                        "session": session,
+                        "name": entity.name,
+                    }
+                ).run(con)
+            except sqlite3.IntegrityError as e:
+                if log is not None:
+                    log.warning(e)
+            else:
+                rv += 1
         return rv
 
     @classmethod
