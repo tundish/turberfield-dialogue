@@ -29,7 +29,7 @@ from turberfield.dialogue import __version__
 from turberfield.dialogue.directives import Pathfinder
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
-import turberfield.dialogue.schema
+from turberfield.dialogue.schema import SchemaBase
 from turberfield.utils.assembly import Assembly
 from turberfield.utils.db import Connection
 from turberfield.utils.db import Creation
@@ -242,12 +242,12 @@ def rehearse(sequence, ensemble, handler, dbPath=None, log=None, loop=None):
     con = Connection(**Connection.options(dbPath))
     with con as db:
         rv = Creation(
-            *turberfield.dialogue.schema.tables.values()
+            *SchemaBase.tables.values()
         ).run(db)
 
         for person in personae:
             rv = Insertion(
-                turberfield.dialogue.schema.tables["entity"],
+                SchemaBase.tables["entity"],
                 data={
                     "session": "1",
                     "name": person._name
