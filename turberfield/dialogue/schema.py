@@ -123,7 +123,12 @@ class SchemaBase:
         cur.close()
 
     @classmethod
-    def touch(cls, con, sbjct, state, objct=None, ts=None, session=session, log=None):
+    def touch(
+        cls, con, sbjct, state,
+        objct=None, ts=None,
+        text="", html="",
+        session=session, log=None
+    ):
         refs = list(cls.reference(con, [sbjct, state, objct]))
         op = Insertion(
             cls.tables["touch"],
