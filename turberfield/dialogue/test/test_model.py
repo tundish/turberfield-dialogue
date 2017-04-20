@@ -17,6 +17,7 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import copy
 import enum
 import sys
 import textwrap
@@ -128,7 +129,7 @@ class SelectTests(unittest.TestCase):
         sad = 0
         happy = 1
 
-    def test_entitys_with_declared_state_and_content(self):
+    def test_select_with_required_state(self):
 
         content = textwrap.dedent("""
             .. entity:: FIGHTER_1
@@ -141,12 +142,47 @@ class SelectTests(unittest.TestCase):
 
                A weapon which makes a noise in use. 
             """)
-        ensemble = PropertyDirectiveTests.personae[:]
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
         ensemble[0].set_state(SelectTests.Contentment.sad)
         self.assertEqual(
             SelectTests.Contentment.sad,
             ensemble[0].get_state(SelectTests.Contentment)
         )
+        ensemble[1].set_state(SelectTests.Aggression.angry)
+        self.assertEqual(
+            SelectTests.Aggression.angry,
+            ensemble[1].get_state(SelectTests.Aggression)
+        )
         script = SceneScript("inline", doc=SceneScript.read(content))
-        rv = script.select(ensemble)
-        self.assertEqual(ensemble[0], list(rv.values())[1])
+        rv = list(script.select(ensemble).values())
+        self.assertEqual(ensemble[0], rv[1])
+        self.assertEqual(ensemble[1], rv[0])
+
+    def test_select_with_unfulfilled_state(self):
+
+        content = textwrap.dedent("""
+            .. entity:: FIGHTER_1
+               :states: turberfield.dialogue.test.test_model.SelectTests.Aggression.angry
+
+            .. entity:: FIGHTER_2
+               :states: turberfield.dialogue.test.test_model.SelectTests.Contentment.sad
+
+            .. entity:: WEAPON
+
+               A weapon which makes a noise in use. 
+            """)
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
+        ensemble[0].set_state(SelectTests.Contentment.sad)
+        self.assertEqual(
+            SelectTests.Contentment.sad,
+            ensemble[0].get_state(SelectTests.Contentment)
+        )
+        ensemble[1].set_state(SelectTests.Contentment.sad)
+        self.assertEqual(
+            SelectTests.Contentment.sad,
+            ensemble[1].get_state(SelectTests.Contentment)
+        )
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        rv = list(script.select(ensemble).values())
+        self.assertIsNone(rv[0])
+        self.assertEqual(ensemble[0], rv[1])

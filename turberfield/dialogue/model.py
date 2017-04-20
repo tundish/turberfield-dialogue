@@ -232,7 +232,10 @@ class SceneScript:
     def select(self, personae, relative=False, roles=1):
 
         def constrained(entity):
-            return len(entity["options"])
+            return (
+                len(entity["options"].get("types", [])) +
+                len(entity["options"].get("states", []))
+            )
 
         rv = OrderedDict()
         pool = list(personae)
