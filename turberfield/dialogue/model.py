@@ -237,15 +237,30 @@ class SceneScript:
         rv = OrderedDict()
         pool = list(personae)
         self.log.debug(pool)
-        entities = sorted(group_by_type(self.doc)[EntityDirective.Declaration], key=constrained, reverse=True)
+        entities = sorted(
+            group_by_type(self.doc)[EntityDirective.Declaration],
+            key=constrained,
+            reverse=True
+        )
         for e in entities:
-            types = filter(None, (e.string_import(t, relative) for t in e["options"].get("types", [])))
-            states = tuple(filter(None, (e.string_import(t, relative) for t in e["options"].get("states", []))))
-            spec = tuple(types) or (object, )
+            types = tuple(filter(
+                None,
+                (e.string_import(t, relative)
+                 for t in e["options"].get("types", [])
+                )
+            ))
+            states = tuple(filter(
+                None,
+                (e.string_import(t, relative)
+                 for t in e["options"].get("states", [])
+                )
+            ))
+            typ = types or object
             persona = next(
                 (i for i in pool
-                 if isinstance(i, spec)
-                 and all(str(i.get_state(type(s))) == str(s) for s in states)
+                 if isinstance(i, typ)
+                 and all(
+                    str(i.get_state(type(s))) == str(s) for s in states                 )
                 ),
                 None
             )
@@ -254,7 +269,11 @@ class SceneScript:
                 try:
                     pool.remove(persona)
                 except ValueError:
-                    self.log.info("No persona matches spec {0} and states {1}".format(spec, states))
+                    self.log.info(
+                        "No persona matches type {0} and states {1}".format(
+                            typ, states
+                        )
+                    )
         return rv
 
     def cast(self, mapping):
