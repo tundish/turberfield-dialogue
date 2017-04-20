@@ -176,3 +176,37 @@ class EntityDeclarationTests(unittest.TestCase):
                     self.assertFalse(obj["content"])
                 elif n == 2:
                     self.assertTrue(obj["content"])
+
+    def test_entitys_with_declared_state_and_content(self):
+
+        content = textwrap.dedent("""
+            .. entity:: FIGHTER_1
+
+            .. entity:: FIGHTER_2
+               :types: turberfield.dialogue.test.test_battle.CastingTests.Animal
+               :states: Aggression.angry Contentment.sad
+
+            .. entity:: WEAPON
+
+               A weapon which makes a noise in use. 
+            """)
+        doc = SceneScript.read(content)
+        for n, obj in enumerate(doc):
+            with self.subTest(n=n):
+                self.assertIsInstance(obj, Entity.Declaration)
+                self.assertTrue(obj["names"])
+
+                if n == 0:
+                    self.assertFalse(obj["content"])
+                elif n == 1:
+                    self.assertEqual(
+                        ["turberfield.dialogue.test.test_battle.CastingTests.Animal"],
+                        obj["options"]["types"]
+                    )
+                    self.assertEqual(
+                        ["Aggression.angry", "Contentment.sad"],
+                        obj["options"]["states"]
+                    )
+                    self.assertFalse(obj["content"])
+                elif n == 2:
+                    self.assertTrue(obj["content"])

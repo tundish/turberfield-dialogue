@@ -84,15 +84,13 @@ class Stateful:
 
     @property
     def state(self):
-        return self._states
+        return self.get_state()
 
-    @state.setter
-    def state(self, value):
-        self._states[type(value)] = value
+    def set_state(self, value):
+        self._states[type(value).__name__] = value
 
-    @state.deleter
-    def state(self):
-        self.state = {}
+    def get_state(self, typ=int):
+        return self._states.get(typ.__name__)
 
 class Player(Stateful, Persona):
     pass

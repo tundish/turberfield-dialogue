@@ -240,14 +240,21 @@ class SceneScript:
         entities = sorted(group_by_type(self.doc)[EntityDirective.Declaration], key=constrained, reverse=True)
         for e in entities:
             types = filter(None, (e.string_import(t, relative) for t in e["options"].get("types", [])))
+            states = tuple(filter(None, (e.string_import(t, relative) for t in e["options"].get("states", []))))
             spec = tuple(types) or (object, )
-            persona = next((i for i in pool if isinstance(i, spec)), None)
+            persona = next(
+                (i for i in pool
+                 if isinstance(i, spec)
+                 and all(str(i.get_state(type(s))) == str(s) for s in states)
+                ),
+                None
+            )
             rv[e] = persona
             if list(rv.values()).count(persona) == roles:
                 try:
                     pool.remove(persona)
                 except ValueError:
-                    self.log.info("No persona matches spec {0}".format(spec))
+                    self.log.info("No persona matches spec {0} and states {1}".format(spec, states))
         return rv
 
     def cast(self, mapping):

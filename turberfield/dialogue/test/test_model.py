@@ -17,17 +17,24 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import enum
 import sys
 import textwrap
 import unittest
 
+from turberfield.dialogue.directives import Entity
+from turberfield.dialogue.types import EnumFactory
 from turberfield.dialogue.types import Player
 from turberfield.dialogue.model import SceneScript
 
 
 class PropertyDirectiveTests(unittest.TestCase):
 
-    player = Player(name="Prof William Fuzzer Q.A Testfixture") 
+    personae = [
+        Player(name="Prof William Fuzzer Q.A Testfixture"),
+        Player(name="Ms Anna Conda"),
+        Player(name="A Big Hammer")
+    ]
 
     def test_property_getter(self):
         content = textwrap.dedent("""
@@ -46,7 +53,7 @@ class PropertyDirectiveTests(unittest.TestCase):
             .. |P_FIRSTNAME| property:: P.name.firstname
             """)
         script = SceneScript("inline", doc=SceneScript.read(content))
-        script.cast(script.select([self.player]))
+        script.cast(script.select([self.personae[0]]))
         model = script.run()
         shot, line = next(iter(model))
         self.assertEqual("scene", shot.scene)
@@ -71,7 +78,7 @@ class PropertyDirectiveTests(unittest.TestCase):
             .. |P_NICKNAME| property:: P.nickname
             """)
         script = SceneScript("inline", doc=SceneScript.read(content))
-        script.cast(script.select([self.player]))
+        script.cast(script.select([self.personae[0]]))
         model = script.run()
         shot, line = next(iter(model))
         self.assertEqual("scene", shot.scene)
@@ -108,3 +115,38 @@ class FXDirectiveTests(unittest.TestCase):
         self.assertEqual(0, cue.offset)
         self.assertEqual(3000, cue.duration)
         self.assertEqual(1, cue.loop)
+
+class SelectTests(unittest.TestCase):
+
+    @enum.unique
+    class Aggression(EnumFactory, enum.Enum):
+        calm = 0
+        angry = 1
+
+    @enum.unique
+    class Contentment(EnumFactory, enum.Enum):
+        sad = 0
+        happy = 1
+
+    def test_entitys_with_declared_state_and_content(self):
+
+        content = textwrap.dedent("""
+            .. entity:: FIGHTER_1
+               :states: turberfield.dialogue.test.test_model.SelectTests.Aggression.angry
+
+            .. entity:: FIGHTER_2
+               :states: turberfield.dialogue.test.test_model.SelectTests.Contentment.sad
+
+            .. entity:: WEAPON
+
+               A weapon which makes a noise in use. 
+            """)
+        ensemble = PropertyDirectiveTests.personae[:]
+        ensemble[0].set_state(SelectTests.Contentment.sad)
+        self.assertEqual(
+            SelectTests.Contentment.sad,
+            ensemble[0].get_state(SelectTests.Contentment)
+        )
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        rv = script.select(ensemble)
+        self.assertEqual(ensemble[0], list(rv.values())[1])

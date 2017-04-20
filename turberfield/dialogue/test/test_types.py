@@ -24,5 +24,6 @@ class TestStateful(unittest.TestCase):
 
     def test_state_as_int(self):
         s = Stateful()
-        s.state = 3
-        self.assertEqual({int: 3}, s.state)
+        s.set_state(3)
+        self.assertEqual(3, s.get_state())
+        self.assertEqual(3, s.state)
