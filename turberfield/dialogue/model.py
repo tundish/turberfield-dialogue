@@ -90,7 +90,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def visit_Setter(self, node):
         ref, attr = node["arguments"][0].split(".")
         entity = self.get_entity(ref)
-        val = node.string_import(node["arguments"][1])
+        s = node["arguments"][1]
+        val = int(s) if s.isdigit() else node.string_import(s)
         self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
 
     def visit_Definition(self, node):
@@ -254,7 +255,7 @@ class SceneScript:
             ))
             states = tuple(filter(
                 None,
-                (e.string_import(t, relative)
+                (int(t) if t.isdigit() else e.string_import(t, relative)
                  for t in e["options"].get("states", [])
                 )
             ))

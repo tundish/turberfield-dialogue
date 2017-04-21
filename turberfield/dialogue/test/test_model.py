@@ -26,6 +26,7 @@ import unittest
 from turberfield.dialogue.directives import Entity
 from turberfield.dialogue.types import EnumFactory
 from turberfield.dialogue.types import Player
+from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 
 
@@ -87,6 +88,48 @@ class PropertyDirectiveTests(unittest.TestCase):
         self.assertIn(line.text, (
             "You can call me  Fuzzer .",
             "You can call me  Q.A ."))
+
+    def test_property_setter_enum(self):
+        content = textwrap.dedent("""
+            .. entity:: P
+
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            .. property:: P.state turberfield.dialogue.test.test_model.SelectTests.Aggression.calm
+
+            """)
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([ensemble[0]]))
+        model = script.run()
+        p = next(l for s, l in model if isinstance(l, Model.Property))
+        self.assertEqual("state", p.attr)
+        self.assertEqual(str(SelectTests.Aggression.calm), str(p.val))
+
+    def test_property_setter_integer(self):
+        content = textwrap.dedent("""
+            .. entity:: P
+
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            .. property:: P.state 3
+
+            """)
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([ensemble[0]]))
+        model = script.run()
+        p = next(l for s, l in model if isinstance(l, Model.Property))
+        self.assertEqual("state", p.attr)
+        self.assertEqual(3, p.val)
 
 class FXDirectiveTests(unittest.TestCase):
 
@@ -153,6 +196,29 @@ class SelectTests(unittest.TestCase):
             SelectTests.Aggression.angry,
             ensemble[1].get_state(SelectTests.Aggression)
         )
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        rv = list(script.select(ensemble).values())
+        self.assertEqual(ensemble[0], rv[1])
+        self.assertEqual(ensemble[1], rv[0])
+
+    def test_select_with_integer_state(self):
+
+        content = textwrap.dedent("""
+            .. entity:: FIGHTER_1
+               :states: 1
+
+            .. entity:: FIGHTER_2
+               :states: 2
+
+            .. entity:: WEAPON
+
+               A weapon which makes a noise in use.
+            """)
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
+        ensemble[0].set_state(2)
+        self.assertEqual(2, ensemble[0].get_state())
+        ensemble[1].set_state(1)
+        self.assertEqual(1, ensemble[1].get_state())
         script = SceneScript("inline", doc=SceneScript.read(content))
         rv = list(script.select(ensemble).values())
         self.assertEqual(ensemble[0], rv[1])

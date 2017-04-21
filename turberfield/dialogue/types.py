@@ -86,6 +86,10 @@ class Stateful:
     def state(self):
         return self.get_state()
 
+    @state.setter
+    def state_set(self, value):
+        return self.set_state(value)
+
     def set_state(self, value):
         self._states[type(value).__name__] = value
 
