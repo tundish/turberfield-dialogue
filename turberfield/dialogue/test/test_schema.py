@@ -135,9 +135,6 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
 
     def setUp(self):
         self.db = Connection(**Connection.options())
-        import inspect
-        print(inspect.getsourcefile(Table))
-        print(*[vars(i) for i in Table.lookup.values()], sep="\n")
         with self.db as con:
             with con as change:
                 rv = Creation(
