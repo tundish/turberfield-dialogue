@@ -116,7 +116,6 @@ class TerminalHandler:
             setattr(obj.object, obj.attr, obj.val)
         except AttributeError as e:
             self.log.error(". ".join(getattr(e, "args", e) or e))
-            self.log.error(vars(obj.object))
         print(
             "{t.dim}{obj.object._name}.{obj.attr} = {obj.val}{t.normal}".format(
                 obj=obj, t=self.terminal

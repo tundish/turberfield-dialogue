@@ -63,6 +63,7 @@ class SQLTests(unittest.TestCase):
     def test_create_touch(self):
         expected = "\n".join((
             "create table if not exists touch(",
+            "id INTEGER PRIMARY KEY NOT NULL,",
             "ts timestamp  NOT NULL,",
             "sbjct INTEGER  NOT NULL,",
             "state INTEGER  NOT NULL,",
@@ -134,6 +135,9 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
 
     def setUp(self):
         self.db = Connection(**Connection.options())
+        import inspect
+        print(inspect.getsourcefile(Table))
+        print(*[vars(i) for i in Table.lookup.values()], sep="\n")
         with self.db as con:
             with con as change:
                 rv = Creation(
@@ -303,3 +307,36 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
                 "left outer join entity as o on touch.objct = o.id"
             )
             self.assertEqual(("cat", "acquired", "hat"), tuple(cur.fetchone()))
+
+    def test_note_transitive(self):
+
+        Thing = namedtuple("Thing", ["name"])
+        with self.db as con:
+            rv = SchemaBase.populate(
+                con, [
+                    SchemaBaseTests.Ownership,
+                    Thing("cat"),
+                    Thing("hat")
+                ]
+            )
+
+            rv = SchemaBase.note(
+                con,
+                Thing("cat"),
+                SchemaBaseTests.Ownership.acquired,
+                Thing("hat"),
+                text="A cat in a hat!"
+            )
+
+            cur = con.cursor()
+            cur.execute("select count(*) from touch")
+            rv = tuple(cur.fetchone())[0]
+            self.assertEqual(1, rv)
+
+            cur.execute(
+                "select s.name, state.name, o.name "
+                "from state join touch on state.id = touch.state "
+                "join entity as s on touch.sbjct = s.id "
+                "left outer join entity as o on touch.objct = o.id"
+            )
+            self.assertEqual(("cat", "acquired", "hat", "A cat in a hat!"), tuple(cur.fetchone()))

@@ -54,10 +54,19 @@ class SchemaBase:
         Table(
             "touch",
             cols=[
+              Table.Column("id", int, True, False, False, None, None),
               Table.Column("ts", datetime.datetime, False, False, False, None, None),
               Table.Column("sbjct", int, False, False, False, None, "entity"),
               Table.Column("state", int, False, False, False, None, "state"),
               Table.Column("objct", int, False, True, False, None, "entity"),
+            ]
+        ),
+        Table(
+            "note",
+            cols=[
+              Table.Column("touch", int, False, False, False, None, "touch"),
+              Table.Column("text", str, False, True, False, None, None),
+              Table.Column("html", str, False, True, False, None, None),
             ]
         )
     ])
@@ -137,6 +146,30 @@ class SchemaBase:
                 "sbjct": refs[0]["id"],
                 "state": refs[1]["id"],
                 "objct": refs[2] and refs[2]["id"]
+            }
+        )
+        if log is not None:
+            log.debug(op.sql)
+        cur = op.run(con)
+        rv = cur.lastrowid
+        cur.close()
+        return rv
+
+    @classmethod
+    def note(
+        cls, con, sbjct, state,
+        objct=None, ts=None,
+        text="", html="",
+        session=session, log=None
+    ):
+        rv = cls.touch(con, sbjct, state, objct, ts, session=session, log=log)
+
+        op = Insertion(
+            cls.tables["note"],
+            data={
+                "touch": rv,
+                "text": text,
+                "html": html,
             }
         )
         if log is not None:

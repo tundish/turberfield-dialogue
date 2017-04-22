@@ -109,6 +109,7 @@ class PropertyDirectiveTests(unittest.TestCase):
         p = next(l for s, l in model if isinstance(l, Model.Property))
         self.assertEqual("state", p.attr)
         self.assertEqual(str(SelectTests.Aggression.calm), str(p.val))
+        setattr(p.object, p.attr, p.val)
 
     def test_property_setter_integer(self):
         content = textwrap.dedent("""
