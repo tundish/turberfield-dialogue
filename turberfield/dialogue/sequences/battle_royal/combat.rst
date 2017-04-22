@@ -22,8 +22,8 @@ Combat
 Action
 ------
 
-.. property:: FIGHTER_1.animation turberfield.dialogue.sequences.battle_royal.types.Animation.angry
-.. property:: FIGHTER_2.animation turberfield.dialogue.sequences.battle_royal.types.Animation.passive
+.. property:: FIGHTER_1.state turberfield.dialogue.sequences.battle_royal.types.Animation.angry
+.. property:: FIGHTER_2.state turberfield.dialogue.sequences.battle_royal.types.Animation.passive
 
 [FIGHTER_1]_
 

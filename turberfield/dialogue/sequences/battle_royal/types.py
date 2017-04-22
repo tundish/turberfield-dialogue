@@ -18,32 +18,29 @@
 
 import enum
 
+from turberfield.dialogue.types import EnumFactory
 from turberfield.dialogue.types import Persona
 from turberfield.dialogue.types import Stateful
 from turberfield.utils.assembly import Assembly
 
 @enum.unique
-class Animation(enum.Enum):
+class Animation(EnumFactory, enum.Enum):
     angry = 0
     passive = 1
     dying = 2
 
 @enum.unique
-class Outcome(enum.Enum):
+class Outcome(EnumFactory, enum.Enum):
     defeated = 0
     victorious = 1
 
-    @classmethod
-    def factory(cls, name=None, **kwargs):
-        return cls[name]
-
-class Animal(Persona, Stateful):
+class Animal(Stateful, Persona):
     pass
 
-class Furniture(Persona, Stateful):
+class Furniture(Stateful, Persona):
     pass
 
-class Tool(Persona, Stateful):
+class Tool(Stateful, Persona):
     pass
 
 ensemble = [

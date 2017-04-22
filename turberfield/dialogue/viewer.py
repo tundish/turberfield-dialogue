@@ -112,7 +112,11 @@ class TerminalHandler:
         return obj
 
     def handle_property(self, obj):
-        setattr(obj.object, obj.attr, obj.val)
+        try:
+            setattr(obj.object, obj.attr, obj.val)
+        except AttributeError as e:
+            self.log.error(". ".join(getattr(e, "args", e) or e))
+            self.log.error(vars(obj.object))
         print(
             "{t.dim}{obj.object._name}.{obj.attr} = {obj.val}{t.normal}".format(
                 obj=obj, t=self.terminal
@@ -158,10 +162,11 @@ class TerminalHandler:
         )
         return obj
 
-    def __init__(self, terminal, pause=1.5, dwell=0.2):
+    def __init__(self, terminal, pause=1.5, dwell=0.2, log=None):
         self.terminal = terminal
         self.pause = pause
         self.dwell = dwell
+        self.log = log or logging.getLogger("turberfield.dialogue.handle")
         self.shot = None
 
     def __call__(self, obj, *args, loop, **kwargs):
