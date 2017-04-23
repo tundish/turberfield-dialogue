@@ -331,9 +331,10 @@ class SchemaBaseTests(DBTests, unittest.TestCase):
             self.assertEqual(1, rv)
 
             cur.execute(
-                "select s.name, state.name, o.name "
+                "select s.name, state.name, o.name, note.text "
                 "from state join touch on state.id = touch.state "
                 "join entity as s on touch.sbjct = s.id "
-                "left outer join entity as o on touch.objct = o.id"
+                "left outer join entity as o on touch.objct = o.id "
+                "left outer join note on note.touch = touch.id"
             )
             self.assertEqual(("cat", "acquired", "hat", "A cat in a hat!"), tuple(cur.fetchone()))
