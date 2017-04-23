@@ -1,5 +1,21 @@
 #!/usr/bin/env python3
-#   coding: UTF-8
+# encoding: UTF-8
+
+# This file is part of turberfield.
+#
+# Turberfield is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Turberfield is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
+
 
 import argparse
 from collections import OrderedDict
@@ -189,6 +205,18 @@ class TerminalHandler:
             yield self.handle_scenescript(obj)
         else:
             yield self.handle(obj)
+
+class CGIHandler(TerminalHandler):
+
+    @staticmethod
+    def handle_audio(obj):
+        path = pkg_resources.resource_filename(obj.package, obj.resource)
+        print("data: {0}\n".format(path[len(sys.prefix) - 1:]), end="\n")
+        return obj
+
+    def handle_line(self, obj):
+        print("data: {0}\n".format(Assembly.dumps(obj)), end="\n")
+        return obj
 
 def run_through(script, ensemble, log, roles=1):
     then = datetime.datetime.now()
@@ -391,19 +419,13 @@ def cgi_consumer(args):
     return rv
 
 def cgi_producer(args):
+    handler = CGIHandler(Terminal())
     print("Content-type:text/event-stream")
     print()
-    for shot, item, pause in rehearse(args.sequence, args.ensemble):
-        print("event: {0}".format(type(item).__name__.lower()), end="\n")
-        time.sleep(pause)
-        #TODO: dispatch handler
-        if isinstance(item, Model.Audio):
-            path = pkg_resources.resource_filename(item.package, item.resource)
-            print("data: {0}\n".format(path[len(sys.prefix):]), end="\n")
-        else:
-            print("data: {0}\n".format(Assembly.dumps(item)), end="\n")
+    for line in rehearse(args.sequence, args.ensemble, handler):
+        #time.sleep(pause)
         sys.stdout.flush()
-        yield item
+        yield line
 
 def presenter(args):
     handler = TerminalHandler(Terminal())
