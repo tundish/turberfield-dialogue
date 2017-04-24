@@ -289,7 +289,7 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
     with handler.con as db:
         Insertion(
             SchemaBase.tables["entity"],
-            data=[dict(vars(p), name=p._name) for p in personae]
+            data=[dict(session=p.id, name=p._name) for p in personae]
         ).run(db)
 
     for script, interlude in itertools.zip_longest(
