@@ -177,17 +177,18 @@ class TerminalHandler:
         )
         return obj
 
-    def __init__(self, terminal, dbUrl=None, pause=1.5, dwell=0.2, log=None):
+    def __init__(
+        self, terminal, dbUrl=None, session=None,
+        pause=1.5, dwell=0.2, log=None
+    ):
         self.terminal = terminal
         self.dbUrl = dbUrl
+        self.session = session or uuid.uuid4().hex
         self.pause = pause
         self.dwell = dwell
         self.log = log or logging.getLogger("turberfield.dialogue.handle")
         self.shot = None
         self.con = Connection(**Connection.options(dbUrl))
-        print(Creation(
-                *SchemaBase.tables.values()
-            ).sql)
         with self.con as db:
             rv = Creation(
                 *SchemaBase.tables.values()
@@ -281,15 +282,13 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
     )
     scripts = SceneScript.scripts(**folder._asdict())
 
-    print(Insertion(
-        SchemaBase.tables["entity"],
-        data=[dict(session=p.id, name=p._name) for p in personae]
-    ).sql)
-    print(SchemaBase.tables["entity"].lookup)
     with handler.con as db:
         Insertion(
             SchemaBase.tables["entity"],
-            data=[dict(session=p.id, name=p._name) for p in personae]
+            data=[
+                dict(session=handler.session, name=p._name)
+                for p in personae
+            ]
         ).run(db)
 
     for script, interlude in itertools.zip_longest(
@@ -425,7 +424,7 @@ def cgi_consumer(args):
     return rv
 
 def cgi_producer(args):
-    handler = CGIHandler(Terminal(), args.db)
+    handler = CGIHandler(Terminal(), args.db, args.session)
     print("Content-type:text/event-stream")
     print()
     for line in rehearse(args.sequence, args.ensemble, handler):
@@ -434,7 +433,7 @@ def cgi_producer(args):
         yield line
 
 def presenter(args):
-    handler = TerminalHandler(Terminal(), args.db)
+    handler = TerminalHandler(Terminal(), args.db, args.session)
     if args.log_level != logging.DEBUG:
         with handler.terminal.fullscreen():
             yield from rehearse(
