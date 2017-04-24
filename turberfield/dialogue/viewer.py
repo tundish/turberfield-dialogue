@@ -177,12 +177,19 @@ class TerminalHandler:
         )
         return obj
 
-    def __init__(self, terminal, pause=1.5, dwell=0.2, log=None):
+    def __init__(self, terminal, dbUrl=None, pause=1.5, dwell=0.2, log=None):
         self.terminal = terminal
+        self.dbUrl = dbUrl
         self.pause = pause
         self.dwell = dwell
         self.log = log or logging.getLogger("turberfield.dialogue.handle")
         self.shot = None
+        self.con = Connection(**Connection.options(dbUrl))
+        with self.con as db:
+            rv = Creation(
+                *SchemaBase.tables.values()
+            ).run(db)
+            db.commit()
 
     def __call__(self, obj, *args, loop, **kwargs):
         if isinstance(obj, Model.Line):
@@ -261,7 +268,7 @@ def rehearsal(folder, ensemble, log=None):
             log.info("Interlude branching to {0}".format(rv))
             return rv
 
-def rehearse(sequence, ensemble, handler, dbPath=None, log=None, loop=None):
+def rehearse(sequence, ensemble, handler, log=None, loop=None):
     log = log or logging.getLogger("turberfield")
     folder = Pathfinder.string_import(
         sequence, relative=False, sep=":"
@@ -271,20 +278,16 @@ def rehearse(sequence, ensemble, handler, dbPath=None, log=None, loop=None):
     )
     scripts = SceneScript.scripts(**folder._asdict())
 
-    con = Connection(**Connection.options(dbPath))
-    with con as db:
-        rv = Creation(
-            *SchemaBase.tables.values()
+    print(Insertion(
+        SchemaBase.tables["entity"],
+        data=[vars(p) for p in personae]
+    ).sql)
+    print(SchemaBase.tables["entity"].lookup)
+    with handler.con as db:
+        Insertion(
+            SchemaBase.tables["entity"],
+            data=[vars(p) for p in personae]
         ).run(db)
-
-        for person in personae:
-            rv = Insertion(
-                SchemaBase.tables["entity"],
-                data={
-                    "session": "1",
-                    "name": person._name
-                }
-            ).run(db)
 
     for script, interlude in itertools.zip_longest(
         scripts, itertools.cycle(folder.interludes)
@@ -419,7 +422,7 @@ def cgi_consumer(args):
     return rv
 
 def cgi_producer(args):
-    handler = CGIHandler(Terminal())
+    handler = CGIHandler(Terminal(), args.db)
     print("Content-type:text/event-stream")
     print()
     for line in rehearse(args.sequence, args.ensemble, handler):
@@ -428,10 +431,12 @@ def cgi_producer(args):
         yield line
 
 def presenter(args):
-    handler = TerminalHandler(Terminal())
+    handler = TerminalHandler(Terminal(), args.db)
     if args.log_level != logging.DEBUG:
         with handler.terminal.fullscreen():
-            yield from rehearse(args.sequence, args.ensemble, handler)
+            yield from rehearse(
+                args.sequence, args.ensemble, handler
+            )
             input("Press return.")
     else:
         yield from rehearse(args.sequence, args.ensemble, handler)

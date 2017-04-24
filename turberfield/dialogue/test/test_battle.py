@@ -95,7 +95,6 @@ class CastingTests(unittest.TestCase):
                 self.assertIsInstance(p, Animal, p)
 
     def test_cgi(self):
-        # TODO: CGI to use handler
         p = turberfield.dialogue.viewer.parser()
         ns = p.parse_args([
             "--ensemble", "turberfield.dialogue.sequences.battle_royal.types:ensemble",
