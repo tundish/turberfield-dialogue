@@ -62,7 +62,7 @@ class DataObject:
 class Persona(DataObject):
 
     def __init__(self, id=None, **kwargs):
-        self.id = id or uuid.uuid4()
+        self.id = id or uuid.uuid4().hex
         self._name = kwargs.pop("name")
         bits = self._name.split()
         try:

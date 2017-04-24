@@ -185,6 +185,9 @@ class TerminalHandler:
         self.log = log or logging.getLogger("turberfield.dialogue.handle")
         self.shot = None
         self.con = Connection(**Connection.options(dbUrl))
+        print(Creation(
+                *SchemaBase.tables.values()
+            ).sql)
         with self.con as db:
             rv = Creation(
                 *SchemaBase.tables.values()
@@ -280,13 +283,13 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
 
     print(Insertion(
         SchemaBase.tables["entity"],
-        data=[vars(p) for p in personae]
+        data=[dict(session=p.id, name=p._name) for p in personae]
     ).sql)
     print(SchemaBase.tables["entity"].lookup)
     with handler.con as db:
         Insertion(
             SchemaBase.tables["entity"],
-            data=[vars(p) for p in personae]
+            data=[dict(vars(p), name=p._name) for p in personae]
         ).run(db)
 
     for script, interlude in itertools.zip_longest(
