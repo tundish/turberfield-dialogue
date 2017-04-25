@@ -219,14 +219,21 @@ class TerminalHandler:
 
 class CGIHandler(TerminalHandler):
 
-    @staticmethod
-    def handle_audio(obj):
+    def handle_audio(self, obj):
         path = pkg_resources.resource_filename(obj.package, obj.resource)
-        print("data: {0}\n".format(path[len(sys.prefix) - 1:]), end="\n")
+        print(
+            "data: {0}\n".format(path[len(sys.prefix) - 1:]),
+            end="\n",
+            file=self.terminal.stream
+        )
         return obj
 
     def handle_line(self, obj):
-        print("data: {0}\n".format(Assembly.dumps(obj)), end="\n")
+        print(
+            "data: {0}\n".format(Assembly.dumps(obj)),
+            end="\n",
+            file=self.terminal.stream
+        )
         return obj
 
 def run_through(script, ensemble, log, roles=1):
