@@ -423,13 +423,13 @@ def cgi_consumer(args):
     """).format(url=url).lstrip()
     return rv
 
-def cgi_producer(args):
-    handler = CGIHandler(Terminal(), args.db, args.session)
-    print("Content-type:text/event-stream")
-    print()
+def cgi_producer(args, stream=None):
+    handler = CGIHandler(Terminal(stream=stream), args.db, args.session)
+    print("Content-type:text/event-stream", file=handler.terminal.stream)
+    print(file=handler.terminal.stream)
     for line in rehearse(args.sequence, args.ensemble, handler):
         #time.sleep(pause)
-        sys.stdout.flush()
+        handler.terminal.stream.flush()
         yield line
 
 def presenter(args):

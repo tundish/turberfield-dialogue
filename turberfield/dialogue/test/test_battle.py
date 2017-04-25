@@ -20,6 +20,7 @@
 import collections.abc
 from collections import namedtuple
 import enum
+import io
 import itertools
 import sys
 import textwrap
@@ -100,7 +101,8 @@ class CastingTests(unittest.TestCase):
             "--ensemble", "turberfield.dialogue.sequences.battle_royal.types:ensemble",
             "--sequence", "turberfield.dialogue.sequences.battle_royal:folder"
         ])
-        rv = list(turberfield.dialogue.viewer.cgi_producer(ns))
+        stream = io.StringIO()
+        rv = list(turberfield.dialogue.viewer.cgi_producer(ns, stream))
 
     def test_run(self):
         self.assertFalse(any(i.state for i in self.personae))
