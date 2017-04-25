@@ -125,7 +125,7 @@ class SchemaBase:
                     "select * from entity where session=:session and name=:name",
                     dict(
                         session=getattr(item, "session", session),
-                        name=getattr(item, "name", None)
+                        name=getattr(item, "_name", getattr(item, "name", None))
                     )
                 )
                 yield cur.fetchone()

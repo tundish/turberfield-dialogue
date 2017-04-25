@@ -124,7 +124,16 @@ class TerminalHandler:
         return obj
 
     def handle_memory(self, obj):
-        print("MEMORY")
+        with self.con as db:
+            rv = SchemaBase.note(
+                db,
+                obj.subject,
+                obj.state,
+                obj.object,
+                text=obj.text,
+                html=obj.html,
+            )
+        print(rv)
         return obj
 
     def handle_property(self, obj):
