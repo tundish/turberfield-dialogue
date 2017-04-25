@@ -283,13 +283,8 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
     scripts = SceneScript.scripts(**folder._asdict())
 
     with handler.con as db:
-        Insertion(
-            SchemaBase.tables["entity"],
-            data=[
-                dict(session=handler.session, name=p._name)
-                for p in personae
-            ]
-        ).run(db)
+        rv = SchemaBase.populate(db, personae, handler.session)
+        log.info("Populated {0} rows.".format(rv))
 
     for script, interlude in itertools.zip_longest(
         scripts, itertools.cycle(folder.interludes)

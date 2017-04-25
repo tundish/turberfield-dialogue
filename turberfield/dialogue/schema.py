@@ -99,7 +99,7 @@ class SchemaBase:
                     cls.tables["entity"],
                     data={
                         "session": session,
-                        "name": entity.name,
+                        "name": getattr(entity, "_name", entity.name),
                     }
                 ).run(con)
             except sqlite3.IntegrityError as e:
