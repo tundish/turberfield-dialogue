@@ -48,6 +48,8 @@ ensemble = [
     Animal(name="Scratchy"),
     Tool(name="Ol' Rusty Chopper"),
     Furniture(name="Dr Hat Stand"),
+    Animation,
+    Outcome
 ]
 
 Assembly.register(Animal, Animation, Furniture, Outcome, Tool)
