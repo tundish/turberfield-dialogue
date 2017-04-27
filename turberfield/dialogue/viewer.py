@@ -186,16 +186,16 @@ class TerminalHandler:
         return obj
 
     def __init__(
-        self, terminal, dbUrl=None,
+        self, terminal, dbPath=None,
         pause=1.5, dwell=0.2, log=None
     ):
         self.terminal = terminal
-        self.dbUrl = dbUrl
+        self.dbPath = dbPath
         self.pause = pause
         self.dwell = dwell
         self.log = log or logging.getLogger("turberfield.dialogue.handle")
         self.shot = None
-        self.con = Connection(**Connection.options(dbUrl))
+        self.con = Connection(**Connection.options(paths=[dbPath]))
         with self.con as db:
             rv = Creation(
                 *SchemaBase.tables.values()

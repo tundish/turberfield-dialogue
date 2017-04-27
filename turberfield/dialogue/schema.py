@@ -87,6 +87,7 @@ class SchemaBase:
                 except sqlite3.IntegrityError as e:
                     if log is not None:
                         log.warning(e)
+                    con.rollback()
                 else:
                     rv += 1
 
@@ -101,6 +102,7 @@ class SchemaBase:
             except sqlite3.IntegrityError as e:
                 if log is not None:
                     log.warning(e)
+                con.rollback()
             else:
                 rv += 1
         return rv
