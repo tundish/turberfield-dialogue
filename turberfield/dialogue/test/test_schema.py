@@ -37,9 +37,7 @@ class SQLTests(unittest.TestCase):
         expected = "\n".join((
             "create table if not exists entity(",
             "id INTEGER PRIMARY KEY NOT NULL,",
-            "session TEXT  NOT NULL,",
-            "name TEXT  NOT NULL,",
-            "UNIQUE(session, name)",
+            "name TEXT  NOT NULL UNIQUE",
             ")"
         ))
         rv = Creation(SchemaBase.tables["entity"]).sql
@@ -48,13 +46,12 @@ class SQLTests(unittest.TestCase):
 
     def test_insert_entity(self):
         expected = (
-            "insert into entity (session, name) values (:session, :name)",
-            {"session": "1234567890", "name": "qwerty"}
+            "insert into entity (name) values (:name)",
+            {"name": "qwerty"}
         )
         rv = Insertion(
             SchemaBase.tables["entity"],
             data=dict(
-                session="1234567890",
                 name="qwerty"
             )
         ).sql

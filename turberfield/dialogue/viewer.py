@@ -133,7 +133,6 @@ class TerminalHandler:
                 text=obj.text,
                 html=obj.html,
             )
-        print(rv)
         return obj
 
     def handle_property(self, obj):

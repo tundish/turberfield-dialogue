@@ -30,15 +30,12 @@ from turberfield.utils.misc import gather_installed
 
 class SchemaBase:
 
-    session = uuid.uuid4().hex
-
     tables = OrderedDict(
         (table.name, table) for table in [
         Table(
             "entity",
             cols=[
               Table.Column("id", int, True, False, False, None, None),
-              Table.Column("session", str, False, False, True, None, None),
               Table.Column("name", str, False, False, True, None, None),
             ]
         ),
@@ -72,7 +69,7 @@ class SchemaBase:
     ])
 
     @classmethod
-    def populate(cls, con, items, session=session, log=None):
+    def populate(cls, con, items, log=None):
         states = [i for i in items if type(i) is enum.EnumMeta]
         entities = [i for i in items if i not in states]
         rv = 0
@@ -98,7 +95,6 @@ class SchemaBase:
                 cur = Insertion(
                     cls.tables["entity"],
                     data={
-                        "session": session,
                         "name": getattr(entity, "_name", entity.name),
                     }
                 ).run(con)
@@ -110,7 +106,7 @@ class SchemaBase:
         return rv
 
     @classmethod
-    def reference(cls, con, items, session=session):
+    def reference(cls, con, items):
         cur = con.cursor()
         for item in items:
             if isinstance(item, enum.Enum):
@@ -122,9 +118,8 @@ class SchemaBase:
 
             else:
                 cur.execute(
-                    "select * from entity where session=:session and name=:name",
+                    "select * from entity where name=:name",
                     dict(
-                        session=getattr(item, "session", session),
                         name=getattr(item, "_name", getattr(item, "name", None))
                     )
                 )
@@ -136,7 +131,7 @@ class SchemaBase:
         cls, con, sbjct, state,
         objct=None, ts=None,
         text="", html="",
-        session=session, log=None
+        log=None
     ):
         refs = list(cls.reference(con, [sbjct, state, objct]))
         op = Insertion(
@@ -160,9 +155,9 @@ class SchemaBase:
         cls, con, sbjct, state,
         objct=None, ts=None,
         text="", html="",
-        session=session, log=None
+        log=None
     ):
-        rv = cls.touch(con, sbjct, state, objct, ts, session=session, log=log)
+        rv = cls.touch(con, sbjct, state, objct, ts, log=log)
 
         op = Insertion(
             cls.tables["note"],
