@@ -186,12 +186,11 @@ class TerminalHandler:
         return obj
 
     def __init__(
-        self, terminal, dbUrl=None, session=None,
+        self, terminal, dbUrl=None,
         pause=1.5, dwell=0.2, log=None
     ):
         self.terminal = terminal
         self.dbUrl = dbUrl
-        self.session = session or uuid.uuid4().hex
         self.pause = pause
         self.dwell = dwell
         self.log = log or logging.getLogger("turberfield.dialogue.handle")
@@ -298,7 +297,7 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
     scripts = SceneScript.scripts(**folder._asdict())
 
     with handler.con as db:
-        rv = SchemaBase.populate(db, personae, handler.session)
+        rv = SchemaBase.populate(db, personae)
         log.info("Populated {0} rows.".format(rv))
 
     for script, interlude in itertools.zip_longest(
@@ -434,7 +433,7 @@ def cgi_consumer(args):
     return rv
 
 def cgi_producer(args, stream=None):
-    handler = CGIHandler(Terminal(stream=stream), args.db, args.session)
+    handler = CGIHandler(Terminal(stream=stream), args.db)
     print("Content-type:text/event-stream", file=handler.terminal.stream)
     print(file=handler.terminal.stream)
     for line in rehearse(args.sequence, args.ensemble, handler):
@@ -443,7 +442,7 @@ def cgi_producer(args, stream=None):
         yield line
 
 def presenter(args):
-    handler = TerminalHandler(Terminal(), args.db, args.session)
+    handler = TerminalHandler(Terminal(), args.db)
     if args.log_level != logging.DEBUG:
         with handler.terminal.fullscreen():
             yield from rehearse(
