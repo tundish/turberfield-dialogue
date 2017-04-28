@@ -229,7 +229,9 @@ class CGIHandler(TerminalHandler):
     def handle_audio(self, obj):
         path = pkg_resources.resource_filename(obj.package, obj.resource)
         print(
+            "event: audio",
             "data: {0}\n".format(path[len(sys.prefix) - 1:]),
+            sep="\n",
             end="\n",
             file=self.terminal.stream
         )
@@ -237,10 +239,28 @@ class CGIHandler(TerminalHandler):
 
     def handle_line(self, obj):
         print(
+            "event: line",
             "data: {0}\n".format(Assembly.dumps(obj)),
+            sep="\n",
             end="\n",
             file=self.terminal.stream
         )
+        return obj
+
+    def handle_property(self, obj):
+        try:
+            setattr(obj.object, obj.attr, obj.val)
+        except AttributeError as e:
+            self.log.error(". ".join(getattr(e, "args", e) or e))
+
+    def handle_scene(self, obj):
+        time.sleep(self.pause)
+        return obj
+
+    def handle_scenescript(self, obj):
+        return obj
+
+    def handle_shot(self, obj):
         return obj
 
 def run_through(script, ensemble, log, roles=1):
@@ -295,7 +315,6 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
         ensemble, relative=False, sep=":"
     )
     scripts = SceneScript.scripts(**folder._asdict())
-
     with handler.con as db:
         rv = SchemaBase.populate(db, personae)
         log.info("Populated {0} rows.".format(rv))

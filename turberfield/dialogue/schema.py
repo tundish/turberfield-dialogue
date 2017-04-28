@@ -19,6 +19,7 @@
 from collections import OrderedDict
 import datetime
 import enum
+import logging
 import sqlite3
 import uuid
 
@@ -70,7 +71,9 @@ class SchemaBase:
 
     @classmethod
     def populate(cls, con, items, log=None):
+        log = log or logging.getLogger("turberfield")
         states = [i for i in items if type(i) is enum.EnumMeta]
+        log.info(states)
         entities = [i for i in items if i not in states]
         rv = 0
         for state in states:

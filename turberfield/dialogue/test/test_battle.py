@@ -103,6 +103,14 @@ class CastingTests(unittest.TestCase):
         ])
         stream = io.StringIO()
         rv = list(turberfield.dialogue.viewer.cgi_producer(ns, stream))
+        lines = stream.getvalue().splitlines()
+        self.assertEqual("Content-type:text/event-stream", lines[0])
+        self.assertEqual("", lines[1])
+        self.assertTrue(all(
+            i.startswith("data:") if not n or n % 0 else i == ""
+            for n, i in enumerate(lines[2:])),
+            lines[2:]
+        )
 
     def test_run(self):
         self.assertFalse(any(i.state for i in self.personae))
