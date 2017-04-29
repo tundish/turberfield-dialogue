@@ -114,11 +114,12 @@ class CastingTests(unittest.TestCase):
             stream = io.StringIO()
             then = datetime.datetime.now()
             rv = list(turberfield.dialogue.viewer.cgi_producer(ns, stream))
+            elapsed = datetime.datetime.now() - then
+            self.assertEqual(8, elapsed.seconds, elapsed.seconds)
+
             lines = stream.getvalue().splitlines()
             self.assertEqual("Content-type:text/event-stream", lines[0])
             self.assertEqual("", lines[1])
-            elapsed = datetime.datetime.now() - then
-            self.assertEqual(8, elapsed.seconds, elapsed.seconds)
             seq = iter(lines[2:])
             for i in range(4):
                 line = next(seq)
