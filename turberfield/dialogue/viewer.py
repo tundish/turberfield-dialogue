@@ -236,6 +236,7 @@ class CGIHandler(TerminalHandler):
             end="\n",
             file=self.terminal.stream
         )
+        self.terminal.stream.flush()
         return obj
 
     def handle_line(self, obj):
@@ -246,6 +247,9 @@ class CGIHandler(TerminalHandler):
             end="\n",
             file=self.terminal.stream
         )
+        self.terminal.stream.flush()
+        interval = self.pause + self.dwell * obj.text.count(" ")
+        time.sleep(interval)
         return obj
 
     def handle_property(self, obj):
@@ -458,8 +462,6 @@ def cgi_producer(args, stream=None):
     print("Content-type:text/event-stream", file=handler.terminal.stream)
     print(file=handler.terminal.stream)
     for line in rehearse(args.sequence, args.ensemble, handler):
-        #time.sleep(pause)
-        handler.terminal.stream.flush()
         yield line
 
 def presenter(args):

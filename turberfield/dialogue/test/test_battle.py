@@ -118,12 +118,15 @@ class CastingTests(unittest.TestCase):
             self.assertEqual("Content-type:text/event-stream", lines[0])
             self.assertEqual("", lines[1])
             elapsed = datetime.datetime.now() - then
-            self.assertTrue(15 < elapsed.seconds < 120, elapsed)
-            self.assertTrue(all(
-                i.startswith("data:") if not n or n % 0 else i == ""
-                for n, i in enumerate(lines[2:])),
-                lines[2:]
-            )
+            self.assertEqual(8, elapsed.seconds, elapsed.seconds)
+            seq = iter(lines[2:])
+            for i in range(4):
+                line = next(seq)
+                self.assertTrue(line.startswith("event:"))
+                line = next(seq)
+                self.assertTrue(line.startswith("data:"))
+                line = next(seq)
+                self.assertFalse(line)
         finally:
             os.close(fd)
             os.remove(fp)
