@@ -19,11 +19,15 @@
 
 import collections.abc
 from collections import namedtuple
+import datetime
 import enum
 import io
 import itertools
+import logging
+import os
 import sys
 import textwrap
+import tempfile
 import unittest
 import uuid
 
@@ -33,6 +37,7 @@ from turberfield.dialogue.sequences.battle_royal.types import Animal
 from turberfield.dialogue.sequences.battle_royal.types import Outcome
 from turberfield.dialogue.sequences.battle_royal.types import Tool
 import turberfield.dialogue.viewer
+from turberfield.utils.misc import log_setup
 
 import pkg_resources
 
@@ -97,20 +102,31 @@ class CastingTests(unittest.TestCase):
 
     def test_cgi(self):
         p = turberfield.dialogue.viewer.parser()
-        ns = p.parse_args([
-            "--ensemble", "turberfield.dialogue.sequences.battle_royal.types:ensemble",
-            "--sequence", "turberfield.dialogue.sequences.battle_royal:folder"
-        ])
-        stream = io.StringIO()
-        rv = list(turberfield.dialogue.viewer.cgi_producer(ns, stream))
-        lines = stream.getvalue().splitlines()
-        self.assertEqual("Content-type:text/event-stream", lines[0])
-        self.assertEqual("", lines[1])
-        self.assertTrue(all(
-            i.startswith("data:") if not n or n % 0 else i == ""
-            for n, i in enumerate(lines[2:])),
-            lines[2:]
-        )
+        fd, fp = tempfile.mkstemp(suffix=".db")
+        try:
+            ns = p.parse_args([
+                "--ensemble", "turberfield.dialogue.sequences.battle_royal.types:ensemble",
+                "--sequence", "turberfield.dialogue.sequences.battle_royal:folder",
+                "--db", fp,
+                #"-v"
+            ])
+            self.assertEqual("turberfield", log_setup(ns))
+            stream = io.StringIO()
+            then = datetime.datetime.now()
+            rv = list(turberfield.dialogue.viewer.cgi_producer(ns, stream))
+            lines = stream.getvalue().splitlines()
+            self.assertEqual("Content-type:text/event-stream", lines[0])
+            self.assertEqual("", lines[1])
+            elapsed = datetime.datetime.now() - then
+            self.assertTrue(15 < elapsed.seconds < 120, elapsed)
+            self.assertTrue(all(
+                i.startswith("data:") if not n or n % 0 else i == ""
+                for n, i in enumerate(lines[2:])),
+                lines[2:]
+            )
+        finally:
+            os.close(fd)
+            os.remove(fp)
 
     def test_run(self):
         self.assertFalse(any(i.state for i in self.personae))

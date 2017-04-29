@@ -164,7 +164,7 @@ class SceneScript:
 
     Folder = namedtuple("Folder", ["pkg", "doc", "paths", "interludes"])
 
-    log = logging.getLogger("turberfield.dialogue.scenescript")
+    log = logging.getLogger("turberfield.dialogue.model.scenescript")
 
     settings=argparse.Namespace(
         character_level_inline_markup=False,

@@ -71,9 +71,8 @@ class SchemaBase:
 
     @classmethod
     def populate(cls, con, items, log=None):
-        log = log or logging.getLogger("turberfield")
+        log = log or logging.getLogger("turberfield.dialogue.schema.populate")
         states = [i for i in items if type(i) is enum.EnumMeta]
-        log.info(states)
         entities = [i for i in items if i not in states]
         rv = 0
         for state in states:
@@ -88,8 +87,7 @@ class SchemaBase:
                         }
                     ).run(con)
                 except sqlite3.IntegrityError as e:
-                    if log is not None:
-                        log.warning(e)
+                    log.warning(e)
                     con.rollback()
                 else:
                     rv += 1
@@ -103,8 +101,7 @@ class SchemaBase:
                     }
                 ).run(con)
             except sqlite3.IntegrityError as e:
-                if log is not None:
-                    log.warning(e)
+                log.warning(e)
                 con.rollback()
             else:
                 rv += 1

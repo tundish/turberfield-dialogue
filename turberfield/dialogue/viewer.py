@@ -201,6 +201,7 @@ class TerminalHandler:
                 *SchemaBase.tables.values()
             ).run(db)
             db.commit()
+            self.log.info("Created {0} tables in {1}.".format(len(rv), self.dbPath))
 
     def __call__(self, obj, *args, loop, **kwargs):
         if isinstance(obj, Model.Line):
@@ -316,6 +317,7 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
     )
     scripts = SceneScript.scripts(**folder._asdict())
     with handler.con as db:
+        log.debug(handler.con)
         rv = SchemaBase.populate(db, personae)
         log.info("Populated {0} rows.".format(rv))
 
