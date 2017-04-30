@@ -230,8 +230,6 @@ class CGIHandler(TerminalHandler):
     def handle_audio(self, obj):
         path = pkg_resources.resource_filename(obj.package, obj.resource)
         pos = path.find("lib", len(sys.prefix))
-        self.log.info(path)
-        self.log.info(path[pos:])
         if pos != -1:
             print(
                 "event: audio",
