@@ -229,14 +229,18 @@ class CGIHandler(TerminalHandler):
 
     def handle_audio(self, obj):
         path = pkg_resources.resource_filename(obj.package, obj.resource)
-        print(
-            "event: audio",
-            "data: {0}\n".format(path[len(sys.prefix) - 1:]),
-            sep="\n",
-            end="\n",
-            file=self.terminal.stream
-        )
-        self.terminal.stream.flush()
+        pos = path.find("lib", len(sys.prefix))
+        self.log.info(path)
+        self.log.info(path[pos:])
+        if pos != -1:
+            print(
+                "event: audio",
+                "data: ../{0}\n".format(path[pos:]),
+                sep="\n",
+                end="\n",
+                file=self.terminal.stream
+            )
+            self.terminal.stream.flush()
         return obj
 
     def handle_line(self, obj):
