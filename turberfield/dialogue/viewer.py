@@ -312,13 +312,14 @@ def rehearsal(folder, ensemble, log=None):
             return rv
 
 def rehearse(sequence, ensemble, handler, log=None, loop=None):
-    log = log or logging.getLogger("turberfield")
+    log = log or logging.getLogger("turberfield.dialogue.viewer.rehearse")
     folder = Pathfinder.string_import(
         sequence, relative=False, sep=":"
     )
     personae = Pathfinder.string_import(
         ensemble, relative=False, sep=":"
     )
+    log.info(personae)
     scripts = SceneScript.scripts(**folder._asdict())
     with handler.con as db:
         log.debug(handler.con)
@@ -505,7 +506,7 @@ def main(args):
 
     elif "SERVER_NAME" in os.environ:
         form = cgi.FieldStorage()
-        params = {key: form[key].value if key in form else "" for key in vars(args).keys()}
+        params = {key: form[key].value if key in form else None for key in vars(args).keys()}
         args = argparse.Namespace(**params)
         cgitb.enable()
         if not args.session:

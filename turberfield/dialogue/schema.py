@@ -89,6 +89,9 @@ class SchemaBase:
                 except sqlite3.IntegrityError as e:
                     log.warning(e)
                     con.rollback()
+                except Exception as e:
+                    log.error(e)
+                    con.rollback()
                 else:
                     rv += 1
 
@@ -102,6 +105,9 @@ class SchemaBase:
                 ).run(con)
             except sqlite3.IntegrityError as e:
                 log.warning(e)
+                con.rollback()
+            except Exception as e:
+                log.error(e)
                 con.rollback()
             else:
                 rv += 1
