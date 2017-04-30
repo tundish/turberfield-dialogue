@@ -29,14 +29,14 @@ Action
 
     I hate the way you use me, |Fighter2| !
 
-[WEAPON]_
-
-    **Whack!**
-
 .. fx:: turberfield.dialogue.sequences.battle_royal slapwhack.wav
    :offset: 0
    :duration: 3000
    :loop: 1
+
+[WEAPON]_
+
+    **Whack!**
 
 [FIGHTER_2]_
 

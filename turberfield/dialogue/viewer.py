@@ -74,7 +74,7 @@ class TerminalHandler:
         return obj
 
     @staticmethod
-    def handle_audio(obj):
+    def handle_audio(obj, wait=False):
         fp = pkg_resources.resource_filename(obj.package, obj.resource)
         data = wave.open(fp, "rb")
         nChannels = data.getnchannels()
@@ -95,7 +95,8 @@ class TerminalHandler:
         for i in range(obj.loop):
             waveObj = simpleaudio.WaveObject(frames, nChannels, bytesPerSample, sampleRate)
             playObj = waveObj.play()
-            playObj.wait_done()
+            if obj.loop > 1 or wait:
+                playObj.wait_done()
         return obj
 
     def handle_line(self, obj):
@@ -141,7 +142,7 @@ class TerminalHandler:
         except AttributeError as e:
             self.log.error(". ".join(getattr(e, "args", e) or e))
         print(
-            "{t.dim}{obj.object._name}.{obj.attr} = {obj.val}{t.normal}".format(
+            "{t.dim}{obj.object._name}.{obj.attr} = {obj.val!s}{t.normal}".format(
                 obj=obj, t=self.terminal
             ),
             end="\n" * 2,
@@ -321,7 +322,7 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
     personae = Pathfinder.string_import(
         ensemble, relative=False, sep=":"
     )
-    log.info(personae)
+    log.debug(personae)
     scripts = SceneScript.scripts(**folder._asdict())
     with handler.con as db:
         log.debug(handler.con)
