@@ -67,6 +67,13 @@ Eg::
 """
 
 
+def yield_resources(obj, *args, loop, **kwargs):
+    if isinstance(obj, Model.Audio):
+        path = pkg_resources.resource_filename(obj.package, obj.resource)
+        pos = path.find("lib", len(sys.prefix))
+        if pos != -1:
+            yield path[pos:]
+
 class TerminalHandler:
 
     @staticmethod
@@ -324,10 +331,12 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
     )
     log.debug(personae)
     scripts = SceneScript.scripts(**folder._asdict())
-    with handler.con as db:
-        log.debug(handler.con)
-        rv = SchemaBase.populate(db, personae)
-        log.info("Populated {0} rows.".format(rv))
+
+    if hasattr(handler, "con"):
+        with handler.con as db:
+            log.debug(handler.con)
+            rv = SchemaBase.populate(db, personae)
+            log.info("Populated {0} rows.".format(rv))
 
     for script, interlude in itertools.zip_longest(
         scripts, itertools.cycle(folder.interludes)
@@ -341,6 +350,8 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
         yield from handler(interlude, loop=loop)
 
 def cgi_consumer(args):
+    resources = rehearse(args.sequence, args.ensemble, yield_resources)
+    links = "\n".join('<link ref="prefetch" href="/{0}">'.format(i) for i in resources)
     params = vars(args)
     params["session"] = uuid.uuid4().hex
     opts = urllib.parse.urlencode(params)
@@ -355,6 +366,7 @@ def cgi_consumer(args):
         <head>
         <meta charset="utf-8" />
         <title>Rehearsal</title>
+        {links}
         <style>
         #line {{
             font-family: "monospace";
@@ -458,7 +470,7 @@ def cgi_consumer(args):
         </script>
         </body>
         </html>
-    """).format(url=url).lstrip()
+    """).format(links=links, url=url).lstrip()
     return rv
 
 def cgi_producer(args, stream=None):
