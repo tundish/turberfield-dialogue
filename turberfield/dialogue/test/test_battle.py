@@ -121,7 +121,7 @@ class CastingTests(unittest.TestCase):
             self.assertEqual("Content-type:text/event-stream", lines[0])
             self.assertEqual("", lines[1])
             seq = iter(lines[2:])
-            for i in range(4):
+            for i in range(3):
                 with self.subTest(i=i):
                     line = next(seq)
                     self.assertTrue(line.startswith("event:"))
