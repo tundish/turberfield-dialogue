@@ -346,7 +346,7 @@ def rehearse(
             scripts, itertools.cycle(folder.interludes)
         ):
             yield from handler(script, loop=loop)
-            seq = list(run_through(script, personae, log))
+            seq = list(run_through(script, personae, log, roles=roles))
             for shot, item in seq:
                 yield from handler(shot, loop=loop)
                 yield from handler(item, loop=loop)

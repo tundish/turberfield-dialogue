@@ -273,8 +273,8 @@ class SceneScript:
                     pool.remove(persona)
                 except ValueError:
                     self.log.info(
-                        "No persona matches type {0} and states {1}".format(
-                            typ, states
+                        "No persona for type {0} and states {1} with {2} {3}.".format(
+                            typ, states, roles, "role" if roles == 1 else "roles"
                         )
                     )
         return rv

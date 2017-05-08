@@ -7,6 +7,7 @@
 
 .. entity:: FIGHTER_1
    :states: turberfield.dialogue.sequences.battle_royal.types.Pose.standing
+   :others: WEAPON
 
 .. entity:: FIGHTER_2
    :types: turberfield.dialogue.sequences.battle_royal.types.Animal
