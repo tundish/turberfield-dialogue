@@ -92,6 +92,7 @@ class Stateful:
 
     def set_state(self, value):
         self._states[type(value).__name__] = value
+        return self
 
     def get_state(self, typ=int):
         return self._states.get(typ.__name__)

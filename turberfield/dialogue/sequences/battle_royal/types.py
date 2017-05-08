@@ -30,9 +30,9 @@ class Animation(EnumFactory, enum.Enum):
     dying = 2
 
 @enum.unique
-class Outcome(EnumFactory, enum.Enum):
-    defeated = 0
-    victorious = 1
+class Pose(EnumFactory, enum.Enum):
+    toppled = 0
+    standing = 1
 
 class Animal(Stateful, Persona):
     pass
@@ -44,12 +44,12 @@ class Tool(Stateful, Persona):
     pass
 
 ensemble = [
-    Animal(name="Itchy"),
-    Animal(name="Scratchy"),
-    Tool(name="Ol' Rusty Chopper"),
-    Furniture(name="Dr Hat Stand"),
+    Animal(name="Itchy").set_state(Pose.standing),
+    Animal(name="Scratchy").set_state(Pose.standing),
+    Tool(name="Ol' Rusty Chopper").set_state(Pose.standing),
+    Furniture(name="Dr Hat Stand").set_state(Pose.standing),
     Animation,
-    Outcome
+    Pose
 ]
 
-Assembly.register(Animal, Animation, Furniture, Outcome, Tool)
+Assembly.register(Animal, Animation, Furniture, Pose, Tool)

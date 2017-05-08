@@ -34,7 +34,7 @@ import uuid
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.sequences.battle_royal.types import Animal
-from turberfield.dialogue.sequences.battle_royal.types import Outcome
+from turberfield.dialogue.sequences.battle_royal.types import Pose
 from turberfield.dialogue.sequences.battle_royal.types import Tool
 import turberfield.dialogue.viewer
 from turberfield.utils.misc import log_setup
@@ -73,9 +73,9 @@ class CastingTests(unittest.TestCase):
 
     def setUp(self):
         self.personae = {
-            Animal(name="Itchy"),
-            Animal(name="Scratchy"),
-            Tool(name="Rusty Chopper"),
+            Animal(name="Itchy").set_state(Pose.standing),
+            Animal(name="Scratchy").set_state(Pose.standing),
+            Tool(name="Rusty Chopper").set_state(Pose.standing),
         }
         folder = SceneScript.Folder(
             "turberfield.dialogue.sequences.battle_royal", "test", ["combat.rst"], itertools.repeat(None)
@@ -145,7 +145,7 @@ class CastingTests(unittest.TestCase):
                 )
 
         # Last item is a Memory
-        self.assertIs(Outcome.defeated, item.state)
+        self.assertIs(Pose.toppled, item.state)
         self.assertTrue(item.text)
         self.assertFalse("|" in item.text)
         self.assertTrue(item.html)
