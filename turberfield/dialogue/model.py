@@ -263,8 +263,7 @@ class SceneScript:
             persona = next(
                 (i for i in pool
                  if isinstance(i, typ)
-                 and all(
-                    str(i.get_state(type(s))) == str(s) for s in states                 )
+                 and all(str(i.get_state(type(s))) == str(s) for s in states)
                 ),
                 None
             )

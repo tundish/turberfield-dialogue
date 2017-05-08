@@ -321,7 +321,10 @@ def rehearsal(folder, ensemble, log=None):
             log.info("Interlude branching to {0}".format(rv))
             return rv
 
-def rehearse(sequence, ensemble, handler, repeat=0, log=None, loop=None):
+def rehearse(
+    sequence, ensemble, handler, repeat=0, roles=1,
+    log=None, loop=None
+):
     log = log or logging.getLogger("turberfield.dialogue.viewer.rehearse")
     folder = Pathfinder.string_import(
         sequence, relative=False, sep=":"
@@ -356,7 +359,9 @@ def rehearse(sequence, ensemble, handler, repeat=0, log=None, loop=None):
             repeat -= 1
 
 def cgi_consumer(args):
-    resources = rehearse(args.sequence, args.ensemble, yield_resources, repeat=0)
+    resources = rehearse(
+        args.sequence, args.ensemble, yield_resources, repeat=0, roles=args.roles
+    )
     links = "\n".join('<link ref="prefetch" href="/{0}">'.format(i) for i in resources)
     params = vars(args)
     params["session"] = uuid.uuid4().hex
@@ -483,7 +488,9 @@ def cgi_producer(args, stream=None):
     handler = CGIHandler(Terminal(stream=stream), args.db)
     print("Content-type:text/event-stream", file=handler.terminal.stream)
     print(file=handler.terminal.stream)
-    for line in rehearse(args.sequence, args.ensemble, handler, args.repeat):
+    for line in rehearse(
+        args.sequence, args.ensemble, handler, args.repeat, args.roles
+    ):
         yield line
 
 def presenter(args):
@@ -491,11 +498,13 @@ def presenter(args):
     if args.log_level != logging.DEBUG:
         with handler.terminal.fullscreen():
             yield from rehearse(
-                args.sequence, args.ensemble, handler, args.repeat
+                args.sequence, args.ensemble, handler, args.repeat, args.roles
             )
             input("Press return.")
     else:
-        yield from rehearse(args.sequence, args.ensemble, handler, args.repeat)
+        yield from rehearse(
+            args.sequence, args.ensemble, handler, args.repeat, args.roles
+        )
 
 def main(args):
     log = logging.getLogger(log_setup(args))
@@ -568,6 +577,10 @@ def parser(description=__doc__):
     rv.add_argument(
         "--repeat", type=int, default=0,
         help="Repeat the rehearsal [0] times."
+    )
+    rv.add_argument(
+        "--roles", type=int, default=1,
+        help="The number of roles [1] permitted for each member of cast."
     )
     rv.add_argument(
         "--web", action="store_true", default=False,

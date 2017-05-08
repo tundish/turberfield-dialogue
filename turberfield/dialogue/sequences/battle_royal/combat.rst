@@ -13,8 +13,7 @@
    :states: turberfield.dialogue.sequences.battle_royal.types.Pose.standing
 
 .. entity:: WEAPON
-   :types: turberfield.dialogue.sequences.battle_royal.types.Furniture
-           turberfield.dialogue.sequences.battle_royal.types.Tool
+   :types: turberfield.dialogue.sequences.battle_royal.types.Tool
 
 
 Combat
