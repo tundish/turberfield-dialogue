@@ -253,3 +253,17 @@ class SelectTests(unittest.TestCase):
         rv = list(script.select(ensemble).values())
         self.assertIsNone(rv[0])
         self.assertEqual(ensemble[0], rv[1])
+
+    def test_select_with_two_roles(self):
+
+        content = textwrap.dedent("""
+            .. entity:: FIGHTER_1
+
+            .. entity:: FIGHTER_2
+
+            """)
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae[0:1])
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        rv = list(script.select(ensemble, roles=2).values())
+        self.assertEqual(ensemble[0], rv[0])
+        self.assertEqual(ensemble[0], rv[1])
