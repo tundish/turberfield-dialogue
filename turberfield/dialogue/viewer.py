@@ -321,7 +321,7 @@ def rehearsal(folder, ensemble, log=None):
             log.info("Interlude branching to {0}".format(rv))
             return rv
 
-def rehearse(sequence, ensemble, handler, log=None, loop=None):
+def rehearse(sequence, ensemble, handler, repeat=0, log=None, loop=None):
     log = log or logging.getLogger("turberfield.dialogue.viewer.rehearse")
     folder = Pathfinder.string_import(
         sequence, relative=False, sep=":"
@@ -330,7 +330,7 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
         ensemble, relative=False, sep=":"
     )
     log.debug(personae)
-    scripts = SceneScript.scripts(**folder._asdict())
+    scripts = list(SceneScript.scripts(**folder._asdict()))
 
     if hasattr(handler, "con"):
         with handler.con as db:
@@ -338,19 +338,25 @@ def rehearse(sequence, ensemble, handler, log=None, loop=None):
             rv = SchemaBase.populate(db, personae)
             log.info("Populated {0} rows.".format(rv))
 
-    for script, interlude in itertools.zip_longest(
-        scripts, itertools.cycle(folder.interludes)
-    ):
-        yield from handler(script, loop=loop)
-        seq = list(run_through(script, personae, log))
-        for shot, item in seq:
-            yield from handler(shot, loop=loop)
-            yield from handler(item, loop=loop)
+    while True:
+        for script, interlude in itertools.zip_longest(
+            scripts, itertools.cycle(folder.interludes)
+        ):
+            yield from handler(script, loop=loop)
+            seq = list(run_through(script, personae, log))
+            for shot, item in seq:
+                yield from handler(shot, loop=loop)
+                yield from handler(item, loop=loop)
 
-        yield from handler(interlude, loop=loop)
+            yield from handler(interlude, loop=loop)
+
+        if not repeat:
+            break
+        else:
+            repeat -= 1
 
 def cgi_consumer(args):
-    resources = rehearse(args.sequence, args.ensemble, yield_resources)
+    resources = rehearse(args.sequence, args.ensemble, yield_resources, repeat=0)
     links = "\n".join('<link ref="prefetch" href="/{0}">'.format(i) for i in resources)
     params = vars(args)
     params["session"] = uuid.uuid4().hex
@@ -477,7 +483,7 @@ def cgi_producer(args, stream=None):
     handler = CGIHandler(Terminal(stream=stream), args.db)
     print("Content-type:text/event-stream", file=handler.terminal.stream)
     print(file=handler.terminal.stream)
-    for line in rehearse(args.sequence, args.ensemble, handler):
+    for line in rehearse(args.sequence, args.ensemble, handler, args.repeat):
         yield line
 
 def presenter(args):
@@ -485,11 +491,11 @@ def presenter(args):
     if args.log_level != logging.DEBUG:
         with handler.terminal.fullscreen():
             yield from rehearse(
-                args.sequence, args.ensemble, handler
+                args.sequence, args.ensemble, handler, args.repeat
             )
             input("Press return.")
     else:
-        yield from rehearse(args.sequence, args.ensemble, handler)
+        yield from rehearse(args.sequence, args.ensemble, handler, args.repeat)
 
 def main(args):
     log = logging.getLogger(log_setup(args))
@@ -558,6 +564,10 @@ def parser(description=__doc__):
     rv.add_argument(
         "--sequence", default="",
         help="Give an import path to a SceneScript folder."
+    )
+    rv.add_argument(
+        "--repeat", type=int, default=0,
+        help="Repeat the rehearsal [0] times."
     )
     rv.add_argument(
         "--web", action="store_true", default=False,
