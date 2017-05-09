@@ -42,9 +42,9 @@ import pkg_resources
 import simpleaudio
 
 from turberfield.dialogue import __version__
-from turberfield.dialogue.directives import Pathfinder
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
+from turberfield.dialogue.player import rehearse
 from turberfield.dialogue.schema import SchemaBase
 from turberfield.utils.assembly import Assembly
 from turberfield.utils.db import Connection
@@ -169,18 +169,12 @@ class TerminalHandler:
         return obj
 
     def handle_scenescript(self, obj):
-        display = functools.partial(
-            print,
+        print(
             "{t.dim}{obj.fP}{t.normal}".format(
                 obj=obj, t=self.terminal
             ),
             file=self.terminal.stream
         )
-        if self.terminal.is_a_tty:
-            with self.terminal.location(0, self.terminal.height - 1):
-                display()
-        else:
-            display()
         return obj
 
     def handle_shot(self, obj):
@@ -277,86 +271,6 @@ class CGIHandler(TerminalHandler):
 
     def handle_shot(self, obj):
         return obj
-
-def run_through(script, ensemble, log, roles=1):
-    then = datetime.datetime.now()
-    with script as dialogue:
-        try:
-            model = dialogue.cast(
-                dialogue.select(ensemble, roles=roles)
-            ).run()
-        except (AttributeError, ValueError) as e:
-            log.error(". ".join(getattr(e, "args", e) or e))
-            return
-        else:
-            yield from model
-
-def rehearsal(folder, ensemble, log=None):
-    # TODO: This function drives terminal
-    log = log or logging.getLogger("turberfield")
-    scripts = SceneScript.scripts(**folder._asdict())
-    for script, interlude in itertools.zip_longest(
-        scripts, itertools.cycle(folder.interludes)
-    ):
-        prev = None
-        seq = run_through(script, ensemble, log)
-        for n, (shot, item) in enumerate(seq):
-            if isinstance(item, Model.Property):
-                log.info("Assigning {val} to {object}.{attr}".format(**item._asdict()))
-                setattr(item.object, item.attr, item.val)
-            elif isinstance(item, Model.Audio):
-                log.info("Launch {resource} from {package}.".format(**item._asdict()))
-            elif isinstance(item, Model.Memory):
-                log.info("{subject} {state} {object}; {text}".format(**item._asdict()))
-                pass
-
-        log.info("Time: {0}".format(datetime.datetime.now() - then))
-        if interlude is None:
-            rv = folder
-        else:
-            pass
-            #rv = await interlude(folder, ensemble, log=log, loop=loop)
-
-        if rv is not folder:
-            log.info("Interlude branching to {0}".format(rv))
-            return rv
-
-def rehearse(
-    sequence, ensemble, handler, repeat=0, roles=1,
-    log=None, loop=None
-):
-    log = log or logging.getLogger("turberfield.dialogue.viewer.rehearse")
-    folder = Pathfinder.string_import(
-        sequence, relative=False, sep=":"
-    )
-    personae = Pathfinder.string_import(
-        ensemble, relative=False, sep=":"
-    )
-    log.debug(personae)
-    scripts = list(SceneScript.scripts(**folder._asdict()))
-
-    if hasattr(handler, "con"):
-        with handler.con as db:
-            log.debug(handler.con)
-            rv = SchemaBase.populate(db, personae)
-            log.info("Populated {0} rows.".format(rv))
-
-    while True:
-        for script, interlude in itertools.zip_longest(
-            scripts, itertools.cycle(folder.interludes)
-        ):
-            yield from handler(script, loop=loop)
-            seq = list(run_through(script, personae, log, roles=roles))
-            for shot, item in seq:
-                yield from handler(shot, loop=loop)
-                yield from handler(item, loop=loop)
-
-            yield from handler(interlude, loop=loop)
-
-        if not repeat:
-            break
-        else:
-            repeat -= 1
 
 def cgi_consumer(args):
     resources = rehearse(

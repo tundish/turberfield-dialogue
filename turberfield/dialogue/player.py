@@ -16,92 +16,60 @@
 # You should have received a copy of the GNU General Public License
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
-
-import argparse
-import asyncio
+import datetime
+import itertools
 import logging
-import logging.handlers
-import sys
-import wave
 
-import simpleaudio
-import turberfield.dialogue.cli
-from turberfield.utils.misc import log_setup
+from turberfield.dialogue.directives import Pathfinder
+from turberfield.dialogue.model import SceneScript
+from turberfield.dialogue.schema import SchemaBase
 
-__doc__ = """
-WAV file player.
+def run_through(script, ensemble, log, roles=1):
+    then = datetime.datetime.now()
+    with script as dialogue:
+        try:
+            model = dialogue.cast(
+                dialogue.select(ensemble, roles=roles)
+            ).run()
+        except (AttributeError, ValueError) as e:
+            log.error(". ".join(getattr(e, "args", e) or e))
+            return
+        else:
+            yield from model
 
-"""
+def rehearse(
+    sequence, ensemble, handler, repeat=0, roles=1,
+    log=None, loop=None
+):
+    log = log or logging.getLogger("turberfield.dialogue.player.rehearse")
+    folder = Pathfinder.string_import(
+        sequence, relative=False, sep=":"
+    )
+    personae = Pathfinder.string_import(
+        ensemble, relative=False, sep=":"
+    )
+    log.debug(personae)
+    scripts = list(SceneScript.scripts(**folder._asdict()))
 
-def main(args):
-    loop = asyncio.get_event_loop()
-    logName = log_setup(args, loop=loop)
-    log = logging.getLogger(logName)
-    try:
-        log.info(args)
+    if hasattr(handler, "con"):
+        with handler.con as db:
+            log.debug(handler.con)
+            rv = SchemaBase.populate(db, personae)
+            log.info("Populated {0} rows.".format(rv))
 
-        data = wave.open(args.input, "rb")
-        nChannels = data.getnchannels()
-        bytesPerSample = data.getsampwidth()
-        sampleRate = data.getframerate()
-        nFrames = data.getnframes()
-        framesPerMilliSecond = nChannels * sampleRate // 1000
+    while True:
+        for script, interlude in itertools.zip_longest(
+            scripts, itertools.cycle(folder.interludes)
+        ):
+            yield from handler(script, loop=loop)
+            seq = list(run_through(script, personae, log, roles=roles))
+            for shot, item in seq:
+                yield from handler(shot, loop=loop)
+                yield from handler(item, loop=loop)
 
-        offset = framesPerMilliSecond * args.start
-        duration = nFrames - offset
-        if duration <= 0:
-            log.error("Start beyond limits.")
-            return 2
-        duration = min(
-            duration,
-            framesPerMilliSecond * args.duration if args.duration is not None else duration
-        )
+            yield from handler(interlude, loop=loop)
 
-        data.readframes(offset)
-
-        frames = data.readframes(duration)
-        for i in range(args.loop):
-            waveObj = simpleaudio.WaveObject(frames, nChannels, bytesPerSample, sampleRate)
-            playObj = waveObj.play()
-            playObj.wait_done()
-            # playObj.is_playing()
-
-    except Exception as e:
-        log.error(getattr(e, "args", e) or e) 
-    finally:
-        loop.close()
-
-    return 0
-
-
-def parser(descr=__doc__):
-    rv = turberfield.dialogue.cli.parser(descr=__doc__)
-    rv = argparse.ArgumentParser(description=descr)
-    rv.add_argument(
-        "--input", required=True,
-        help="Set a file path for audio input")
-    rv.add_argument(
-        "--start", default=0, type=int,
-        help="Set the starting offset (ms)")
-    rv.add_argument(
-        "--duration", default=None, type=int,
-        help="Set the clip duration (ms)")
-    rv.add_argument(
-        "--loop", default=1, type=int,
-        help="The number of times to loop the clip")
-    return rv
-
-
-def run():
-    p = parser()
-    args = p.parse_args()
-    if args.version:
-        sys.stdout.write(turberfield.dialogue.__version__ + "\n")
-        rv = 0
-    else:
-        rv = main(args)
-    sys.exit(rv)
-
-
-if __name__ == "__main__":
-    run()
+        if not repeat:
+            break
+        else:
+            repeat -= 1
