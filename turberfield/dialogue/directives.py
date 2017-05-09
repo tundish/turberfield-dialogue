@@ -68,6 +68,7 @@ class Entity(docutils.parsers.rst.Directive):
     option_spec = {
         "states": Declaration.string_split,
         "types": Declaration.string_split,
+        "roles": Declaration.string_split,
     }
     has_content = True
     node_class = Declaration

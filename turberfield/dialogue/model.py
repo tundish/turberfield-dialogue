@@ -239,14 +239,18 @@ class SceneScript:
             )
 
         rv = OrderedDict()
+        performing = defaultdict(set)
         pool = list(personae)
         self.log.debug(pool)
-        entities = sorted(
-            group_by_type(self.doc)[EntityDirective.Declaration],
-            key=constrained,
-            reverse=True
-        )
-        for e in entities:
+        entities = OrderedDict([
+            ("".join(entity.attributes["names"]), entity)
+            for entity in sorted(
+                group_by_type(self.doc)[EntityDirective.Declaration],
+                key=constrained,
+                reverse=True
+            )
+        ])
+        for e in entities.values():
             types = tuple(filter(
                 None,
                 (e.string_import(t, relative)
@@ -259,16 +263,20 @@ class SceneScript:
                  for t in e["options"].get("states", [])
                 )
             ))
+            otherRoles = {i.lower() for i in e["options"].get("roles", [])}
             typ = types or object
             persona = next(
                 (i for i in pool
                  if isinstance(i, typ)
                  and all(str(i.get_state(type(s))) == str(s) for s in states)
+                 and (performing[i].issubset(otherRoles) or not otherRoles)
                 ),
                 None
             )
             rv[e] = persona
-            if list(rv.values()).count(persona) == roles:
+            performing[persona].update(set(e.attributes["names"]))
+
+            if not otherRoles or list(rv.values()).count(persona) == roles:
                 try:
                     pool.remove(persona)
                 except ValueError:

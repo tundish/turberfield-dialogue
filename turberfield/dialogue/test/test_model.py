@@ -257,9 +257,10 @@ class SelectTests(unittest.TestCase):
     def test_select_with_two_roles(self):
 
         content = textwrap.dedent("""
-            .. entity:: FIGHTER_1
+            .. entity:: CHARACTER_1
+               :roles: CHARACTER_2
 
-            .. entity:: FIGHTER_2
+            .. entity:: CHARACTER_2
 
             """)
         ensemble = copy.deepcopy(PropertyDirectiveTests.personae[0:1])
