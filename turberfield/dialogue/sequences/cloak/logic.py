@@ -49,13 +49,16 @@ class Locatable(Stateful, Persona):
 class Destructible(Stateful, Persona):
     pass
 
-ensemble = [
-    Locatable(name="Narrator"),
-    Locatable(name="Cloak"),
-    Destructible(name="Message"),
-]
+ensemble = {
+    i._name.lower(): i for i in 
+    [
+        Locatable(name="Narrator"),
+        Locatable(name="Cloak"),
+        Destructible(name="Message")
+    ]
+}
 
-totality = ensemble
+totality = list(ensemble.values())
 
 folder = SceneScript.Folder(
     "turberfield.dialogue.sequences.cloak",
