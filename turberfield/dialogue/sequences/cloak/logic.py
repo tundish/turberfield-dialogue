@@ -52,7 +52,7 @@ class Destructible(Stateful, Persona):
 ensemble = {
     i._name.lower(): i for i in 
     [
-        Locatable(name="Narrator"),
+        Locatable(name="Narrator").set_state(0),
         Locatable(name="Cloak"),
         Destructible(name="Message")
     ]
@@ -60,9 +60,10 @@ ensemble = {
 
 totality = list(ensemble.values())
 
-folder = SceneScript.Folder(
+game = SceneScript.Folder(
     "turberfield.dialogue.sequences.cloak",
     __doc__,
-    ["foyer.rst", "bar.rst", "cloakroom.rst"],
+    ["foyer.rst", ],
+    #["foyer.rst", "bar.rst", "cloakroom.rst"],
     []
 )

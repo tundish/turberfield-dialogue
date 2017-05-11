@@ -48,6 +48,7 @@ def rehearse(
     personae = Pathfinder.string_import(
         ensemble, relative=False, sep=":"
     )
+    log.debug(folder)
     log.debug(personae)
     scripts = list(SceneScript.scripts(**folder._asdict()))
 

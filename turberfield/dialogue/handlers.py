@@ -156,7 +156,7 @@ class TerminalHandler:
         self.dwell = dwell
         self.log = log or logging.getLogger("turberfield.dialogue.handle")
         self.shot = None
-        self.con = Connection(**Connection.options(paths=[dbPath]))
+        self.con = Connection(**Connection.options(paths=[dbPath] if dbPath else []))
         with self.con as db:
             rv = Creation(
                 *SchemaBase.tables.values()
