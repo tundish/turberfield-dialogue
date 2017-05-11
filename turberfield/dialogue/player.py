@@ -59,10 +59,11 @@ def rehearse(
             log.info("Populated {0} rows.".format(rv))
 
     while True:
-        for script, interlude in itertools.zip_longest(
+        for script, interlude in zip(
             scripts, itertools.cycle(folder.interludes)
         ):
             yield from handler(script, loop=loop)
+            log.debug(script)
             seq = list(run_through(script, personae, log, roles=roles))
             for shot, item in seq:
                 yield from handler(shot, loop=loop)

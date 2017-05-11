@@ -58,6 +58,10 @@ ensemble = {
     ]
 }
 
+def interaction(folder, ensemble, log=None, loop=None):
+    reply = input("Press return.")
+    return folder
+
 totality = list(ensemble.values())
 
 game = SceneScript.Folder(
@@ -65,5 +69,5 @@ game = SceneScript.Folder(
     __doc__,
     ["foyer.rst", ],
     #["foyer.rst", "bar.rst", "cloakroom.rst"],
-    []
+    [interaction]
 )
