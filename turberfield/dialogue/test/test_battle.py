@@ -46,7 +46,8 @@ class LoaderTests(unittest.TestCase):
 
     def test_scripts(self):
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "test", ["combat.rst"], itertools.repeat(None)
+            "turberfield.dialogue.sequences.battle_royal", "test", None,
+            ["combat.rst"], itertools.repeat(None)
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertEqual(1, len(rv))
@@ -54,14 +55,16 @@ class LoaderTests(unittest.TestCase):
 
     def test_scripts_bad_pkg(self):
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.not_there", "test", ["combat.rst"], itertools.repeat(None)
+            "turberfield.dialogue.sequences.not_there", "test", None,
+            ["combat.rst"], itertools.repeat(None)
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertFalse(rv)
 
     def test_scripts_bad_scenefile(self):
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "test", ["not_there.rst"], itertools.repeat(None)
+            "turberfield.dialogue.sequences.battle_royal", "test", None,
+            ["not_there.rst"], itertools.repeat(None)
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertFalse(rv)
@@ -78,7 +81,8 @@ class CastingTests(unittest.TestCase):
             Tool(name="Rusty Chopper").set_state(Pose.standing),
         }
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "test", ["combat.rst"], itertools.repeat(None)
+            "turberfield.dialogue.sequences.battle_royal", "test", None,
+            ["combat.rst"], itertools.repeat(None)
         )
         self.script = next(SceneScript.scripts(**folder._asdict()))
 

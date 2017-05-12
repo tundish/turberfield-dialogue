@@ -162,7 +162,7 @@ class SceneScript:
 
     """
 
-    Folder = namedtuple("Folder", ["pkg", "doc", "paths", "interludes"])
+    Folder = namedtuple("Folder", ["pkg", "doc", "metadata", "paths", "interludes"])
 
     log = logging.getLogger("turberfield.dialogue.model.scenescript")
 
