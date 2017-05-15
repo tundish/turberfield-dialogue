@@ -1,3 +1,5 @@
+from itertools import repeat
+
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.types import EnumFactory
 from turberfield.dialogue.types import Persona
@@ -66,8 +68,8 @@ totality = list(ensemble.values())
 
 game = SceneScript.Folder(
     "turberfield.dialogue.sequences.cloak",
-    __doc__,
+    __doc__, None,
     ["foyer.rst", ],
     #["foyer.rst", "bar.rst", "cloakroom.rst"],
-    [interaction]
+    repeat(interaction)
 )
