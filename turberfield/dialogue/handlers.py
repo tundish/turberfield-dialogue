@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
+from collections.abc import Callable
 import logging
 import sys
 import textwrap
@@ -36,8 +38,13 @@ from turberfield.utils.db import Creation
 class TerminalHandler:
 
     @staticmethod
-    def handle(obj):
-        return obj
+    def handle(obj, folder, ensemble, log, loop, **kwargs):
+        rv = folder
+        if asyncio.iscoroutinefunction(obj):
+            raise NotImplementedError
+        elif isinstance(obj, Callable):
+            rv = obj(folder, ensemble, log=log, loop=loop, **kwargs)
+        return rv
 
     @staticmethod
     def handle_audio(obj, wait=False):
@@ -184,7 +191,7 @@ class TerminalHandler:
         elif isinstance(obj, SceneScript):
             yield self.handle_scenescript(obj)
         else:
-            yield self.handle(obj)
+            yield self.handle(obj, *args, loop, self.log, **kwargs)
 
 class CGIHandler(TerminalHandler):
 

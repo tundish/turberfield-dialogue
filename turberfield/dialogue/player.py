@@ -50,7 +50,6 @@ def rehearse(
     )
     log.debug(folder)
     log.debug(personae)
-    scripts = list(SceneScript.scripts(**folder._asdict()))
 
     if hasattr(handler, "con"):
         with handler.con as db:
@@ -59,9 +58,9 @@ def rehearse(
             log.info("Populated {0} rows.".format(rv))
 
     while True:
-        for script, interlude in zip(
-            scripts, itertools.cycle(folder.interludes)
-        ):
+        scripts = list(SceneScript.scripts(**folder._asdict()))
+
+        for script, interlude in zip(scripts, folder.interludes):
             yield from handler(script, loop=loop)
             log.debug(script)
             seq = list(run_through(script, personae, log, roles=roles))
@@ -69,9 +68,13 @@ def rehearse(
                 yield from handler(shot, loop=loop)
                 yield from handler(item, loop=loop)
 
-            yield from handler(interlude, loop=loop)
-
-        if not repeat:
-            break
+            branch = next(handler(interlude, folder, personae, loop=loop))
+            if branch != folder:
+                break
         else:
-            repeat -= 1
+            if not repeat:
+                break
+            else:
+                repeat -= 1
+
+        folder = branch
