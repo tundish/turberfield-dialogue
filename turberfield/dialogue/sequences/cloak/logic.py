@@ -55,12 +55,14 @@ ensemble = {
     i._name.lower(): i for i in 
     [
         Locatable(name="Narrator").set_state(0),
-        Locatable(name="Cloak"),
+        Locatable(name="Cloak").set_state(0),
         Destructible(name="Message")
     ]
 }
 
 def interaction(folder, ensemble, log=None, loop=None):
+    narrator = next(i for i in ensemble if i._name == "Narrator")
+    print(narrator)
     reply = input("Press return.")
     return folder
 
