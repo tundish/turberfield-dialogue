@@ -6,12 +6,12 @@
 :date: 2016-10-15
 
 .. entity:: FIGHTER_1
-   :states: turberfield.dialogue.sequences.battle_royal.types.Pose.standing
+   :states: 1
    :roles: WEAPON
 
 .. entity:: FIGHTER_2
    :types: turberfield.dialogue.sequences.battle_royal.types.Animal
-   :states: turberfield.dialogue.sequences.battle_royal.types.Pose.standing
+   :states: 1
 
 .. entity:: WEAPON
    :types: turberfield.dialogue.sequences.battle_royal.types.Tool
@@ -45,7 +45,7 @@ Action
     Uuurrggh!
 
 .. property:: FIGHTER_2.state turberfield.dialogue.sequences.battle_royal.types.Animation.dying
-.. property:: FIGHTER_2.state turberfield.dialogue.sequences.battle_royal.types.Pose.toppled
+.. property:: FIGHTER_2.state 0
 
 .. memory:: turberfield.dialogue.sequences.battle_royal.types.Pose.toppled
    :subject: FIGHTER_1

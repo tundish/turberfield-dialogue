@@ -41,9 +41,9 @@ class Tool(Stateful, Persona):
     pass
 
 ensemble = [
-    Animal(name="Itchy").set_state(Pose.standing),
-    Animal(name="Scratchy").set_state(Pose.standing),
-    Tool(name="Ol' Rusty Chopper").set_state(Pose.standing),
+    Animal(name="Itchy").set_state(1),
+    Animal(name="Scratchy").set_state(1),
+    Tool(name="Ol' Rusty Chopper").set_state(1),
     Animation,
     Pose
 ]

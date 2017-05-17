@@ -33,3 +33,11 @@ Checking my person
     that its folds and textures cannot be perceived. It seems to swallow all
     light.
 
+.. memory:: turberfield.dialogue.sequences.cloak.logic.Progress.described
+   :subject: NARRATOR
+   :object: CLOAK
+
+   |Narrator| described the |Cloak|.
+
+.. |Narrator| property:: Narrator.name.firstname
+.. |Cloak| property:: Cloak.name.firstname
