@@ -30,6 +30,11 @@ class Pathfinder:
 
     @staticmethod
     def string_import(arg, relative=False, sep=None):
+        try:
+            return int(arg.strip())
+        except ValueError:
+            pass
+
         bits = arg.split(".")
         if sep is None:
             index = min(n for n, i in enumerate(bits) if i and i[0].isupper())

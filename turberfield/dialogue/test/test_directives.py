@@ -56,6 +56,9 @@ class EntityDeclarationTests(unittest.TestCase):
         )
         self.assertIs(rv, EntityDeclarationTests.Outer.Inner)
 
+        rv = Entity.Declaration.string_import("0", relative=True)
+        self.assertEqual(0, rv)
+
     @unittest.skipIf(
         "discover" not in sys.argv,
         "Testing relative import: Needs ~/py3.5/bin/python -m unittest discover turberfield"
@@ -106,6 +109,9 @@ class EntityDeclarationTests(unittest.TestCase):
             relative=False
         )
         self.assertIs(rv, EntityDeclarationTests.Outer.Inner)
+
+        rv = Entity.Declaration.string_import("0", relative=False)
+        self.assertEqual(0, rv)
 
     @unittest.skipIf(
         "discover" in sys.argv,

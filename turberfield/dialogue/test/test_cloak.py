@@ -42,6 +42,7 @@ from turberfield.utils.misc import log_setup
 import pkg_resources
 
 
+@unittest.skip("Migrate to cloak tests.")
 class LoaderTests(unittest.TestCase):
 
     def test_scripts(self):
@@ -69,6 +70,7 @@ class LoaderTests(unittest.TestCase):
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertFalse(rv)
 
+@unittest.skip("Migrate to cloak tests.")
 class CastingTests(unittest.TestCase):
 
     Persona = namedtuple("Persona", ["uuid", "title", "names"])
@@ -147,3 +149,10 @@ class CastingTests(unittest.TestCase):
                     item,
                     (Model.Audio, Model.Property, Model.Line, Model.Memory)
                 )
+
+        # Last item is a Memory
+        self.assertEqual(0, item.state)
+        self.assertTrue(item.text)
+        self.assertFalse("|" in item.text)
+        self.assertTrue(item.html)
+        self.assertFalse("|" in item.html)
