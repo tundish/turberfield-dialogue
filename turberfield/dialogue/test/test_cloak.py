@@ -17,132 +17,26 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import collections.abc
-from collections import namedtuple
-import datetime
-import enum
-import io
-import itertools
-import logging
-import os
-import sys
-import textwrap
-import tempfile
+import copy
 import unittest
-import uuid
 
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
-from turberfield.dialogue.sequences.battle_royal.types import Animal
-from turberfield.dialogue.sequences.battle_royal.types import Pose
-from turberfield.dialogue.sequences.battle_royal.types import Tool
-import turberfield.dialogue.viewer
-from turberfield.utils.misc import log_setup
-
-import pkg_resources
+from turberfield.dialogue.sequences.cloak.logic import references
+from turberfield.dialogue.sequences.cloak.logic import game
+from turberfield.dialogue.sequences.cloak.logic import Progress
 
 
-@unittest.skip("Migrate to cloak tests.")
-class LoaderTests(unittest.TestCase):
-
-    def test_scripts(self):
-        folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "test", None,
-            ["combat.rst"], itertools.repeat(None)
-        )
-        rv = list(SceneScript.scripts(**folder._asdict()))
-        self.assertEqual(1, len(rv))
-        self.assertIsInstance(rv[0], SceneScript)
-
-    def test_scripts_bad_pkg(self):
-        folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.not_there", "test", None,
-            ["combat.rst"], itertools.repeat(None)
-        )
-        rv = list(SceneScript.scripts(**folder._asdict()))
-        self.assertFalse(rv)
-
-    def test_scripts_bad_scenefile(self):
-        folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "test", None,
-            ["not_there.rst"], itertools.repeat(None)
-        )
-        rv = list(SceneScript.scripts(**folder._asdict()))
-        self.assertFalse(rv)
-
-@unittest.skip("Migrate to cloak tests.")
 class CastingTests(unittest.TestCase):
 
-    Persona = namedtuple("Persona", ["uuid", "title", "names"])
-    Location = namedtuple("Location", ["name", "capacity"])
-
     def setUp(self):
-        self.personae = {
-            Animal(name="Itchy").set_state(1),
-            Animal(name="Scratchy").set_state(1),
-            Tool(name="Rusty Chopper").set_state(1),
-        }
-        folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "test", None,
-            ["combat.rst"], itertools.repeat(None)
-        )
-        self.script = next(SceneScript.scripts(**folder._asdict()))
+        self.references = references
+        self.folder = copy.deepcopy(game)
 
-    def test_casting_adds_citation_definition(self):
-        with self.script as script:
-            self.assertFalse(script.doc.citations)
-            self.assertEqual(3, len(script.doc.citation_refs))
-            casting = script.select(self.personae)
-            self.assertIsInstance(casting, collections.abc.Mapping, casting)
-            script.cast(casting)
-            self.assertEqual(3, len(script.doc.citations))
-            self.assertEqual(3, len(script.doc.citation_refs))
-
-    def test_casting_respects_type(self):
-        for n in range(16):
-            self.setUp()
-            with self.subTest(n=n), self.script as script:
-                casting = script.select(self.personae)
-                c, p = next((c, p) for c, p in casting.items() if "fighter_2" in c["names"])
-                self.assertIsInstance(p, Animal, p)
-
-    def test_cgi(self):
-        p = turberfield.dialogue.viewer.parser()
-        fd, fp = tempfile.mkstemp(suffix=".db")
-        try:
-            ns = p.parse_args([
-                "--ensemble", "turberfield.dialogue.sequences.battle_royal.types:ensemble",
-                "--sequence", "turberfield.dialogue.sequences.battle_royal:folder",
-                "--db", fp,
-                #"-v"
-            ])
-            self.assertEqual("turberfield", log_setup(ns))
-            stream = io.StringIO()
-            then = datetime.datetime.now()
-            rv = list(turberfield.dialogue.viewer.cgi_producer(ns, stream))
-            elapsed = datetime.datetime.now() - then
-            self.assertTrue(8 <= elapsed.seconds <= 9, elapsed.seconds)
-
-            lines = stream.getvalue().splitlines()
-            self.assertEqual("Content-type:text/event-stream", lines[0])
-            self.assertEqual("", lines[1])
-            seq = iter(lines[2:])
-            for i in range(3):
-                with self.subTest(i=i):
-                    line = next(seq)
-                    self.assertTrue(line.startswith("event:"))
-                    line = next(seq)
-                    self.assertTrue(line.startswith("data:"))
-                    line = next(seq)
-                    self.assertFalse(line)
-        finally:
-            os.close(fd)
-            os.remove(fp)
-
-    def test_run(self):
-        #self.assertTrue(all(i.state for i in self.personae))
-        with self.script as script:
-            model = script.cast(script.select(self.personae)).run()
+    def test_foyer_scene(self):
+        script = next(SceneScript.scripts(**self.folder._asdict()))
+        with script as scene:
+            model = scene.cast(scene.select(self.references)).run()
             for n, (shot, item) in enumerate(model):
                 self.assertIsInstance(shot, Model.Shot)
                 self.assertIsInstance(
@@ -150,9 +44,9 @@ class CastingTests(unittest.TestCase):
                     (Model.Audio, Model.Property, Model.Line, Model.Memory)
                 )
 
-        # Last item is a Memory
-        self.assertEqual(0, item.state)
-        self.assertTrue(item.text)
-        self.assertFalse("|" in item.text)
-        self.assertTrue(item.html)
-        self.assertFalse("|" in item.html)
+                if isinstance(item, Model.Memory):
+                    self.assertEqual(Progress.described, item.state)
+                    self.assertTrue(item.text)
+                    self.assertFalse("|" in item.text)
+                    self.assertTrue(item.html)
+                    self.assertFalse("|" in item.html)

@@ -6,25 +6,32 @@
 :date: 2017-05-11
 
 .. entity:: NARRATOR
-   :states: 0
+   :types: turberfield.dialogue.sequences.cloak.logic.Narrator
+   :states: turberfield.dialogue.sequences.cloak.logic.Location.foyer
 
 .. entity:: CLOAK
-   :states: 0
-
+   :types: turberfield.dialogue.sequences.cloak.logic.Garment
+   :states: turberfield.dialogue.sequences.cloak.logic.Location.foyer
 
 The Foyer of an abandoned Hotel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Looking around
---------------
+From where you stand
+--------------------
 
 [NARRATOR]_
 
-    It appears this building used to be a Hotel.
+    It appears this building used to be a hotel. This would be the foyer.
+    You can see the footprint of a long reception desk running down one side
+    of the floor.
 
-Checking my person
-------------------
+[NARRATOR]_
+
+    The room is completely empty now.
+
+Checking your person
+--------------------
 
 [CLOAK]_
 
@@ -37,7 +44,16 @@ Checking my person
    :subject: NARRATOR
    :object: CLOAK
 
-   |Narrator| described the |Cloak|.
+   Narrator described the Cloak.
 
-.. |Narrator| property:: Narrator.name.firstname
-.. |Cloak| property:: Cloak.name.firstname
+Looking around
+--------------
+
+[NARRATOR]_
+
+    To the North, the door you first entered by is stuck fast.
+
+[NARRATOR]_
+
+    There are other doors to the South and West.
+

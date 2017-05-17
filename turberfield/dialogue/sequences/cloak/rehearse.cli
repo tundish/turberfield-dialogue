@@ -1,3 +1,3 @@
---ensemble=turberfield.dialogue.sequences.cloak.logic:totality
+--ensemble=turberfield.dialogue.sequences.cloak.logic:references
 --sequence=turberfield.dialogue.sequences.cloak.logic:game
 --repeat=-1
