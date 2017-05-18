@@ -91,3 +91,9 @@ class SceneTests(unittest.TestCase):
                     self.assertEqual(Location.bar, narrator.get_state(Location))
                     interlude(game, self.references, cmd="north")
                     self.assertEqual(Location.foyer, narrator.get_state(Location))
+
+                elif script.fP.endswith("cloakroom.rst"):
+                    self.assertEqual(1, n)
+                    self.assertEqual(Location.cloakroom, narrator.get_state(Location))
+                    interlude(game, self.references, cmd="east")
+                    self.assertEqual(Location.foyer, narrator.get_state(Location))
