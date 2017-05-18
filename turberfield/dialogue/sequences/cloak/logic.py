@@ -75,14 +75,14 @@ def parse_command(cmd):
         return None
 
 
-def interaction(folder, ensemble, log=None, loop=None):
+def interaction(folder, ensemble, cmd="", log=None, loop=None):
     narrator = next(i for i in ensemble if isinstance(i, Narrator))
     cloak = next(i for i in ensemble if isinstance(i, Garment))
     locn = narrator.get_state(Location)
     action = None
     if locn == Location.foyer:
         while action not in ("s", "w"):
-            cmd = input("Enter a command: ")
+            cmd = cmd or input("Enter a command: ")
             action = parse_command(cmd)
         if action == "s":
             narrator.set_state(Location.bar)

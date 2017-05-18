@@ -18,12 +18,17 @@
 
 
 import copy
+import itertools
+import logging
 import unittest
 
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
+from turberfield.dialogue.player import run_through
 from turberfield.dialogue.sequences.cloak.logic import references
 from turberfield.dialogue.sequences.cloak.logic import game
+from turberfield.dialogue.sequences.cloak.logic import Location
+from turberfield.dialogue.sequences.cloak.logic import Narrator
 from turberfield.dialogue.sequences.cloak.logic import Progress
 
 
@@ -33,7 +38,7 @@ class CastingTests(unittest.TestCase):
         self.references = references
         self.folder = copy.deepcopy(game)
 
-    def test_foyer_scene(self):
+    def test_foyer_scenescript(self):
         script = next(SceneScript.scripts(**self.folder._asdict()))
         with script as scene:
             model = scene.cast(scene.select(self.references)).run()
@@ -50,3 +55,26 @@ class CastingTests(unittest.TestCase):
                     self.assertFalse("|" in item.text)
                     self.assertTrue(item.html)
                     self.assertFalse("|" in item.html)
+
+class SceneTests(unittest.TestCase):
+
+    def setUp(self):
+        self.references = references
+        self.folder = copy.deepcopy(game)
+
+    @staticmethod
+    def unittest_handler(obj, *args, loop, **kwargs):
+        return
+
+    def test_foyer_scene(self):
+        narrator = next(i for i in self.references if isinstance(i, Narrator))
+        log = logging.getLogger("turberfield")
+        scripts = list(SceneScript.scripts(**game._asdict()))
+
+        for n, script, interlude in zip(itertools.count(), scripts, game.interludes):
+            with script as scene:
+                cast = scene.select(self.references)
+            seq = list(run_through(script, self.references, log, roles=1))
+            if script.fP.endswith("foyer.rst"):
+                interlude(game, self.references, cmd="south")
+                self.assertEqual(Location.bar, narrator.get_state(Location))

@@ -173,7 +173,10 @@ class TerminalHandler:
 
     def __call__(self, obj, *args, loop, **kwargs):
         if isinstance(obj, Model.Line):
-            yield self.handle_line(obj)
+            try:
+                yield self.handle_line(obj)
+            except AttributeError:
+                pass
         elif isinstance(obj, Model.Audio):
             yield self.handle_audio(obj)
         elif isinstance(obj, Model.Memory):
