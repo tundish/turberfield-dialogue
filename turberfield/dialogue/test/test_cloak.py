@@ -75,25 +75,31 @@ class SceneTests(unittest.TestCase):
         for n in range(3):
             for script, interlude in zip(scripts, game.interludes):
                 seq = list(run_through(script, self.references, log, roles=1))
+                print(seq)
                 if script.fP.endswith("foyer.rst"):
                     self.assertEqual(Location.foyer, narrator.get_state(Location))
                     if n == 0:
                         interlude(game, self.references, cmd="south")
                         self.assertEqual(Location.bar, narrator.get_state(Location))
+                        continue
                     elif n == 1:
                         interlude(game, self.references, cmd="west")
                         self.assertEqual(Location.cloakroom, narrator.get_state(Location))
+                        continue
                     else:
                         self.assertEqual(2, n)
+                        continue
 
                 elif script.fP.endswith("bar.rst"):
                     self.assertEqual(0, n)
                     self.assertEqual(Location.bar, narrator.get_state(Location))
                     interlude(game, self.references, cmd="north")
                     self.assertEqual(Location.foyer, narrator.get_state(Location))
+                    continue
 
                 elif script.fP.endswith("cloakroom.rst"):
                     self.assertEqual(1, n)
                     self.assertEqual(Location.cloakroom, narrator.get_state(Location))
                     interlude(game, self.references, cmd="east")
                     self.assertEqual(Location.foyer, narrator.get_state(Location))
+                    continue

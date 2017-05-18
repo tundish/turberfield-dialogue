@@ -90,6 +90,14 @@ def interaction(folder, ensemble, cmd="", log=None, loop=None):
             narrator.set_state(Location.cloakroom)
         if cloak.get_state(Location) == locn:
             cloak.set_state(narrator.get_state(Location))
+    elif locn == Location.bar:
+        while action != "n":
+            cmd = cmd or input("Enter a command: ")
+            action = parse_command(cmd)
+        else:
+            narrator.set_state(Location.foyer)
+        if cloak.get_state(Location) == locn:
+            cloak.set_state(narrator.get_state(Location))
     else:
         print(narrator)
     return folder
