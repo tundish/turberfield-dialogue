@@ -68,9 +68,10 @@ def rehearse(
                 yield from handler(shot, loop=loop)
                 yield from handler(item, loop=loop)
 
-            branch = next(handler(interlude, folder, personae, loop=loop))
-            if branch != folder:
-                break
+            if seq:
+                branch = next(handler(interlude, folder, personae, loop=loop))
+                if branch != folder:
+                    break
         else:
             if not repeat:
                 break
