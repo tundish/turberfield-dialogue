@@ -66,22 +66,28 @@ class SceneTests(unittest.TestCase):
     def unittest_handler(obj, *args, loop, **kwargs):
         return
 
-    def test_foyer_scene(self):
+    def test_locations(self):
         narrator = next(i for i in self.references if isinstance(i, Narrator))
         log = logging.getLogger("turberfield")
         scripts = list(SceneScript.scripts(**game._asdict()))
         self.assertEqual(3, len(scripts))
 
-        for n, script, interlude in zip(
-            itertools.count(0), scripts, game.interludes
-        ):
-            seq = list(run_through(script, self.references, log, roles=1))
-            if script.fP.endswith("foyer.rst"):
-                interlude(game, self.references, cmd="south")
-                self.assertEqual(Location.bar, narrator.get_state(Location))
+        for n in range(3):
+            for script, interlude in zip(scripts, game.interludes):
+                seq = list(run_through(script, self.references, log, roles=1))
+                if script.fP.endswith("foyer.rst"):
+                    self.assertEqual(Location.foyer, narrator.get_state(Location))
+                    if n == 0:
+                        interlude(game, self.references, cmd="south")
+                        self.assertEqual(Location.bar, narrator.get_state(Location))
+                    elif n == 1:
+                        interlude(game, self.references, cmd="west")
+                        self.assertEqual(Location.cloakroom, narrator.get_state(Location))
+                    else:
+                        self.assertEqual(2, n)
 
-            elif script.fP.endswith("bar.rst"):
-                interlude(game, self.references, cmd="north")
-                self.assertEqual(Location.foyer, narrator.get_state(Location))
-
-        self.assertEqual(2, n)
+                elif script.fP.endswith("bar.rst"):
+                    self.assertEqual(0, n)
+                    self.assertEqual(Location.bar, narrator.get_state(Location))
+                    interlude(game, self.references, cmd="north")
+                    self.assertEqual(Location.foyer, narrator.get_state(Location))
