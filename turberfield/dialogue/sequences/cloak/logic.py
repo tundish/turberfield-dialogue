@@ -99,7 +99,6 @@ references = ensemble + [Location, Progress]
 game = SceneScript.Folder(
     "turberfield.dialogue.sequences.cloak",
     __doc__, None,
-    ["foyer.rst", ],
-    #["foyer.rst", "bar.rst", "cloakroom.rst"],
+    ["foyer.rst", "bar.rst", "cloakroom.rst"],
     repeat(interaction)
 )

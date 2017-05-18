@@ -70,11 +70,18 @@ class SceneTests(unittest.TestCase):
         narrator = next(i for i in self.references if isinstance(i, Narrator))
         log = logging.getLogger("turberfield")
         scripts = list(SceneScript.scripts(**game._asdict()))
+        self.assertEqual(3, len(scripts))
 
-        for n, script, interlude in zip(itertools.count(), scripts, game.interludes):
-            with script as scene:
-                cast = scene.select(self.references)
+        for n, script, interlude in zip(
+            itertools.count(0), scripts, game.interludes
+        ):
             seq = list(run_through(script, self.references, log, roles=1))
             if script.fP.endswith("foyer.rst"):
                 interlude(game, self.references, cmd="south")
                 self.assertEqual(Location.bar, narrator.get_state(Location))
+
+            elif script.fP.endswith("bar.rst"):
+                interlude(game, self.references, cmd="north")
+                self.assertEqual(Location.foyer, narrator.get_state(Location))
+
+        self.assertEqual(2, n)
