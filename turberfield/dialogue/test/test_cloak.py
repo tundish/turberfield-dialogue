@@ -17,6 +17,7 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from collections.abc import Callable
 import copy
 import itertools
 import logging
@@ -24,7 +25,7 @@ import unittest
 
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
-from turberfield.dialogue.player import run_through
+from turberfield.dialogue.player import rehearse
 from turberfield.dialogue.sequences.cloak.logic import references
 from turberfield.dialogue.sequences.cloak.logic import game
 from turberfield.dialogue.sequences.cloak.logic import Location
@@ -62,44 +63,48 @@ class SceneTests(unittest.TestCase):
         self.references = references
         self.folder = copy.deepcopy(game)
 
-    @staticmethod
-    def unittest_handler(obj, *args, loop, **kwargs):
-        return
-
     def test_locations(self):
-        narrator = next(i for i in self.references if isinstance(i, Narrator))
         log = logging.getLogger("turberfield")
-        scripts = list(SceneScript.scripts(**game._asdict()))
-        self.assertEqual(3, len(scripts))
+        narrator = next(i for i in self.references if isinstance(i, Narrator))
 
-        for n in range(3):
-            for script, interlude in zip(scripts, game.interludes):
-                seq = list(run_through(script, self.references, log, roles=1))
-                print(seq)
-                if script.fP.endswith("foyer.rst"):
-                    self.assertEqual(Location.foyer, narrator.get_state(Location))
-                    if n == 0:
-                        interlude(game, self.references, cmd="south")
-                        self.assertEqual(Location.bar, narrator.get_state(Location))
-                        continue
-                    elif n == 1:
-                        interlude(game, self.references, cmd="west")
-                        self.assertEqual(Location.cloakroom, narrator.get_state(Location))
-                        continue
-                    else:
-                        self.assertEqual(2, n)
-                        continue
+        class MockHandler:
 
-                elif script.fP.endswith("bar.rst"):
-                    self.assertEqual(0, n)
-                    self.assertEqual(Location.bar, narrator.get_state(Location))
-                    interlude(game, self.references, cmd="north")
-                    self.assertEqual(Location.foyer, narrator.get_state(Location))
-                    continue
+            def __init__(self, parent, folder, references):
+                self.parent = parent
+                self.folder = folder
+                self.references = references
+                self.repeats = 0
 
-                elif script.fP.endswith("cloakroom.rst"):
-                    self.assertEqual(1, n)
-                    self.assertEqual(Location.cloakroom, narrator.get_state(Location))
-                    interlude(game, self.references, cmd="east")
-                    self.assertEqual(Location.foyer, narrator.get_state(Location))
-                    continue
+            def __call__(self, obj, *args, **kwargs):
+                if isinstance(obj, Callable):
+                    interlude = obj
+                    folder, index, ensemble = args
+                    if folder.paths[index] == "foyer.rst":
+                        self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
+                        if self.repeats == 0:
+                            interlude(self.folder, self.references, cmd="south")
+                            self.parent.assertEqual(Location.bar, narrator.get_state(Location))
+                        elif self.repeats == 1:
+                            interlude(self.folder, self.references, cmd="west")
+                            self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
+                        else:
+                            self.parent.assertEqual(2, self.repeats)
+
+                    elif folder.paths[index] == "bar.rst":
+                        self.parent.assertEqual(0, self.repeats)
+                        self.parent.assertEqual(Location.bar, narrator.get_state(Location))
+                        interlude(self.folder, self.references, cmd="north")
+                        self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
+
+                    elif folder.paths[index] == "cloakroom.rst":
+                        self.parent.assertEqual(1, self.repeats)
+                        self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
+                        interlude(self.folder, self.references, cmd="east")
+                        self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
+                        self.repeats += 1
+                    yield folder
+
+        test_handler = MockHandler(self, self.folder, self.references)
+        rv = list(rehearse(
+            self.folder, self.references, test_handler, repeat=0, roles=1
+        ))

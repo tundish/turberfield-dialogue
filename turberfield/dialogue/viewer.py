@@ -34,6 +34,7 @@ from blessings import Terminal
 import pkg_resources
 
 from turberfield.dialogue import __version__
+from turberfield.dialogue.directives import Pathfinder
 from turberfield.dialogue.handlers import CGIHandler
 from turberfield.dialogue.handlers import TerminalHandler
 from turberfield.dialogue.model import Model
@@ -192,8 +193,15 @@ def cgi_producer(args, stream=None):
     handler = CGIHandler(Terminal(stream=stream), args.db)
     print("Content-type:text/event-stream", file=handler.terminal.stream)
     print(file=handler.terminal.stream)
+    folder = Pathfinder.string_import(
+        args.sequence, relative=False, sep=":"
+    )
+    references = Pathfinder.string_import(
+        args.ensemble, relative=False, sep=":"
+    )
+
     for line in rehearse(
-        args.sequence, args.ensemble, handler, args.repeat, args.roles
+        folder, references, handler, args.repeat, args.roles
     ):
         yield line
 

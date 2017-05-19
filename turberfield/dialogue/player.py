@@ -27,10 +27,12 @@ from turberfield.dialogue.schema import SchemaBase
 def run_through(script, ensemble, log, roles=1):
     then = datetime.datetime.now()
     with script as dialogue:
+        selection = dialogue.select(ensemble, roles=roles)
+        if not any(selection.values()):
+            return
+
         try:
-            model = dialogue.cast(
-                dialogue.select(ensemble, roles=roles)
-            ).run()
+            model = dialogue.cast(selection).run()
         except (AttributeError, ValueError) as e:
             log.error(". ".join(getattr(e, "args", e) or e))
             return
@@ -38,38 +40,30 @@ def run_through(script, ensemble, log, roles=1):
             yield from model
 
 def rehearse(
-    sequence, ensemble, handler, repeat=0, roles=1,
+    folder, references, handler, repeat=0, roles=1,
     log=None, loop=None
 ):
     log = log or logging.getLogger("turberfield.dialogue.player.rehearse")
-    folder = Pathfinder.string_import(
-        sequence, relative=False, sep=":"
-    )
-    personae = Pathfinder.string_import(
-        ensemble, relative=False, sep=":"
-    )
-    log.debug(folder)
-    log.debug(personae)
 
     if hasattr(handler, "con"):
         with handler.con as db:
             log.debug(handler.con)
-            rv = SchemaBase.populate(db, personae)
+            rv = SchemaBase.populate(db, references)
             log.info("Populated {0} rows.".format(rv))
 
     while True:
         scripts = list(SceneScript.scripts(**folder._asdict()))
 
-        for script, interlude in zip(scripts, folder.interludes):
+        for index, script, interlude in zip(itertools.count(), scripts, folder.interludes):
             yield from handler(script, loop=loop)
             log.debug(script)
-            seq = list(run_through(script, personae, log, roles=roles))
+            seq = list(run_through(script, references, log, roles=roles))
             for shot, item in seq:
                 yield from handler(shot, loop=loop)
                 yield from handler(item, loop=loop)
 
             if seq:
-                branch = next(handler(interlude, folder, personae, loop=loop))
+                branch = next(handler(interlude, folder, index, references, loop=loop))
                 if branch != folder:
                     break
         else:

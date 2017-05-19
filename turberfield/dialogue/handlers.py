@@ -38,7 +38,7 @@ from turberfield.utils.db import Creation
 class TerminalHandler:
 
     @staticmethod
-    def handle(obj, folder, ensemble, log, loop, **kwargs):
+    def handle(obj, folder, index:int, ensemble, log, loop, **kwargs):
         rv = folder
         if asyncio.iscoroutinefunction(obj):
             raise NotImplementedError
