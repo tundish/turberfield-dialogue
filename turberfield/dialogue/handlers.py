@@ -37,14 +37,6 @@ from turberfield.utils.db import Creation
 
 class TerminalHandler:
 
-    def handle(self, obj, folder, index:int, ensemble, loop, **kwargs):
-        rv = folder
-        if asyncio.iscoroutinefunction(obj):
-            raise NotImplementedError
-        elif isinstance(obj, Callable):
-            rv = obj(folder, ensemble, loop=loop, **kwargs)
-        return rv
-
     @staticmethod
     def handle_audio(obj, wait=False):
         fp = pkg_resources.resource_filename(obj.package, obj.resource)
@@ -70,6 +62,12 @@ class TerminalHandler:
             if obj.loop > 1 or wait:
                 playObj.wait_done()
         return obj
+
+    def handle_interlude(self, obj, folder, index:int, ensemble, loop=None, **kwargs):
+        if obj is None:
+            return folder
+        else:
+            return obj(folder, ensemble, loop=loop, **kwargs)
 
     def handle_line(self, obj):
         print(
@@ -192,8 +190,12 @@ class TerminalHandler:
             self.shot = obj
         elif isinstance(obj, SceneScript):
             yield self.handle_scenescript(obj)
+        elif asyncio.iscoroutinefunction(obj):
+            raise NotImplementedError
+        elif (obj is None or isinstance(obj, Callable)) and len(args) == 3:
+            yield self.handle_interlude(obj, *args, loop=loop, **kwargs)
         else:
-            yield self.handle(obj, *args, loop=loop, **kwargs)
+            yield obj
 
 class CGIHandler(TerminalHandler):
 
