@@ -64,11 +64,11 @@ class TerminalHandler:
                 playObj.wait_done()
         return obj
 
-    def handle_interlude(self, obj, folder, index:int, ensemble, loop=None, **kwargs):
+    def handle_interlude(self, obj, folder, index, ensemble, loop=None, **kwargs):
         if obj is None:
             return folder
         else:
-            return obj(folder, ensemble, loop=loop, **kwargs)
+            return obj(folder, index, ensemble, loop=loop, **kwargs)
 
     def handle_line(self, obj):
         print(
