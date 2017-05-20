@@ -82,10 +82,10 @@ class SceneTests(unittest.TestCase):
                     if folder.paths[index] == "foyer.rst":
                         self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
                         if self.repeats == 0:
-                            interlude(self.folder, self.references, cmd="south")
+                            interlude(self.folder, index, self.references, cmd="south")
                             self.parent.assertEqual(Location.bar, narrator.get_state(Location))
                         elif self.repeats == 1:
-                            interlude(self.folder, self.references, cmd="west")
+                            interlude(self.folder, index, self.references, cmd="west")
                             self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
                         else:
                             self.parent.assertEqual(2, self.repeats)
@@ -93,13 +93,13 @@ class SceneTests(unittest.TestCase):
                     elif folder.paths[index] == "bar.rst":
                         self.parent.assertEqual(0, self.repeats)
                         self.parent.assertEqual(Location.bar, narrator.get_state(Location))
-                        interlude(self.folder, self.references, cmd="north")
+                        interlude(self.folder, index, self.references, cmd="north")
                         self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
 
                     elif folder.paths[index] == "cloakroom.rst":
                         self.parent.assertEqual(1, self.repeats)
                         self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
-                        interlude(self.folder, self.references, cmd="east")
+                        interlude(self.folder, index, self.references, cmd="east")
                         self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
                         self.repeats += 1
                     yield folder

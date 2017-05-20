@@ -75,7 +75,7 @@ def parse_command(cmd):
         return None
 
 
-def interaction(folder, ensemble, cmd="", log=None, loop=None):
+def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
     narrator = next(i for i in ensemble if isinstance(i, Narrator))
     cloak = next(i for i in ensemble if isinstance(i, Garment))
     locn = narrator.get_state(Location)
