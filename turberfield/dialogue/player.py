@@ -40,7 +40,7 @@ def run_through(script, ensemble, roles=1):
         else:
             yield from model
 
-def rehearse( folder, references, handler, repeat=0, roles=1, loop=None):
+def rehearse(folder, references, handler, repeat=0, roles=1, loop=None):
 
     yield from handler(references, loop=loop)
 

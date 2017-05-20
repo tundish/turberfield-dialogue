@@ -56,12 +56,21 @@ Eg::
 """
 
 
-def yield_resources(obj, *args, loop, **kwargs):
+def yield_resources(obj, *args, **kwargs):
     if isinstance(obj, Model.Audio):
         path = pkg_resources.resource_filename(obj.package, obj.resource)
         pos = path.find("lib", len(sys.prefix))
         if pos != -1:
             yield path[pos:]
+
+def resolve_objects(args):
+    folder = Pathfinder.string_import(
+        args.sequence, relative=False, sep=":"
+    )
+    references = Pathfinder.string_import(
+        args.ensemble, relative=False, sep=":"
+    )
+    return folder, references
 
 def cgi_consumer(args):
     resources = rehearse(
@@ -193,30 +202,18 @@ def cgi_producer(args, stream=None):
     handler = CGIHandler(Terminal(stream=stream), args.db)
     print("Content-type:text/event-stream", file=handler.terminal.stream)
     print(file=handler.terminal.stream)
-    folder = Pathfinder.string_import(
-        args.sequence, relative=False, sep=":"
-    )
-    references = Pathfinder.string_import(
-        args.ensemble, relative=False, sep=":"
-    )
-
-    for line in rehearse(
-        folder, references, handler, args.repeat, args.roles
-    ):
-        yield line
+    folder, references = resolve_objects(args)
+    yield from rehearse(folder, references, handler, args.repeat, args.roles)
 
 def presenter(args):
     handler = TerminalHandler(Terminal(), args.db)
+    folder, references = resolve_objects(args)
     if args.log_level != logging.DEBUG:
         with handler.terminal.fullscreen():
-            yield from rehearse(
-                args.sequence, args.ensemble, handler, args.repeat, args.roles
-            )
+            yield from rehearse(folder, references, handler, args.repeat, args.roles)
             input("Press return.")
     else:
-        yield from rehearse(
-            args.sequence, args.ensemble, handler, args.repeat, args.roles
-        )
+        yield from rehearse(folder, references, handler, args.repeat, args.roles)
 
 def main(args):
     log = logging.getLogger(log_setup(args))
