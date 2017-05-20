@@ -24,7 +24,7 @@ from turberfield.dialogue.directives import Pathfinder
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.schema import SchemaBase
 
-def run_through(script, ensemble, log, roles=1):
+def run_through(script, ensemble, roles=1):
     then = datetime.datetime.now()
     with script as dialogue:
         selection = dialogue.select(ensemble, roles=roles)
@@ -34,6 +34,7 @@ def run_through(script, ensemble, log, roles=1):
         try:
             model = dialogue.cast(selection).run()
         except (AttributeError, ValueError) as e:
+            log = logging.getLogger("turberfield.dialogue.player.run_through")
             log.error(". ".join(getattr(e, "args", e) or e))
             return
         else:
@@ -57,7 +58,7 @@ def rehearse(
         for index, script, interlude in zip(itertools.count(), scripts, folder.interludes):
             yield from handler(script, loop=loop)
             log.debug(script)
-            seq = list(run_through(script, references, log, roles=roles))
+            seq = list(run_through(script, references, roles=roles))
             for shot, item in seq:
                 yield from handler(shot, loop=loop)
                 yield from handler(item, loop=loop)

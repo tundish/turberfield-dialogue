@@ -37,13 +37,12 @@ from turberfield.utils.db import Creation
 
 class TerminalHandler:
 
-    @staticmethod
-    def handle(obj, folder, index:int, ensemble, log, loop, **kwargs):
+    def handle(self, obj, folder, index:int, ensemble, loop, **kwargs):
         rv = folder
         if asyncio.iscoroutinefunction(obj):
             raise NotImplementedError
         elif isinstance(obj, Callable):
-            rv = obj(folder, ensemble, log=log, loop=loop, **kwargs)
+            rv = obj(folder, ensemble, loop=loop, **kwargs)
         return rv
 
     @staticmethod
@@ -194,7 +193,7 @@ class TerminalHandler:
         elif isinstance(obj, SceneScript):
             yield self.handle_scenescript(obj)
         else:
-            yield self.handle(obj, *args, loop, self.log, **kwargs)
+            yield self.handle(obj, *args, loop=loop, **kwargs)
 
 class CGIHandler(TerminalHandler):
 
