@@ -18,6 +18,7 @@
 
 import asyncio
 from collections.abc import Callable
+from collections.abc import MutableSequence
 import logging
 import sys
 import textwrap
@@ -150,6 +151,21 @@ class TerminalHandler:
         )
         return obj
 
+    def handle_creation(self):
+        with self.con as db:
+            rv = Creation(
+                *SchemaBase.tables.values()
+            ).run(db)
+            db.commit()
+            self.log.info("Created {0} tables in {1}.".format(len(rv), self.dbPath))
+            return rv
+
+    def handle_references(self, obj):
+        with self.con as db:
+            rv = SchemaBase.populate(db, obj)
+            self.log.info("Populated {0} rows.".format(rv))
+            return rv
+
     def __init__(
         self, terminal, dbPath=None,
         pause=1.5, dwell=0.2, log=None
@@ -161,12 +177,7 @@ class TerminalHandler:
         self.log = log or logging.getLogger("turberfield.dialogue.handle")
         self.shot = None
         self.con = Connection(**Connection.options(paths=[dbPath] if dbPath else []))
-        with self.con as db:
-            rv = Creation(
-                *SchemaBase.tables.values()
-            ).run(db)
-            db.commit()
-            self.log.info("Created {0} tables in {1}.".format(len(rv), self.dbPath))
+        self.handle_creation()
 
     def __call__(self, obj, *args, loop, **kwargs):
         if isinstance(obj, Model.Line):
@@ -192,6 +203,8 @@ class TerminalHandler:
             yield self.handle_scenescript(obj)
         elif asyncio.iscoroutinefunction(obj):
             raise NotImplementedError
+        elif isinstance(obj, MutableSequence):
+            yield self.handle_references(obj)
         elif (obj is None or isinstance(obj, Callable)) and len(args) == 3:
             yield self.handle_interlude(obj, *args, loop=loop, **kwargs)
         else:

@@ -40,24 +40,15 @@ def run_through(script, ensemble, roles=1):
         else:
             yield from model
 
-def rehearse(
-    folder, references, handler, repeat=0, roles=1,
-    log=None, loop=None
-):
-    log = log or logging.getLogger("turberfield.dialogue.player.rehearse")
+def rehearse( folder, references, handler, repeat=0, roles=1, loop=None):
 
-    if hasattr(handler, "con"):
-        with handler.con as db:
-            log.debug(handler.con)
-            rv = SchemaBase.populate(db, references)
-            log.info("Populated {0} rows.".format(rv))
+    yield from handler(references, loop=loop)
 
     while True:
         scripts = list(SceneScript.scripts(**folder._asdict()))
 
         for index, script, interlude in zip(itertools.count(), scripts, folder.interludes):
             yield from handler(script, loop=loop)
-            log.debug(script)
             seq = list(run_through(script, references, roles=roles))
             for shot, item in seq:
                 yield from handler(shot, loop=loop)
