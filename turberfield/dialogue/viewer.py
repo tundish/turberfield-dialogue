@@ -73,8 +73,9 @@ def resolve_objects(args):
     return folder, references
 
 def cgi_consumer(args):
+    folder, references = resolve_objects(args)
     resources = rehearse(
-        args.sequence, args.ensemble, yield_resources, repeat=0, roles=args.roles
+        folder, references, yield_resources, repeat=0, roles=args.roles
     )
     links = "\n".join('<link ref="prefetch" href="/{0}">'.format(i) for i in resources)
     params = vars(args)
