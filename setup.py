@@ -79,10 +79,11 @@ setup(
             "pep8>=1.6.2",
         ],
         "docbuild": [
-            "babel>=2.2.0",
-            "sphinx-argparse>=0.1.15",
-            "sphinxcontrib-seqdiag>=0.8.4",
-            "sphinx_rtd_theme>=0.1.9"
+            "babel>=2.4.0",
+            "sphinx>=1.6.1",
+            "sphinx-argparse>=0.2.0",
+            "sphinxcontrib-seqdiag>=0.8.5",
+            "sphinx_rtd_theme>=0.2.4"
         ],
     },
     tests_require=[],
