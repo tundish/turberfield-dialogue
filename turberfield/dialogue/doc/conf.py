@@ -66,8 +66,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'turberfield-dialogue'
-copyright = '2017, D HAynes'
-author = 'D HAynes'
+copyright = '2017, D Haynes'
+author = 'D Haynes'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

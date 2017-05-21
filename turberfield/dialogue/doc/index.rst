@@ -1,20 +1,42 @@
-.. turberfield-dialogue documentation master file, created by
-   sphinx-quickstart on Sun May 21 10:20:26 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+..  Titling
+    ##++::==~~--''``
 
-Welcome to turberfield-dialogue's documentation!
-================================================
+Turberfield is a framework for discrete event simulations and turn-based
+games.
+
+The API may change as the project proceeds. At this early stage you should
+only use the latest release; it may not be compatible with previous
+versions.
+
+If you've spotted a bug in Turberfield, please let me know so I can fix it.
+If you think Turberfield lacks a feature, you can help drive development by
+describing your Use Case.
+
+In either event, please visit the project's `issue tracker`_.
+
+Turberfield Dialogue library
+::::::::::::::::::::::::::::
+
+.. include:: ../../../README.rst
+
+:Author: tundish
+:Copyright: 2017 D Haynes
+:Licence: `GNU General Public License`_
+
+|
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :numbered:
 
-
-
-Indices and tables
-==================
+   design
+   syntax
+   battle
+   cloak
+   cli
+   api
 
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+
+.. _GNU General Public License: http://www.gnu.org/licenses/gpl.html
+.. _issue tracker: https://github.com/tundish/turberfield-dialogue/issues
