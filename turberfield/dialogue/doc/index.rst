@@ -27,7 +27,6 @@ Turberfield Dialogue library
 
 .. toctree::
    :maxdepth: 1
-   :numbered:
 
    design
    syntax

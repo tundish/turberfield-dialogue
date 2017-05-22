@@ -17,7 +17,9 @@ to writing practitioners. It uses terminology from screenplay medium.
 Turberfield comes with a rehearsal tool which lets you run through your dialogue and fine-tune
 your tone and pacing.
 
-Syntax
+We'll go over the syntax of Turberfield scene script files in a moment.
+They are based on a system called reStructuredText_. It's the same system which generated
+the pages your are reading now.
 
 Be happy; you're a developer!
 =============================
@@ -41,5 +43,6 @@ Cinematic metaphors
 * Shot
 * Line
 
+.. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html
 .. _Python packaging: https://packaging.python.org/distributing/
 .. _easy tutorial: http://thuswise.co.uk/packaging-python-for-scale-part-one.html
