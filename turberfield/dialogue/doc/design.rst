@@ -28,13 +28,14 @@ Python is also your publisher. When it's time to collaborate with others or show
 to an audience, you'll use the Python packaging system to distribute and install your work.
 
 By the end of the creative process, you need to be familiar with `Python packaging`_. Start
-with an `easy tutorial`_. 
+with an `easy tutorial`_.
 Game logic
 Packaging
 
 Separation of concerns allows unit tests for game logic.
 
 Cinematic metaphors
+
 * Sequence
 * Scene
 * Shot
