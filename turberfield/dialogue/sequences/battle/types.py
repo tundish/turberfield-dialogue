@@ -17,11 +17,19 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 import enum
+import itertools
 
+from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.types import EnumFactory
 from turberfield.dialogue.types import Persona
 from turberfield.dialogue.types import Stateful
 from turberfield.utils.assembly import Assembly
+
+__doc__ = """
+A simple drama for demonstration.
+
+"""
+
 
 @enum.unique
 class Animation(EnumFactory, enum.Enum):
@@ -44,8 +52,14 @@ ensemble = [
     Animal(name="Itchy").set_state(1),
     Animal(name="Scratchy").set_state(1),
     Tool(name="Ol' Rusty Chopper").set_state(1),
-    Animation,
-    Pose
 ]
+
+references = ensemble + [Animation, Pose]
+
+folder = SceneScript.Folder(
+    "turberfield.dialogue.sequences.battle",
+    __doc__, None,
+    ["combat.rst"], itertools.repeat(None)
+)
 
 Assembly.register(Animal, Animation, Pose, Tool)

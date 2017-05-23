@@ -46,7 +46,7 @@ class LoaderTests(unittest.TestCase):
 
     def test_scripts(self):
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle", "test", None,
+            "turberfield.dialogue.sequences.battle.types", "test", None,
             ["combat.rst"], itertools.repeat(None)
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
@@ -63,7 +63,7 @@ class LoaderTests(unittest.TestCase):
 
     def test_scripts_bad_scenefile(self):
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle", "test", None,
+            "turberfield.dialogue.sequences.battle.types", "test", None,
             ["not_there.rst"], itertools.repeat(None)
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
@@ -81,7 +81,7 @@ class CastingTests(unittest.TestCase):
             Tool(name="Rusty Chopper").set_state(1),
         }
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle", "test", None,
+            "turberfield.dialogue.sequences.battle.types", "test", None,
             ["combat.rst"], itertools.repeat(None)
         )
         self.script = next(SceneScript.scripts(**folder._asdict()))
@@ -110,7 +110,7 @@ class CastingTests(unittest.TestCase):
         try:
             ns = p.parse_args([
                 "--ensemble", "turberfield.dialogue.sequences.battle.types:ensemble",
-                "--sequence", "turberfield.dialogue.sequences.battle:folder",
+                "--sequence", "turberfield.dialogue.sequences.battle.types:folder",
                 "--db", fp,
                 #"-v"
             ])
