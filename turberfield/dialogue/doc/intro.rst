@@ -1,8 +1,8 @@
 ..  Titling
     ##++::==~~--''``
 
-Design overview
-:::::::::::::::
+Overview
+::::::::
 
 
 So, you're a writer?
@@ -12,7 +12,6 @@ Turberfield-dialogue is a framework which supports screenwriting.
 It defines a format for scripts which feels familiar to writing practitioners.
 Its design uses terminology from the screenplay tradition.
 
-* Dialogue is organised into folders.
 * Folders contain sequences of action.
 * Scripts separate action into scenes.
 * Scenes are made up of shots.
@@ -22,12 +21,12 @@ Turberfield comes with a rehearsal tool which lets you run through your dialogue
 your tone and pace.
 
 We'll go over the syntax of Turberfield scene files in a moment.
-They are based on a system called reStructuredText_. It's the same system which generated
+It is based on a system called reStructuredText_. That's the same system which generated
 the pages you are reading now.
 
 As well as producing dialogue, you may be called upon to define some game logic too.
 The Turberfield framework encourages you to write game logic in Python_.
-Don't worry, it's friendliest programming language I know...
+Don't worry, it's the friendliest programming language I know...
 
 So, you're a developer.
 =======================
@@ -40,12 +39,12 @@ Or, you can use it as a library to provide a dialogue system for your existing P
 Python is also your publisher. When it's time to collaborate with others or show your dialogue
 to an audience, you'll use the Python packaging system to distribute and install your work.
 
-By the end of the creative process, you will need some familiarity with the
-`Python packaging system`_. That's not usually a subject for beginners, so I wrote this
+By the end of the creative process, you will need some familiarity with
+`packaging techniques`_. That's not usually a subject for beginners, so I wrote this
 `easy tutorial`_. If you revisit this topic from time to time, you should have
-learned what you need by the time your dialogue is ready for to share. 
+learned what you need by the time your dialogue is ready to share. 
 
 .. _Python: http://python.org
 .. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html
-.. _Python packaging system: https://packaging.python.org/distributing/
+.. _packaging techniques: https://packaging.python.org/distributing/
 .. _easy tutorial: http://thuswise.co.uk/packaging-python-for-scale-part-one.html

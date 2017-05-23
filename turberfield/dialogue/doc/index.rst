@@ -7,7 +7,7 @@ Turberfield Dialogue library
 .. toctree::
    :maxdepth: 1
 
-   design
+   intro
    battle
    syntax
    cloak
