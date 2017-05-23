@@ -33,9 +33,9 @@ import uuid
 
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
-from turberfield.dialogue.sequences.battle_royal.types import Animal
-from turberfield.dialogue.sequences.battle_royal.types import Pose
-from turberfield.dialogue.sequences.battle_royal.types import Tool
+from turberfield.dialogue.sequences.battle.types import Animal
+from turberfield.dialogue.sequences.battle.types import Pose
+from turberfield.dialogue.sequences.battle.types import Tool
 import turberfield.dialogue.viewer
 from turberfield.utils.misc import log_setup
 
@@ -46,7 +46,7 @@ class LoaderTests(unittest.TestCase):
 
     def test_scripts(self):
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "test", None,
+            "turberfield.dialogue.sequences.battle", "test", None,
             ["combat.rst"], itertools.repeat(None)
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
@@ -63,7 +63,7 @@ class LoaderTests(unittest.TestCase):
 
     def test_scripts_bad_scenefile(self):
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "test", None,
+            "turberfield.dialogue.sequences.battle", "test", None,
             ["not_there.rst"], itertools.repeat(None)
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
@@ -81,7 +81,7 @@ class CastingTests(unittest.TestCase):
             Tool(name="Rusty Chopper").set_state(1),
         }
         folder = SceneScript.Folder(
-            "turberfield.dialogue.sequences.battle_royal", "test", None,
+            "turberfield.dialogue.sequences.battle", "test", None,
             ["combat.rst"], itertools.repeat(None)
         )
         self.script = next(SceneScript.scripts(**folder._asdict()))
@@ -109,8 +109,8 @@ class CastingTests(unittest.TestCase):
         fd, fp = tempfile.mkstemp(suffix=".db")
         try:
             ns = p.parse_args([
-                "--ensemble", "turberfield.dialogue.sequences.battle_royal.types:ensemble",
-                "--sequence", "turberfield.dialogue.sequences.battle_royal:folder",
+                "--ensemble", "turberfield.dialogue.sequences.battle.types:ensemble",
+                "--sequence", "turberfield.dialogue.sequences.battle:folder",
                 "--db", fp,
                 #"-v"
             ])

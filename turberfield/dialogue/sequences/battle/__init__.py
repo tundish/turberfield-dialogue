@@ -8,7 +8,7 @@ A simple drama for demonstration.
 """
 
 folder = SceneScript.Folder(
-    "turberfield.dialogue.sequences.battle_royal",
+    "turberfield.dialogue.sequences.battle",
     __doc__, None,
     ["combat.rst"], itertools.repeat(None)
 )

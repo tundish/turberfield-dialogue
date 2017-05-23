@@ -39,7 +39,7 @@ setup(
         "turberfield.dialogue",
         "turberfield.dialogue.test",
         "turberfield.dialogue.sequences",
-        "turberfield.dialogue.sequences.battle_royal",
+        "turberfield.dialogue.sequences.battle",
         "turberfield.dialogue.sequences.cloak",
     ],
     package_data={
@@ -57,7 +57,7 @@ setup(
             "doc/html/_static/*.js",
             "doc/html/_static/*.png",
             ],
-        "turberfield.dialogue.sequences.battle_royal": [
+        "turberfield.dialogue.sequences.battle": [
             "*.rst",
             "*.wav",
         ],

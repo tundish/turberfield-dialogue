@@ -10,11 +10,11 @@
    :roles: WEAPON
 
 .. entity:: FIGHTER_2
-   :types: turberfield.dialogue.sequences.battle_royal.types.Animal
+   :types: turberfield.dialogue.sequences.battle.types.Animal
    :states: 1
 
 .. entity:: WEAPON
-   :types: turberfield.dialogue.sequences.battle_royal.types.Tool
+   :types: turberfield.dialogue.sequences.battle.types.Tool
 
 
 Combat
@@ -28,7 +28,7 @@ Action
 
     I hate the way you use me, |Fighter2| !
 
-.. fx:: turberfield.dialogue.sequences.battle_royal slapwhack.wav
+.. fx:: turberfield.dialogue.sequences.battle slapwhack.wav
    :offset: 0
    :duration: 3000
    :loop: 1
