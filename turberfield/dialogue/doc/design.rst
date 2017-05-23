@@ -4,45 +4,48 @@
 Design overview
 :::::::::::::::
 
-Turberfield is the family name for a bunch of software components which support
-game development. This particular package is `turberfield-dialogue`. It helps you
-create dramatic dialogue or screenplay.
 
-Be happy; you're a writer!
-==========================
+So, you're a writer?
+====================
 
-Turberfield wants to support your writing. It lets you create dialogue in a format familiar
-to writing practitioners. It uses terminology from screenplay medium.
+Turberfield-dialogue is a framework which supports screenwriting.
+It defines a format for scripts which feels familiar to writing practitioners.
+Its design uses terminology from the screenplay tradition.
+
+* Dialogue is organised into folders.
+* Folders contain sequences of action.
+* Scripts separate action into scenes.
+* Scenes are made up of shots.
+* Shots can contain lines of dialogue or audio effects.
 
 Turberfield comes with a rehearsal tool which lets you run through your dialogue and fine-tune
-your tone and pacing.
+your tone and pace.
 
-We'll go over the syntax of Turberfield scene script files in a moment.
+We'll go over the syntax of Turberfield scene files in a moment.
 They are based on a system called reStructuredText_. It's the same system which generated
-the pages your are reading now.
+the pages you are reading now.
 
-Be happy; you're a developer!
-=============================
+As well as producing dialogue, you may be called upon to define some game logic too.
+The Turberfield framework encourages you to write game logic in Python_.
+Don't worry, it's friendliest programming language I know...
 
-Turberfield is written in Python. It's friendliest programming language I know.
+So, you're a developer.
+=======================
+
+If you have written no code at all yet, Turberfield by itself can provide
+all you need for an early prototype.
+
+Or, you can use it as a library to provide a dialogue system for your existing Python game.
 
 Python is also your publisher. When it's time to collaborate with others or show your dialogue
 to an audience, you'll use the Python packaging system to distribute and install your work.
 
-By the end of the creative process, you need to be familiar with `Python packaging`_. Start
-with an `easy tutorial`_.
-Game logic
-Packaging
+By the end of the creative process, you will need some familiarity with the
+`Python packaging system`_. That's not usually a subject for beginners, so I wrote this
+`easy tutorial`_. If you revisit this topic from time to time, you should have
+learned what you need by the time your dialogue is ready for to share. 
 
-Separation of concerns allows unit tests for game logic.
-
-Cinematic metaphors
-
-* Sequence
-* Scene
-* Shot
-* Line
-
+.. _Python: http://python.org
 .. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html
-.. _Python packaging: https://packaging.python.org/distributing/
+.. _Python packaging system: https://packaging.python.org/distributing/
 .. _easy tutorial: http://thuswise.co.uk/packaging-python-for-scale-part-one.html

@@ -1,45 +1,9 @@
 ..  Titling
     ##++::==~~--''``
 
-Turberfield is a framework for discrete event simulations and turn-based
-games.
-
-It is developed by a private individual but released to the public under the
-`GNU General Public License`_.
-
-The API may change as the project proceeds. At this early stage you should
-only use the latest release; it may not be compatible with previous
-versions.
-
-Requirements
-::::::::::::
-
-* Turberfield runs on Python 3.4 or later.
-* Docutils
-* Simpleaudio
-
-Usage
-:::::
-
-Download and unpack the source distribution::
-
-    $ tar -xzvf turberfield-dialogue-0.1.0.tar.gz
-    $ cd turberfield-dialogue-0.1.0
-
-Run the tests::
-
-    $ python3.4 -m unittest discover turberfield
-
-Consult the documentation::
-
-    $ firefox turberfield/dialogue/doc/html/index.html
-
-Installation
-::::::::::::
-
-::
-
-    $ pip install turberfield-dialogue
+*Turberfield* is the family name for a bunch of software components which support
+game development. This particular package is `turberfield-dialogue`. It helps you
+create dramatic dialogue or screenplay.
 
 Roadmap
 :::::::
@@ -71,10 +35,11 @@ What's missing? *UR*!
 * If you think Turberfield lacks a feature, you can help drive development by describing
   your Use Case.
 
-In either event, please leave a message on the project's `message board`_.
+In either event, please visit the project's `issue tracker`_.
 
 :Author: tundish
-:Copyright: 2016 D Haynes
+:Copyright: 2017 D Haynes
+:Licence: `GNU General Public License`_
 
 .. _GNU General Public License: http://www.gnu.org/licenses/gpl.html
-.. _message board: https://www.assembla.com/spaces/turberfield/messages
+.. _issue tracker: https://github.com/tundish/turberfield-dialogue/issues
