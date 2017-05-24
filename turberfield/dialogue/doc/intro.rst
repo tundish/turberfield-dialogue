@@ -36,7 +36,7 @@ all you need for an early prototype.
 
 Or, you can use it as a library to provide a dialogue system for your existing Python game.
 
-Python is also your publisher. When it's time to collaborate with others or show your dialogue
+Turberfield is also your publisher. When it's time to collaborate with others or show your dialogue
 to an audience, you'll use the Python packaging system to distribute and install your work.
 
 By the end of the creative process, you will need some familiarity with
