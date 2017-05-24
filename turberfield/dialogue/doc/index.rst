@@ -2,7 +2,7 @@
     ##++::==~~--''``
 
 Turberfield Dialogue library
-::::::::::::::::::::::::::::
+++++++++++++++++++++++++++++
 
 .. toctree::
    :maxdepth: 1

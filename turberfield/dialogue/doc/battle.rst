@@ -4,6 +4,16 @@
 Example 1: Battle Royal
 :::::::::::::::::::::::
 
+Turberfield comes with a couple of examples. We will start with the simplest.
+What we learn here will set us up for the more advanced example later.
+
+This is our first encounter with the Turberfield rehearsal tool. We will use
+it to preview the action in the first example.
+
+It may be that this is the first time you have launched a Python program from
+your computer's command line. If so, there's a couple of things to understand first.
+
+ 
 Launch an interactive session in a fresh window, passing your options file
 using the '`@`' syntax, eg:
 
