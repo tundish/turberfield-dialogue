@@ -8,6 +8,7 @@ Turberfield Dialogue library
    :maxdepth: 1
 
    intro
+   install
    battle
    syntax
    cloak
