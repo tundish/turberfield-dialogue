@@ -35,7 +35,7 @@ def run_through(script, ensemble, roles=1):
             model = dialogue.cast(selection).run()
         except (AttributeError, ValueError) as e:
             log = logging.getLogger("turberfield.dialogue.player.run_through")
-            log.error(". ".join(getattr(e, "args", e) or e))
+            log.warning(". ".join(getattr(e, "args", e) or e))
             return
         else:
             yield from model
@@ -56,7 +56,9 @@ def rehearse(folder, references, handler, repeat=0, roles=1, loop=None):
 
             if seq:
                 branch = next(handler(interlude, folder, index, references, loop=loop))
-                if branch != folder:
+                if branch is None:
+                    return
+                elif branch != folder:
                     break
         else:
             if not repeat:

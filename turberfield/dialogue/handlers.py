@@ -133,7 +133,7 @@ class TerminalHandler:
         return obj
 
     def handle_scenescript(self, obj):
-        self.log.info(obj.fP)
+        self.log.debug(obj.fP)
         return obj
 
     def handle_shot(self, obj):

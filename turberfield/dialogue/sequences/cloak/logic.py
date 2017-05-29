@@ -81,25 +81,33 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
     locn = narrator.get_state(Location)
     action = None
     if locn == Location.foyer:
-        while action not in ("s", "w"):
-            cmd = cmd or input("Enter a command: ")
-            action = parse_command(cmd)
+        while action not in ("s", "w", "q"):
+            action = parse_command(cmd or input("Enter a command: "))
         if action == "s":
             narrator.set_state(Location.bar)
-        else:
+        elif action == "w":
             narrator.set_state(Location.cloakroom)
-        if cloak.get_state(Location) == locn:
-            cloak.set_state(narrator.get_state(Location))
+        else:
+            return None
     elif locn == Location.bar:
         while action != "n":
-            cmd = cmd or input("Enter a command: ")
-            action = parse_command(cmd)
+            action = parse_command(cmd or input("Enter a command: "))
         else:
             narrator.set_state(Location.foyer)
-        if cloak.get_state(Location) == locn:
-            cloak.set_state(narrator.get_state(Location))
-    else:
-        print(narrator)
+    elif locn == Location.cloakroom:
+        while action not in ("c", "h", "e"):
+            action = parse_command(cmd or input("Enter a command: "))
+        if action == "c":
+            if cloak.get_state(Location) == Location.cloakroom:
+                cloak.set_state(Location.cloakroom_floor)
+            else:
+                cloak.set_state(Location.cloakroom)
+        elif action == "h":
+            cloak.set_state(Location.cloakroom_floor)
+        else:
+            narrator.set_state(Location.foyer)
+    if cloak.get_state(Location) == locn:
+        cloak.set_state(narrator.get_state(Location))
     return folder
 
 references = ensemble + [Location, Progress]

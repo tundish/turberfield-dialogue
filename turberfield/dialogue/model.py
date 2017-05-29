@@ -280,7 +280,7 @@ class SceneScript:
                 try:
                     pool.remove(persona)
                 except ValueError:
-                    self.log.info(
+                    self.log.debug(
                         "No persona for type {0} and states {1} with {2} {3}.".format(
                             typ, states, roles, "role" if roles == 1 else "roles"
                         )
