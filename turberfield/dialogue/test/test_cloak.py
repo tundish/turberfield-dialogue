@@ -75,46 +75,65 @@ class SceneTests(unittest.TestCase):
                 self.parent = parent
                 self.folder = folder
                 self.references = references
-                self.repeats = 0
+                self.calls = 0
+                self.visits = 0
 
             def __call__(self, obj, *args, **kwargs):
                 if isinstance(obj, Callable):
+                    self.calls += 1
                     interlude = obj
                     folder, index, ensemble = args
+                    print(folder.paths[index])
+                    print(self.visits)
                     if folder.paths[index] == "foyer.rst":
+                        self.visits += 1
                         self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
-                        if self.repeats == 0:
-                            rv = interlude(self.folder, index, self.references, cmd="south")
-                            self.parent.assertEqual(folder, rv)
+                        if self.visits == 1:
+                            rv = interlude(folder, index, self.references, cmd="south")
+                            self.parent.assertEqual(self.folder, rv)
                             self.parent.assertEqual(Location.bar, narrator.get_state(Location))
-                        elif self.repeats == 1:
-                            interlude(self.folder, index, self.references, cmd="west")
+                            yield rv
+                        elif self.visits == 2:
+                            rv = interlude(folder, index, self.references, cmd="west")
+                            self.parent.assertEqual(self.folder, rv)
                             self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
+                            yield rv
                         else:
-                            self.parent.assertEqual(2, self.repeats)
+                            self.parent.assertEqual(3, self.visits)
 
                     elif folder.paths[index] == "bar.rst":
-                        self.parent.assertEqual(0, self.repeats)
+                        self.parent.assertEqual(1, self.visits)
                         self.parent.assertEqual(Location.bar, narrator.get_state(Location))
-                        rv = interlude(self.folder, index, self.references, cmd="north")
-                        self.parent.assertEqual(folder, rv)
+                        rv = interlude(folder, index, self.references, cmd="north")
+                        self.parent.assertEqual(self.folder, rv)
                         self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
+                        yield rv
 
                     elif folder.paths[index] == "cloakroom.rst":
-                        self.parent.assertEqual(1, self.repeats)
+                        self.parent.assertEqual(2, self.visits)
                         self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
-                        rv = interlude(self.folder, index, self.references, cmd="drop cloak")
+                        rv = interlude(folder, index, self.references, cmd="drop cloak")
+                        print(rv)
+                        self.parent.assertEqual(self.folder, rv)
                         self.parent.assertEqual(Location.cloakroom_floor, cloak.get_state(Location))
-                        rv = interlude(self.folder, index, self.references, cmd="get cloak")
+                        yield rv
+
+                        rv = interlude(folder, index, self.references, cmd="get cloak")
+                        self.parent.assertEqual(self.folder, rv)
                         self.parent.assertEqual(Location.cloakroom, cloak.get_state(Location))
-                        rv = interlude(self.folder, index, self.references, cmd="put cloak on hook")
+                        yield rv
+
+                        rv = interlude(folder, index, self.references, cmd="put cloak on hook")
+                        self.parent.assertEqual(self.folder, rv)
                         self.parent.assertEqual(Location.cloakroom_hook, cloak.get_state(Location))
-                        self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
+                        yield rv
+
                         rv = interlude(self.folder, index, self.references, cmd="east")
-                        self.parent.assertEqual(Location.cloakroom_hook, cloak.get_state(Location))
                         self.parent.assertEqual(folder, rv)
+                        self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
+                        self.parent.assertEqual(Location.cloakroom_hook, cloak.get_state(Location))
                         self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
-                        self.repeats += 1
+                        yield rv
                     yield folder
                 else:
                     yield obj
@@ -124,4 +143,5 @@ class SceneTests(unittest.TestCase):
             self.folder, self.references, test_handler, repeat=6, roles=1
         ))
         self.assertEqual(176, len(rv))
-        self.assertEqual(2, test_handler.repeats)
+        self.assertEqual(6, test_handler.calls)
+        self.assertEqual(2, test_handler.visits)

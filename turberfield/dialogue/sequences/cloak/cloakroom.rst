@@ -7,11 +7,11 @@
 
 .. entity:: NARRATOR
    :types: turberfield.dialogue.sequences.cloak.logic.Narrator
-   :states: turberfield.dialogue.sequences.cloak.logic.Location.bar
+   :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom
 
 .. entity:: CLOAK
    :types: turberfield.dialogue.sequences.cloak.logic.Garment
-   :states: turberfield.dialogue.sequences.cloak.logic.Location.bar
+   :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom
 
 A damp and musty cloakroom
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
