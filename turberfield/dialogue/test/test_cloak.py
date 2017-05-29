@@ -106,5 +106,6 @@ class SceneTests(unittest.TestCase):
 
         test_handler = MockHandler(self, self.folder, self.references)
         rv = list(rehearse(
-            self.folder, self.references, test_handler, repeat=0, roles=1
+            self.folder, self.references, test_handler, repeat=6, roles=1
         ))
+        self.assertEqual(6, len(rv))
