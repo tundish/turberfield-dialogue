@@ -45,7 +45,7 @@ DFLT_PORT = 8080
 DFLT_DB = ":memory:"
 
 __doc__ = """
-A utility to run through a sequence of dialogue.
+A utility to run through a folder of dialogue.
 
 The rehearsal can be viewed in a terminal or by web browser.
 
@@ -65,10 +65,10 @@ def yield_resources(obj, *args, **kwargs):
 
 def resolve_objects(args):
     folder = Pathfinder.string_import(
-        args.sequence, relative=False, sep=":"
+        args.folder, relative=False, sep=":"
     )
     references = Pathfinder.string_import(
-        args.ensemble, relative=False, sep=":"
+        args.references, relative=False, sep=":"
     )
     return folder, references
 
@@ -225,7 +225,7 @@ def main(args):
             k: getattr(args, k)
             for k in (
                 "log_level", "log_path", "port",
-                "session", "locn", "ensemble", "sequence"
+                "session", "locn", "references", "folder"
             )
         }
         opts = urllib.parse.urlencode(params)
@@ -277,11 +277,11 @@ def parser(description=__doc__):
         "--log", default=None, dest="log_path",
         help="Set a file path for log output")
     rv.add_argument(
-        "--ensemble", default="",
+        "--references", default="",
         help="Give an import path to a list of Personae."
     )
     rv.add_argument(
-        "--sequence", default="",
+        "--folder", default="",
         help="Give an import path to a SceneScript folder."
     )
     rv.add_argument(

@@ -109,8 +109,8 @@ class CastingTests(unittest.TestCase):
         fd, fp = tempfile.mkstemp(suffix=".db")
         try:
             ns = p.parse_args([
-                "--ensemble", "turberfield.dialogue.sequences.battle.types:ensemble",
-                "--sequence", "turberfield.dialogue.sequences.battle.types:folder",
+                "--references", "turberfield.dialogue.sequences.battle.types:ensemble",
+                "--folder", "turberfield.dialogue.sequences.battle.types:folder",
                 "--db", fp,
                 #"-v"
             ])

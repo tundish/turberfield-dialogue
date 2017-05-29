@@ -133,12 +133,7 @@ class TerminalHandler:
         return obj
 
     def handle_scenescript(self, obj):
-        print(
-            "{t.dim}{obj.fP}{t.normal}".format(
-                obj=obj, t=self.terminal
-            ),
-            file=self.terminal.stream
-        )
+        self.log.info(obj.fP)
         return obj
 
     def handle_shot(self, obj):

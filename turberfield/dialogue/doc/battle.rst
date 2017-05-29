@@ -27,3 +27,35 @@ On Windows 8.1::
 
 From now on, I'll assume you know how to operate the command line on your computer.
 Further instructions will give the Linux form of commands only, and omit the prompt character.
+
+::
+
+    Combat
+
+
+        Action
+
+
+          Scratchy
+                  I hate the way you use me,  Itchy  !
+
+          Ol' Rusty Chopper
+                  **Whack!**
+
+          Itchy
+                  Uuurrggh!
+
+        Itchy.state = 0
+
+          Ol' Rusty Chopper
+                  I hate the way you use me,  Scratchy  !
+
+          Ol' Rusty Chopper
+                  **Whack!**
+
+          Scratchy
+                  Uuurrggh!
+
+        Scratchy.state = 0
+
+    Press return.
