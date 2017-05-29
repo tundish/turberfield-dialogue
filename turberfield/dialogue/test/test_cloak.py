@@ -17,6 +17,7 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from collections import Counter
 from collections.abc import Callable
 import copy
 import itertools
@@ -76,7 +77,7 @@ class SceneTests(unittest.TestCase):
                 self.folder = folder
                 self.references = references
                 self.calls = 0
-                self.visits = 0
+                self.visits = Counter()
 
             def __call__(self, obj, *args, **kwargs):
                 if isinstance(obj, Callable):
@@ -86,14 +87,14 @@ class SceneTests(unittest.TestCase):
                     print(folder.paths[index])
                     print(self.visits)
                     if folder.paths[index] == "foyer.rst":
-                        self.visits += 1
+                        self.visits["foyer"] += 1
                         self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
-                        if self.visits == 1:
+                        if self.visits["foyer"] == 1:
                             rv = interlude(folder, index, self.references, cmd="south")
                             self.parent.assertEqual(self.folder, rv)
                             self.parent.assertEqual(Location.bar, narrator.get_state(Location))
                             yield rv
-                        elif self.visits == 2:
+                        elif self.visits["foyer"] == 2:
                             rv = interlude(folder, index, self.references, cmd="west")
                             self.parent.assertEqual(self.folder, rv)
                             self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
@@ -102,7 +103,8 @@ class SceneTests(unittest.TestCase):
                             self.parent.assertEqual(3, self.visits)
 
                     elif folder.paths[index] == "bar.rst":
-                        self.parent.assertEqual(1, self.visits)
+                        self.visits["bar"] += 1
+                        self.parent.assertEqual(1, self.visits["foyer"])
                         self.parent.assertEqual(Location.bar, narrator.get_state(Location))
                         rv = interlude(folder, index, self.references, cmd="north")
                         self.parent.assertEqual(self.folder, rv)
