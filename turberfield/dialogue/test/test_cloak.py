@@ -28,6 +28,7 @@ from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.player import rehearse
 from turberfield.dialogue.sequences.cloak.logic import references
 from turberfield.dialogue.sequences.cloak.logic import game
+from turberfield.dialogue.sequences.cloak.logic import Garment
 from turberfield.dialogue.sequences.cloak.logic import Location
 from turberfield.dialogue.sequences.cloak.logic import Narrator
 from turberfield.dialogue.sequences.cloak.logic import Progress
@@ -66,6 +67,7 @@ class SceneTests(unittest.TestCase):
     def test_locations(self):
         log = logging.getLogger("turberfield")
         narrator = next(i for i in self.references if isinstance(i, Narrator))
+        cloak = next(i for i in self.references if isinstance(i, Garment))
 
         class MockHandler:
 
@@ -82,7 +84,8 @@ class SceneTests(unittest.TestCase):
                     if folder.paths[index] == "foyer.rst":
                         self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
                         if self.repeats == 0:
-                            interlude(self.folder, index, self.references, cmd="south")
+                            rv = interlude(self.folder, index, self.references, cmd="south")
+                            self.parent.assertEqual(folder, rv)
                             self.parent.assertEqual(Location.bar, narrator.get_state(Location))
                         elif self.repeats == 1:
                             interlude(self.folder, index, self.references, cmd="west")
@@ -93,19 +96,32 @@ class SceneTests(unittest.TestCase):
                     elif folder.paths[index] == "bar.rst":
                         self.parent.assertEqual(0, self.repeats)
                         self.parent.assertEqual(Location.bar, narrator.get_state(Location))
-                        interlude(self.folder, index, self.references, cmd="north")
+                        rv = interlude(self.folder, index, self.references, cmd="north")
+                        self.parent.assertEqual(folder, rv)
                         self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
 
                     elif folder.paths[index] == "cloakroom.rst":
                         self.parent.assertEqual(1, self.repeats)
                         self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
-                        interlude(self.folder, index, self.references, cmd="east")
+                        rv = interlude(self.folder, index, self.references, cmd="drop cloak")
+                        self.parent.assertEqual(Location.cloakroom_floor, cloak.get_state(Location))
+                        rv = interlude(self.folder, index, self.references, cmd="get cloak")
+                        self.parent.assertEqual(Location.cloakroom, cloak.get_state(Location))
+                        rv = interlude(self.folder, index, self.references, cmd="put cloak on hook")
+                        self.parent.assertEqual(Location.cloakroom_hook, cloak.get_state(Location))
+                        self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
+                        rv = interlude(self.folder, index, self.references, cmd="east")
+                        self.parent.assertEqual(Location.cloakroom_hook, cloak.get_state(Location))
+                        self.parent.assertEqual(folder, rv)
                         self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
                         self.repeats += 1
                     yield folder
+                else:
+                    yield obj
 
         test_handler = MockHandler(self, self.folder, self.references)
         rv = list(rehearse(
             self.folder, self.references, test_handler, repeat=6, roles=1
         ))
-        self.assertEqual(6, len(rv))
+        self.assertEqual(176, len(rv))
+        self.assertEqual(2, test_handler.repeats)
