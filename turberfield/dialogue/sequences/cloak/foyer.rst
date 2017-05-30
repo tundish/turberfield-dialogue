@@ -28,7 +28,7 @@ From where you stand
 
 [NARRATOR]_
 
-    The room is completely empty now.
+    The room has been stripped of all it once contained.
 
 Checking your person
 --------------------

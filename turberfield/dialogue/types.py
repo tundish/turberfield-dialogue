@@ -94,8 +94,8 @@ class Stateful:
         self._states[type(value).__name__] = value
         return self
 
-    def get_state(self, typ=int):
-        return self._states.get(typ.__name__)
+    def get_state(self, typ=int, default=0):
+        return self._states.get(typ.__name__, default)
 
 class Player(Stateful, Persona):
     pass

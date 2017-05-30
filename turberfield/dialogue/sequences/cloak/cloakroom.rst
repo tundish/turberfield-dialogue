@@ -16,12 +16,12 @@
 .. entity:: CLOAK_ON_THE_FLOOR
    :types: turberfield.dialogue.sequences.cloak.logic.Garment
    :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom_floor
-            turberfield.dialogue.sequences.cloak.logic.Scope.present
+            1
 
 .. entity:: CLOAK_ON_THE_HOOK
    :types: turberfield.dialogue.sequences.cloak.logic.Garment
    :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom_hook
-            turberfield.dialogue.sequences.cloak.logic.Scope.present
+            1
 
 A damp and musty cloakroom
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
