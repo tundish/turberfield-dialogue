@@ -47,11 +47,8 @@ Looking around
 
 [MESSAGE]_
 
-    I am |Message|.
+    I am the message.
 
 [NARRATOR]_
 
     There is a door to the North.
-
-
-.. |Message| property:: MESSAGE.name.firstname

@@ -51,8 +51,9 @@ class Vocabulary(EnumFactory, enum.Enum):
 
 class DataObject:
 
-    def __init__(self, **kwargs):
+    def __init__(self, id=None, **kwargs):
         super().__init__(**kwargs)
+        self.id = id or uuid.uuid4().hex
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -61,8 +62,7 @@ class DataObject:
 
 class Persona(DataObject):
 
-    def __init__(self, id=None, **kwargs):
-        self.id = id or uuid.uuid4().hex
+    def __init__(self, **kwargs):
         self._name = kwargs.pop("name")
         bits = self._name.split()
         try:

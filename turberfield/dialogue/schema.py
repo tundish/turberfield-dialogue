@@ -100,7 +100,13 @@ class SchemaBase:
                 cur = Insertion(
                     cls.tables["entity"],
                     data={
-                        "name": getattr(entity, "_name", entity.name),
+                        "name": getattr(
+                                    entity, "_name", getattr(
+                                        entity,
+                                        "name",
+                                        entity.__class__.__name__
+                                    )
+                                )
                     }
                 ).run(con)
             except sqlite3.IntegrityError as e:
@@ -120,7 +126,8 @@ class SchemaBase:
             if isinstance(item, enum.Enum):
                 cur.execute(
                     "select * from state where class=:cls and name=:name",
-                    {"cls": item.__objclass__.__name__, "name": item.name}
+                    {
+                     "cls": item.__objclass__.__name__, "name": item.name}
                 )
                 yield cur.fetchone()
 
@@ -128,7 +135,15 @@ class SchemaBase:
                 cur.execute(
                     "select * from entity where name=:name",
                     dict(
-                        name=getattr(item, "_name", getattr(item, "name", None))
+                        name=getattr(
+                            item,
+                            "_name",
+                            getattr(
+                                item,
+                                "name",
+                                item.__class__.__name__
+                            )
+                        )
                     )
                 )
                 yield cur.fetchone()

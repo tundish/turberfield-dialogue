@@ -3,7 +3,7 @@ from itertools import repeat
 
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.types import EnumFactory
-from turberfield.dialogue.types import Persona
+from turberfield.dialogue.types import DataObject
 from turberfield.dialogue.types import Stateful
 
 
@@ -56,20 +56,20 @@ class Progress(EnumFactory, enum.Enum):
     described = 1
     read = 2
 
-class Narrator(Stateful, Persona):
+class Narrator(Stateful):
     pass
 
-class Garment(Stateful, Persona):
+class Garment(Stateful, DataObject):
     pass
 
-class Prize(Stateful, Persona):
+class Prize(Stateful, DataObject):
     pass
 
 
 ensemble = [
-    Narrator(name="").set_state(Location.foyer),
-    Garment(name="Cloak").set_state(Location.foyer),
-    Prize(name="Message").set_state(Scope.absent)
+    Narrator().set_state(Location.foyer),
+    Garment().set_state(Location.foyer),
+    Prize().set_state(Scope.absent)
 ]
 
 

@@ -71,11 +71,10 @@ class TerminalHandler:
             return obj(folder, index, ensemble, loop=loop, **kwargs)
 
     def handle_line(self, obj):
+        name = getattr(obj.persona, "_name", "")
         print(
             textwrap.indent(
-                "{t.normal}{obj.persona._name}".format(
-                    obj=obj, t=self.terminal
-                ),
+                "{t.normal}{name}".format(name=name, t=self.terminal),
                 " " * 2
             ),
             end="\n",

@@ -13,8 +13,8 @@
    :types: turberfield.dialogue.sequences.cloak.logic.Garment
    :states: turberfield.dialogue.sequences.cloak.logic.Location.foyer
 
-The Foyer of an abandoned Hotel
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+An abandoned building offers shelter from an evening rainstorm
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 From where you stand
@@ -22,7 +22,7 @@ From where you stand
 
 [NARRATOR]_
 
-    It appears this building used to be a hotel. This would be the foyer.
+    It appears this place used to be a hotel. This would have been the foyer.
     You can see the footprint of a long reception desk running down one side
     of the floor.
 
@@ -51,7 +51,7 @@ Looking around
 
 [NARRATOR]_
 
-    To the North, the door you first entered by is stuck fast.
+    To the North, the door by which you first entered is stuck fast.
 
 [NARRATOR]_
 
