@@ -84,8 +84,7 @@ class SceneTests(unittest.TestCase):
                     self.calls += 1
                     interlude = obj
                     folder, index, ensemble = args
-                    print(folder.paths[index])
-                    print(self.visits)
+                    rv = None
                     if folder.paths[index] == "foyer.rst":
                         self.visits["foyer"] += 1
                         self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
@@ -93,14 +92,12 @@ class SceneTests(unittest.TestCase):
                             rv = interlude(folder, index, self.references, cmd="south")
                             self.parent.assertEqual(self.folder, rv)
                             self.parent.assertEqual(Location.bar, narrator.get_state(Location))
-                            yield rv
                         elif self.visits["foyer"] == 2:
                             rv = interlude(folder, index, self.references, cmd="west")
                             self.parent.assertEqual(self.folder, rv)
                             self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
-                            yield rv
                         else:
-                            self.parent.assertEqual(3, self.visits)
+                            self.parent.assertEqual(3, self.visits["foyer"])
 
                     elif folder.paths[index] == "bar.rst":
                         self.visits["bar"] += 1
@@ -109,41 +106,42 @@ class SceneTests(unittest.TestCase):
                         rv = interlude(folder, index, self.references, cmd="north")
                         self.parent.assertEqual(self.folder, rv)
                         self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
-                        yield rv
 
                     elif folder.paths[index] == "cloakroom.rst":
-                        self.parent.assertEqual(2, self.visits)
-                        self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
-                        rv = interlude(folder, index, self.references, cmd="drop cloak")
-                        print(rv)
-                        self.parent.assertEqual(self.folder, rv)
-                        self.parent.assertEqual(Location.cloakroom_floor, cloak.get_state(Location))
-                        yield rv
+                        self.visits["cloakroom"] += 1
+                        if self.visits["cloakroom"] == 1:
+                            self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
+                            rv = interlude(folder, index, self.references, cmd="drop cloak")
+                            self.parent.assertEqual(self.folder, rv)
+                            self.parent.assertEqual(Location.cloakroom_floor, cloak.get_state(Location))
 
-                        rv = interlude(folder, index, self.references, cmd="get cloak")
-                        self.parent.assertEqual(self.folder, rv)
-                        self.parent.assertEqual(Location.cloakroom, cloak.get_state(Location))
-                        yield rv
+                        elif self.visits["cloakroom"] == 2:
+                            rv = interlude(folder, index, self.references, cmd="get cloak")
+                            self.parent.assertEqual(self.folder, rv)
+                            self.parent.assertEqual(Location.cloakroom, cloak.get_state(Location))
 
-                        rv = interlude(folder, index, self.references, cmd="put cloak on hook")
-                        self.parent.assertEqual(self.folder, rv)
-                        self.parent.assertEqual(Location.cloakroom_hook, cloak.get_state(Location))
-                        yield rv
+                        elif self.visits["cloakroom"] == 3:
+                            rv = interlude(folder, index, self.references, cmd="put cloak on hook")
+                            self.parent.assertEqual(self.folder, rv)
+                            self.parent.assertEqual(Location.cloakroom_hook, cloak.get_state(Location))
 
-                        rv = interlude(self.folder, index, self.references, cmd="east")
-                        self.parent.assertEqual(folder, rv)
-                        self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
-                        self.parent.assertEqual(Location.cloakroom_hook, cloak.get_state(Location))
-                        self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
-                        yield rv
-                    yield folder
+                        elif self.visits["cloakroom"] == 4:
+                            rv = interlude(self.folder, index, self.references, cmd="east")
+                            self.parent.assertEqual(folder, rv)
+                            self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
+                            self.parent.assertEqual(Location.cloakroom_hook, cloak.get_state(Location))
+                            self.parent.assertEqual(Location.foyer, narrator.get_state(Location))
+
+                    yield rv
                 else:
                     yield obj
 
         test_handler = MockHandler(self, self.folder, self.references)
         rv = list(rehearse(
-            self.folder, self.references, test_handler, repeat=6, roles=1
+            self.folder, self.references, test_handler, repeat=8, roles=1
         ))
-        self.assertEqual(176, len(rv))
-        self.assertEqual(6, test_handler.calls)
-        self.assertEqual(2, test_handler.visits)
+        self.assertEqual(71, len(rv))
+        self.assertEqual(8, test_handler.calls)
+        self.assertEqual(3, test_handler.visits["foyer"])
+        self.assertEqual(1, test_handler.visits["bar"])
+        self.assertEqual(4, test_handler.visits["cloakroom"])

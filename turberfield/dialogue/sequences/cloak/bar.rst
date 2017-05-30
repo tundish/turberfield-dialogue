@@ -15,6 +15,7 @@
 
 .. entity:: MESSAGE
    :types: turberfield.dialogue.sequences.cloak.logic.Prize
+   :states: turberfield.dialogue.sequences.cloak.logic.Scope.present
 
 A dingy bar room
 ~~~~~~~~~~~~~~~~

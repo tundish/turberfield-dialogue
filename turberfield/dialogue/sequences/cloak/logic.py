@@ -46,6 +46,11 @@ class Location(EnumFactory, enum.Enum):
     cloakroom_hook = 4
 
 @enum.unique
+class Scope(EnumFactory, enum.Enum):
+    absent = 0
+    present = 1
+
+@enum.unique
 class Progress(EnumFactory, enum.Enum):
     destroyed = 0
     described = 1
@@ -64,7 +69,7 @@ class Prize(Stateful, Persona):
 ensemble = [
     Narrator(name="").set_state(Location.foyer),
     Garment(name="Cloak").set_state(Location.foyer),
-    Prize(name="Message")
+    Prize(name="Message").set_state(Scope.absent)
 ]
 
 
@@ -76,8 +81,7 @@ def parse_command(cmd):
 
 
 def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
-    narrator = next(i for i in ensemble if isinstance(i, Narrator))
-    cloak = next(i for i in ensemble if isinstance(i, Garment))
+    narrator, cloak, message, *others = ensemble
     locn = narrator.get_state(Location)
     action = None
     if locn == Location.foyer:
@@ -85,6 +89,7 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
             action = parse_command(cmd or input("Enter a command: "))
         if action == "s":
             narrator.set_state(Location.bar)
+            message.set_state(Scope.present)
         elif action == "w":
             narrator.set_state(Location.cloakroom)
         else:
@@ -94,6 +99,7 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
             action = parse_command(cmd or input("Enter a command: "))
         else:
             narrator.set_state(Location.foyer)
+            message.set_state(Scope.absent)
     elif locn == Location.cloakroom:
         while action not in ("c", "h", "e"):
             action = parse_command(cmd or input("Enter a command: "))
@@ -103,14 +109,14 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
             else:
                 cloak.set_state(Location.cloakroom)
         elif action == "h":
-            cloak.set_state(Location.cloakroom_floor)
+            cloak.set_state(Location.cloakroom_hook)
         else:
             narrator.set_state(Location.foyer)
     if cloak.get_state(Location) == locn:
         cloak.set_state(narrator.get_state(Location))
     return folder
 
-references = ensemble + [Location, Progress]
+references = ensemble + [Location, Scope, Progress]
 
 game = SceneScript.Folder(
     "turberfield.dialogue.sequences.cloak",
