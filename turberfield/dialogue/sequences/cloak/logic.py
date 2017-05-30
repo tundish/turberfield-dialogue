@@ -46,11 +46,6 @@ class Location(EnumFactory, enum.Enum):
     cloakroom_hook = 4
 
 @enum.unique
-class Scope(EnumFactory, enum.Enum):
-    absent = 0
-    present = 1
-
-@enum.unique
 class Progress(EnumFactory, enum.Enum):
     destroyed = 0
     described = 1
@@ -69,7 +64,7 @@ class Prize(Stateful, DataObject):
 ensemble = [
     Narrator().set_state(Location.foyer),
     Garment().set_state(Location.foyer),
-    Prize().set_state(Scope.absent)
+    Prize()
 ]
 
 
@@ -89,7 +84,7 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
             action = parse_command(cmd or input("Enter a command: "))
         if action == "s":
             narrator.set_state(Location.bar)
-            message.set_state(Scope.present)
+            message.set_state(1)
         elif action == "w":
             narrator.set_state(Location.cloakroom)
         else:
@@ -99,7 +94,7 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
             action = parse_command(cmd or input("Enter a command: "))
         else:
             narrator.set_state(Location.foyer)
-            message.set_state(Scope.absent)
+            message.set_state(0)
     elif locn == Location.cloakroom:
         while action not in ("c", "h", "e"):
             action = parse_command(cmd or input("Enter a command: "))
@@ -116,7 +111,7 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
         cloak.set_state(narrator.get_state(Location))
     return folder
 
-references = ensemble + [Location, Scope, Progress]
+references = ensemble + [Location, Progress]
 
 game = SceneScript.Folder(
     "turberfield.dialogue.sequences.cloak",
