@@ -37,8 +37,11 @@ Checking your person
 
     You are wearing a long cloak, which gathers around you. It feels furry,
     like velvet, although that's hard to tell by looking. It is so black
-    that its folds and textures cannot be perceived. It seems to swallow all
-    light.
+    that its folds and textures cannot be perceived.
+
+[CLOAK]_
+
+    It seems to swallow all light.
 
 .. memory:: turberfield.dialogue.sequences.cloak.logic.Progress.described
    :subject: NARRATOR

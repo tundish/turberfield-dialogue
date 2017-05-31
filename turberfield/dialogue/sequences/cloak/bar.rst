@@ -13,7 +13,7 @@
    :types: turberfield.dialogue.sequences.cloak.logic.Garment
    :states: turberfield.dialogue.sequences.cloak.logic.Location.bar
 
-.. entity:: MESSAGE
+.. entity:: PRIZE
    :types: turberfield.dialogue.sequences.cloak.logic.Prize
    :states: 1
 
@@ -28,27 +28,30 @@ From where you stand
 
     This is the bar.
 
-[NARRATOR]_
+[CLOAK]_
 
-    The room is completely empty now.
+    The room is totally dark. The echoes suggest empty, too.
 
 Checking your person
 --------------------
 
 [CLOAK]_
 
-    Your cloak is 
-    like velvet, although that's hard to tell by looking. It is so black
-    that its folds and textures cannot be perceived. It seems to swallow all
-    light.
-
+    The hem of your cloak is catching against uneven wooden boards.
+    The smell of sawdust begins to reach your nostrils as you sweep
+    over the floor.
+    
 Looking around
 --------------
 
-[MESSAGE]_
+[PRIZE]_
 
-    I am the message.
+    Someone has written a message in the dust on the floor. It says:
+
+    |message|
 
 [NARRATOR]_
 
     There is a door to the North.
+
+.. |message| property:: PRIZE.message

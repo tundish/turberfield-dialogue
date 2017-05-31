@@ -64,7 +64,7 @@ class Prize(Stateful, DataObject):
 ensemble = [
     Narrator().set_state(Location.foyer),
     Garment().set_state(Location.foyer),
-    Prize()
+    Prize(message="You win!")
 ]
 
 

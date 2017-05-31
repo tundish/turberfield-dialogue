@@ -52,10 +52,10 @@ class Vocabulary(EnumFactory, enum.Enum):
 class DataObject:
 
     def __init__(self, id=None, **kwargs):
-        super().__init__(**kwargs)
         self.id = id or uuid.uuid4().hex
         for k, v in kwargs.items():
             setattr(self, k, v)
+        super().__init__()
 
     def __repr__(self):
         return "<{0}> {1}".format(type(self).__name__, vars(self))

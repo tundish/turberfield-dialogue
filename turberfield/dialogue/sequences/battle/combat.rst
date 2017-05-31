@@ -26,7 +26,7 @@ Action
 
 [FIGHTER_1]_
 
-    I hate the way you use me, |Fighter2| !
+    I hate the way you use me, |fighter2| !
 
 .. fx:: turberfield.dialogue.sequences.battle slapwhack.wav
    :offset: 0
@@ -43,5 +43,4 @@ Action
 
 .. property:: FIGHTER_2.state 0
 
-.. |Fighter1| property:: FIGHTER_1.name.firstname
-.. |Fighter2| property:: FIGHTER_2.name.firstname
+.. |fighter2| property:: FIGHTER_2.name.firstname
