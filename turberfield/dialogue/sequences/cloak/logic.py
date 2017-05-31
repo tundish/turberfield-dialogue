@@ -1,5 +1,6 @@
 import enum
 from itertools import repeat
+import random
 
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.types import EnumFactory
@@ -76,7 +77,7 @@ def parse_command(cmd):
 
 
 def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
-    narrator, cloak, message, *others = ensemble
+    narrator, cloak, prize, *others = ensemble
     locn = narrator.get_state(Location)
     action = None
     if locn == Location.foyer:
@@ -84,7 +85,7 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
             action = parse_command(cmd or input("Enter a command: "))
         if action == "s":
             narrator.set_state(Location.bar)
-            message.set_state(1)
+            prize.set_state(1)
         elif action == "w":
             narrator.set_state(Location.cloakroom)
         else:
@@ -94,7 +95,10 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
             action = parse_command(cmd or input("Enter a command: "))
         else:
             narrator.set_state(Location.foyer)
-            message.set_state(0)
+            prize.message = prize.message.replace(
+                random.choice(prize.message), " ", 1
+            )
+            prize.set_state(0)
     elif locn == Location.cloakroom:
         while action not in ("c", "h", "e"):
             action = parse_command(cmd or input("Enter a command: "))
