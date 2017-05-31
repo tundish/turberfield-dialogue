@@ -85,7 +85,10 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
             action = parse_command(cmd or input("Enter a command: "))
         if action == "s":
             narrator.set_state(Location.bar)
-            prize.set_state(1)
+            if cloak.get_state(Location) == locn:
+                prize.set_state(0)
+            else:
+                prize.set_state(1)
         elif action == "w":
             narrator.set_state(Location.cloakroom)
         else:
