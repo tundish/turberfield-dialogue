@@ -34,7 +34,6 @@ import uuid
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.sequences.battle.types import Animal
-from turberfield.dialogue.sequences.battle.types import Pose
 from turberfield.dialogue.sequences.battle.types import Tool
 import turberfield.dialogue.viewer
 from turberfield.utils.misc import log_setup
@@ -109,7 +108,7 @@ class CastingTests(unittest.TestCase):
         fd, fp = tempfile.mkstemp(suffix=".db")
         try:
             ns = p.parse_args([
-                "--references", "turberfield.dialogue.sequences.battle.types:ensemble",
+                "--references", "turberfield.dialogue.sequences.battle.types:references",
                 "--folder", "turberfield.dialogue.sequences.battle.types:folder",
                 "--db", fp,
                 #"-v"
