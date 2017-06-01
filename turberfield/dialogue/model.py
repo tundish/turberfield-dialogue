@@ -134,9 +134,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
                     if isinstance(tgt, PropertyDirective.Getter):
                         ref, dot, attr = tgt["arguments"][0].partition(".")
                         entity = self.get_entity(ref)
-                        val = operator.attrgetter(attr)(entity.persona)
-                        text.append(val)
-                        html.append('<span class="ref">{0}</span>'.format(val))
+                        if getattr(entity, "persona", None) is not None:
+                            val = operator.attrgetter(attr)(entity.persona)
+                            text.append(val)
+                            html.append('<span class="ref">{0}</span>'.format(val))
             elif isinstance(c, docutils.nodes.strong):
                 text.append(c.rawsource)
                 html.append('<strong class="text">{0}</strong>'.format(c.rawsource.replace("*", "")))

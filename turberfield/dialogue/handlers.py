@@ -71,6 +71,9 @@ class TerminalHandler:
             return obj(folder, index, ensemble, loop=loop, **kwargs)
 
     def handle_line(self, obj):
+        if obj.persona is None:
+            return obj
+
         name = getattr(obj.persona, "_name", "")
         print(
             textwrap.indent(

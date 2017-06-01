@@ -140,7 +140,7 @@ class SceneTests(unittest.TestCase):
         rv = list(rehearse(
             self.folder, self.references, test_handler, repeat=8, roles=1
         ))
-        self.assertEqual(71, len(rv))
+        self.assertEqual(77, len(rv))
         self.assertEqual(8, test_handler.calls)
         self.assertEqual(3, test_handler.visits["foyer"])
         self.assertEqual(1, test_handler.visits["bar"])
