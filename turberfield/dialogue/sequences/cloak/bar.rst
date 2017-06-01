@@ -17,8 +17,8 @@
    :types: turberfield.dialogue.sequences.cloak.logic.Prize
    :states: 1
 
-A dingy bar room
-~~~~~~~~~~~~~~~~
+A man walks into a bar...
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 From where you stand

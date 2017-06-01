@@ -23,8 +23,8 @@
    :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom_hook
             1
 
-A damp and musty cloakroom
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Utility and futility
+~~~~~~~~~~~~~~~~~~~~
 
 
 From where you stand
@@ -32,5 +32,18 @@ From where you stand
 
 [NARRATOR]_
 
-    This is a cloakroom for patrons of the bar.
+    This is a cloakroom for patrons of the bar. You can tell because at eye-level
+    an array of metalwork resembles a line of coat hooks. All are gone, witnessed only by
+    broken brass baseplates or rotten screw holes.
 
+[NARRATOR]_
+
+    No, wait; there is one. One coat hook survives.
+
+[CLOAK_ON_THE_FLOOR]_
+
+    Your cloak lies in a heap on the floor.
+
+[CLOAK_ON_THE_HOOK]_
+
+    Your velvet cloak hangs darkly from the hook.

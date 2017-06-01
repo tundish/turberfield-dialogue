@@ -13,9 +13,8 @@
    :types: turberfield.dialogue.sequences.cloak.logic.Garment
    :states: turberfield.dialogue.sequences.cloak.logic.Location.foyer
 
-An abandoned building offers shelter from an evening rainstorm
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+I'm gonna tear your Playhouse down
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 From where you stand
 --------------------
@@ -23,7 +22,7 @@ From where you stand
 [NARRATOR]_
 
     It appears this place used to be a hotel. This would have been the foyer.
-    You can see the footprint of a long reception desk running down one side
+    You can see the footprint of a grand reception desk running down one side
     of the floor.
 
 [NARRATOR]_
