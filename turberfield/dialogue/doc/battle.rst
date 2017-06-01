@@ -67,13 +67,20 @@ appropriate point::
 This is a short scene in a fictional cartoon. In order to produce this for
 an audience, we bring two components together:
 
-* Actors
-* Dialogue
+* An ensemble_ of Actors
+* A folder_ of Dialogue
 
-Logic.py
+.... admonition:: All the world's a stage
+
+.. tip:: **All the world's a stage**
+
+   Explain every object has a voice. Named objects are Personae
+
+Ensemble
 ========
 
 This is where the actors live.
+Terminology - Personae vs actors, characters.
 
 * class inheritance
 * Persona - name
