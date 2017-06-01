@@ -16,12 +16,10 @@
 .. entity:: CLOAK_ON_THE_FLOOR
    :types: turberfield.dialogue.sequences.cloak.logic.Garment
    :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom_floor
-            1
 
 .. entity:: CLOAK_ON_THE_HOOK
    :types: turberfield.dialogue.sequences.cloak.logic.Garment
    :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom_hook
-            1
 
 Utility and futility
 ~~~~~~~~~~~~~~~~~~~~
