@@ -64,7 +64,7 @@ class Prize(Stateful, DataObject):
 
 ensemble = [
     Narrator().set_state(Location.foyer),
-    Garment().set_state(Location.foyer),
+    Garment().set_state(Location.foyer).set_state(1),
     Prize(message="You win!")
 ]
 
@@ -91,17 +91,18 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
                 prize.set_state(1)
         elif action == "w":
             narrator.set_state(Location.cloakroom)
+            cloak.set_state(1)
         else:
             return None
     elif locn == Location.bar:
         while action != "n":
             action = parse_command(cmd or input("Enter a command: "))
-        else:
-            narrator.set_state(Location.foyer)
-            prize.message = prize.message.replace(
-                random.choice(prize.message), " ", 1
-            )
-            prize.set_state(0)
+
+        narrator.set_state(Location.foyer)
+        prize.message = prize.message.replace(
+            random.choice(prize.message), " ", 1
+        )
+        prize.set_state(0)
     elif locn == Location.cloakroom:
         while action not in ("c", "h", "e"):
             action = parse_command(cmd or input("Enter a command: "))
@@ -114,8 +115,13 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
             cloak.set_state(Location.cloakroom_hook)
         else:
             narrator.set_state(Location.foyer)
+            if cloak.get_state(Location) != locn:
+                cloak.set_state(0)
+
     if cloak.get_state(Location) == locn:
         cloak.set_state(narrator.get_state(Location))
+        cloak.set_state(1)
+    print(cloak)
     return folder
 
 references = ensemble + [Location, Progress]

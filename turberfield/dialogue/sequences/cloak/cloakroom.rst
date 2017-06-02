@@ -16,10 +16,12 @@
 .. entity:: CLOAK_ON_THE_FLOOR
    :types: turberfield.dialogue.sequences.cloak.logic.Garment
    :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom_floor
+            1
 
 .. entity:: CLOAK_ON_THE_HOOK
    :types: turberfield.dialogue.sequences.cloak.logic.Garment
    :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom_hook
+            1
 
 Utility and futility
 ~~~~~~~~~~~~~~~~~~~~
@@ -38,6 +40,10 @@ From where you stand
 
     No, wait; there is one. One coat hook survives.
 
+[CLOAK]_
+
+    You are wearing a dark cloak.
+
 [CLOAK_ON_THE_FLOOR]_
 
     Your cloak lies in a heap on the floor.
@@ -45,3 +51,11 @@ From where you stand
 [CLOAK_ON_THE_HOOK]_
 
     Your velvet cloak hangs darkly from the hook.
+
+Looking around
+--------------
+
+[NARRATOR]_
+
+    There is a door to the East.
+
