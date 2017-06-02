@@ -121,7 +121,7 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
     if cloak.get_state(Location) == locn:
         cloak.set_state(narrator.get_state(Location))
         cloak.set_state(1)
-    print(cloak)
+
     return folder
 
 references = ensemble + [Location, Progress]

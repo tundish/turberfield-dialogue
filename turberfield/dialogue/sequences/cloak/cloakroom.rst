@@ -40,9 +40,15 @@ From where you stand
 
     No, wait; there is one. One coat hook survives.
 
+Checking your person
+--------------------
+
 [CLOAK]_
 
     You are wearing a dark cloak.
+
+Looking around
+--------------
 
 [CLOAK_ON_THE_FLOOR]_
 
@@ -51,9 +57,6 @@ From where you stand
 [CLOAK_ON_THE_HOOK]_
 
     Your velvet cloak hangs darkly from the hook.
-
-Looking around
---------------
 
 [NARRATOR]_
 

@@ -13,7 +13,7 @@
    :types: turberfield.dialogue.sequences.cloak.logic.Garment
    :states: turberfield.dialogue.sequences.cloak.logic.Location.foyer
 
-I'm gonna tear your Playhouse down
+After the fire, a Magician returns
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 From where you stand
@@ -21,7 +21,7 @@ From where you stand
 
 [NARRATOR]_
 
-    It appears this place used to be a hotel. This would have been the foyer.
+    This place no longer looks much like a hotel. This would have been the foyer, though.
     You can see the footprint of a grand reception desk running down one side
     of the floor.
 
