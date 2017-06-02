@@ -200,14 +200,14 @@ def cgi_consumer(args):
     return rv
 
 def cgi_producer(args, stream=None):
-    handler = CGIHandler(Terminal(stream=stream), args.db)
+    handler = CGIHandler(Terminal(stream=stream), args.db, args.pause, args.dwell)
     print("Content-type:text/event-stream", file=handler.terminal.stream)
     print(file=handler.terminal.stream)
     folder, references = resolve_objects(args)
     yield from rehearse(folder, references, handler, args.repeat, args.roles)
 
 def presenter(args):
-    handler = TerminalHandler(Terminal(), args.db)
+    handler = TerminalHandler(Terminal(), args.db, args.pause, args.dwell)
     folder, references = resolve_objects(args)
     if args.log_level != logging.DEBUG:
         with handler.terminal.fullscreen():
@@ -225,7 +225,8 @@ def main(args):
             k: getattr(args, k)
             for k in (
                 "log_level", "log_path", "port",
-                "session", "locn", "references", "folder"
+                "session", "locn", "references", "folder",
+                "pause", "dwell"
             )
         }
         opts = urllib.parse.urlencode(params)
@@ -291,6 +292,14 @@ def parser(description=__doc__):
     rv.add_argument(
         "--roles", type=int, default=1,
         help="The number of roles [1] permitted for each member of cast."
+    )
+    rv.add_argument(
+        "--pause", type=float, default=TerminalHandler.pause,
+        help="Time in seconds [{th.pause}] to pause after a line.".format(th=TerminalHandler)
+    )
+    rv.add_argument(
+        "--dwell", type=float, default=TerminalHandler.dwell,
+        help="Time in seconds [{th.dwell}] to dwell on each word.".format(th=TerminalHandler)
     )
     rv.add_argument(
         "--web", action="store_true", default=False,

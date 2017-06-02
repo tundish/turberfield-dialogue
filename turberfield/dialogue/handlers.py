@@ -38,6 +38,9 @@ from turberfield.utils.db import Creation
 
 class TerminalHandler:
 
+    pause = 1.5
+    dwell = 0.2
+
     @staticmethod
     def handle_audio(obj, wait=False):
         fp = pkg_resources.resource_filename(obj.package, obj.resource)
@@ -165,7 +168,7 @@ class TerminalHandler:
 
     def __init__(
         self, terminal, dbPath=None,
-        pause=1.5, dwell=0.2, log=None
+        pause=pause, dwell=dwell, log=None
     ):
         self.terminal = terminal
         self.dbPath = dbPath
