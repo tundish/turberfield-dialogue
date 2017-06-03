@@ -42,11 +42,10 @@ Checking your person
 
     It seems to swallow all light.
 
-.. memory:: turberfield.dialogue.sequences.cloak.logic.Progress.described
+.. memory:: turberfield.dialogue.sequences.cloak.logic.Location.foyer
    :subject: NARRATOR
-   :object: CLOAK
 
-   Narrator described the Cloak.
+   The Player visited the foyer.
 
 Looking around
 --------------

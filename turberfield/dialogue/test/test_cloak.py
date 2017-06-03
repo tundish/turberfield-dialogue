@@ -32,7 +32,6 @@ from turberfield.dialogue.sequences.cloak.logic import game
 from turberfield.dialogue.sequences.cloak.logic import Garment
 from turberfield.dialogue.sequences.cloak.logic import Location
 from turberfield.dialogue.sequences.cloak.logic import Narrator
-from turberfield.dialogue.sequences.cloak.logic import Progress
 
 
 class CastingTests(unittest.TestCase):
@@ -53,7 +52,7 @@ class CastingTests(unittest.TestCase):
                 )
 
                 if isinstance(item, Model.Memory):
-                    self.assertEqual(Progress.described, item.state)
+                    self.assertEqual(Location.foyer, item.state)
                     self.assertTrue(item.text)
                     self.assertFalse("|" in item.text)
                     self.assertTrue(item.html)
@@ -140,7 +139,7 @@ class SceneTests(unittest.TestCase):
         rv = list(rehearse(
             self.folder, self.references, test_handler, repeat=8, roles=1
         ))
-        self.assertEqual(117, len(rv))
+        self.assertEqual(137, len(rv))
         self.assertEqual(8, test_handler.calls)
         self.assertEqual(3, test_handler.visits["foyer"])
         self.assertEqual(1, test_handler.visits["bar"])

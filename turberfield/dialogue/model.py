@@ -72,7 +72,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         return next((
             entity
             for entity in self.document.citations
-            if ref.lower() in entity.attributes["names"]),
+            if ref and ref.lower() in entity.attributes["names"]),
             None)
 
     def default_visit(self, node):
@@ -98,7 +98,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         state = node.string_import(node["arguments"][0])
         subj = self.get_entity(node["options"].get("subject"))
         obj = self.get_entity(node["options"].get("object"))
-        self.memory = Model.Memory(subj.persona, obj.persona, state, None, None)
+        self.memory = Model.Memory(subj and subj.persona, obj and obj.persona, state, None, None)
 
     def visit_Cue(self, node):
         pkg = node["arguments"][0]

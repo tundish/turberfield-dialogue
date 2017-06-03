@@ -1,3 +1,6 @@
 --references=turberfield.dialogue.sequences.cloak.logic:references
 --folder=turberfield.dialogue.sequences.cloak.logic:game
 --repeat=-1
+--db=cloak.sl3
+--dwell=0
+--pause=0

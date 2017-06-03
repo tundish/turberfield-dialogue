@@ -54,9 +54,19 @@ Looking around
 
     Your cloak lies in a heap on the floor.
 
+.. memory:: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom_floor
+   :subject: CLOAK_ON_THE_FLOOR
+
+   The Player dropped the cloak.
+
 [CLOAK_ON_THE_HOOK]_
 
     Your velvet cloak hangs darkly from the hook.
+
+.. memory:: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom_hook
+   :subject: CLOAK_ON_THE_HOOK
+
+   The Player hung the cloak on a hook.
 
 [NARRATOR]_
 

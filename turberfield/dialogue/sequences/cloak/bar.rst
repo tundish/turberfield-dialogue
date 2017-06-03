@@ -41,6 +41,11 @@ Checking your person
     The smell of sawdust begins to reach your nostrils as you sweep
     over the floor.
     
+.. memory:: turberfield.dialogue.sequences.cloak.logic.Location.bar
+   :subject: CLOAK
+
+   The Player wore the cloak in the bar.
+
 Looking around
 --------------
 
@@ -49,6 +54,11 @@ Looking around
     Someone has written a message in the dust on the floor. It says:
 
     |message|
+
+.. memory:: turberfield.dialogue.sequences.cloak.logic.Location.bar
+   :subject: PRIZE
+
+   The Player read the message as "|message|".
 
 [NARRATOR]_
 
