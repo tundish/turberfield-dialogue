@@ -35,6 +35,8 @@ except ImportError:
 
 import turberfield.dialogue
 
+def setup(app):
+    app.add_stylesheet("turberfield.css")
 
 # -- General configuration ------------------------------------------------
 

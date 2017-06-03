@@ -72,7 +72,7 @@ an audience, we bring two components together:
 
 .... admonition:: All the world's a stage
 
-.. tip:: **All the world's a stage**
+.. admonition:: All the world's a stage
 
    Explain every object has a voice. Named objects are Personae
 
