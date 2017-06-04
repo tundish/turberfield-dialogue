@@ -16,8 +16,8 @@ consider one of these:
 
 .. todo:: Text editors
 
-Install Python
-==============
+Pick your Python
+================
 
 The version of Python you're going to use depends on your Operating System.
 Two examples are documented below:
@@ -35,6 +35,7 @@ Create a Python virtual environment
 Linux or MacOSX
 ~~~~~~~~~~~~~~~
 
+#. Install `python3.5` using the package manager.
 #. Create a new Python virtual environment::
 
     $ python3.5 -m venv ~/py3.5

@@ -60,15 +60,74 @@ a sound effect at the appropriate point::
 
         Itchy.state = 0
 
-This is a short scene in a fictional cartoon. In order to produce this for
-an audience, we bring two components together:
+Script file
+===========
 
-* An ensemble_ of Actors
-* A folder_ of Dialogue
+Let's take a peek at the file which generates the dialogue. You can open
+`turberfield/dialogue/sequences/battle/combar.rst` to see it in full. Here's the gist of
+it below.
+
+.. code-block:: rest
+    :emphasize-lines: 13-15, 22-28
+
+    .. entity:: FIGHTER_1
+       :states: 1
+       :roles: WEAPON
+
+    .. entity:: FIGHTER_2
+       :types: turberfield.dialogue.sequences.battle.types.Animal
+       :states: 1
+
+    .. entity:: WEAPON
+       :types: turberfield.dialogue.sequences.battle.types.Tool
+
+
+    [FIGHTER_1]_
+
+        I hate the way you use me, |fighter2| !
+
+    .. fx:: turberfield.dialogue.sequences.battle slapwhack.wav
+       :offset: 0
+       :duration: 3000
+       :loop: 1
+
+    [WEAPON]_
+
+        **Whack!**
+
+    [FIGHTER_2]_
+
+        Uuurrggh!
+
+    .. property:: FIGHTER_2.state 0
+
+    .. |fighter2| property:: FIGHTER_2.name.firstname
+
+If you look at the yellow highlighted sections, you'll see immediately how they correspond
+to lines of dialogue. Notice how they aren't allocated to characters by name. Instead, the
+dialogue is written for generic *roles*. Part of Turberfield's job is to match characters to
+those roles.
+
+The script file also contains other sections which do not correspond to dialogue. They are called
+*directives*. I will explain those in the next section.
 
 .. admonition:: All the world's a stage
 
-   Explain every object has a voice. Named objects are Personae
+   From now on, I'm going to start being precise in what I call things. I will avoid the words
+   *Actor* and *Character*. They suggest a human being.
+
+   In screenplay any object, whether animate or inanimate, can have a voice.
+   So Turberfield calls them **Entities**.
+
+   Entities can have attributes. An entity with a name is called a *Persona*. An entity which
+   changes state is called *Stateful*.
+
+   An entity can play the **role** of another entity.
+
+
+
+* An ensemble_ of Actors
+* A folder_ of Dialogue
 
 Ensemble
 ========
