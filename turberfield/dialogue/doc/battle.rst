@@ -20,14 +20,14 @@ it to preview the action in the first example.
     follow that with *options* which are extra instructions to control the way the
     program behaves.
 
-    The Turberfield rehearsal tool takes several options; typing them all out every
+    The Turberfield rehearsal tool takes several options. Typing them all out every
     time is an annoyance. So the essential ones are stored in a text file called
     *rehearse.cli*. You can pass this file to the program instead and it will take
     the options from there. You can add more from the command line at the same time
     by typing them afterwards in the usual way.
 
-    To launch the rehearsal tool with stored options, precede the path to the options
-    file with a '`@`' symbol, eg:
+    To instruct the rehearsal tool to load stored options, precede the path to the options
+    file with a `@` symbol.
 
 Rehearsal
 =========
@@ -40,9 +40,11 @@ On Windows 8.1::
 
     > start %USERPROFILE%\py3.6\Scripts\turberfield-rehearse @turberfield/dialogue/sequences/battle/rehearse.cli
 
-From now on, I'll assume you know how to operate the command line on your computer.
-Further instructions will give the Linux form of commands only, and omit the prompt
-character.
+.. admonition:: You can do this.
+
+    From now on, I'll assume you know how to operate the command line on your computer.
+    Further instructions will give the Linux form of commands only, and omit the prompt
+    character.
 
 Here's what you should see in your terminal window, including a sound effect at the
 appropriate point::
@@ -127,3 +129,5 @@ Defines the script files
         Scratchy.state = 0
 
     Press return.
+
+.. _Peek: https://github.com/phw/peek

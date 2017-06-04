@@ -8,7 +8,7 @@ Choose a Text Editor
 ====================
 
 A text editor is a program for writing text and storing it in a plain format which
-all computers understand. This is in contrast to Microsofty Word or LibreOffice which
+all computers understand. This is in contrast to Microsoft Word or LibreOffice which
 have their own particular file formats.
 
 If you are a developer, you may already know which you prefer. Otherwise, you might
@@ -62,7 +62,7 @@ Microsoft Windows 8.1
 
    `Pip` installs packages. That is, programs and libraries. Turberfield is
    one such library. There are many thousands more. A community of developers
-   puts them on the internet for all to use.
+   puts them on the internet for us to use.
 
    When you invoke `pip` like this, it goes out to the internet to find the package
    you want. It downloads it and installs it to your Python environment.
@@ -87,5 +87,13 @@ On Windows 8.1::
 
     > %USERPROFILE%\py3.6\Scripts\pip install turberfield-dialogue[audio]
 
+Download the examples
+=====================
+
+#. Download the example `source as a zipfile`_.
+#. Unzip the archive in your home directory.
+#. ``cd turberfield-dialogue-master``
+
 .. _PyPI: https://pypi.python.org/pypi
 .. _Python 3.6.1 for Windows: https://www.python.org/ftp/python/3.6.1/python-3.6.1.exe
+.. _source as a zipfile: https://github.com/tundish/turberfield-dialogue/archive/master.zip
