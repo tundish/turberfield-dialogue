@@ -46,23 +46,17 @@ On Windows 8.1::
     Further instructions will give the Linux form of commands only, and omit the prompt
     character.
 
-Here's what you should see in your terminal window, including a sound effect at the
-appropriate point::
+Over the course of a few seconds, here's what should see in your terminal window. There's also
+a sound effect at the appropriate point::
 
-    Combat
+      Scratchy
+              I hate the way you use me,  Itchy  !
 
+      Ol' Rusty Chopper
+              **Whack!**
 
-        Action
-
-
-          Scratchy
-                  I hate the way you use me,  Itchy  !
-
-          Ol' Rusty Chopper
-                  **Whack!**
-
-          Itchy
-                  Uuurrggh!
+      Itchy
+              Uuurrggh!
 
         Itchy.state = 0
 
@@ -71,8 +65,6 @@ an audience, we bring two components together:
 
 * An ensemble_ of Actors
 * A folder_ of Dialogue
-
-.... admonition:: All the world's a stage
 
 .. admonition:: All the world's a stage
 
@@ -100,34 +92,27 @@ Defines the script files
 
 ::
 
-    Combat
+    Scratchy
+          I hate the way you use me,  Itchy  !
 
+    Ol' Rusty Chopper
+          **Whack!**
 
-        Action
-
-
-          Scratchy
-                  I hate the way you use me,  Itchy  !
-
-          Ol' Rusty Chopper
-                  **Whack!**
-
-          Itchy
-                  Uuurrggh!
+    Itchy
+          Uuurrggh!
 
         Itchy.state = 0
 
-          Ol' Rusty Chopper
-                  I hate the way you use me,  Scratchy  !
+    Ol' Rusty Chopper
+          I hate the way you use me,  Scratchy  !
 
-          Ol' Rusty Chopper
-                  **Whack!**
+    Ol' Rusty Chopper
+          **Whack!**
 
-          Scratchy
-                  Uuurrggh!
+    Scratchy
+          Uuurrggh!
 
         Scratchy.state = 0
 
-    Press return.
 
 .. _Peek: https://github.com/phw/peek

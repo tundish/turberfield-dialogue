@@ -14,6 +14,7 @@ have their own particular file formats.
 If you are a developer, you may already know which you prefer. Otherwise, you might
 consider one of these:
 
+.. todo:: Text editors
 
 Install Python
 ==============
