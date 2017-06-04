@@ -111,10 +111,10 @@ those roles.
 The script file also contains other sections which do not correspond to dialogue. They are called
 *directives*. I will explain those in the next section.
 
-.. admonition:: All the world's a stage
+.. admonition:: If names be not correct...
 
    From now on, I'm going to start being precise in what I call things. I will avoid the words
-   *Actor* and *Character*. They suggest a human being.
+   *Actor* and *Character*, since they suggest a human being.
 
    In screenplay any thing, whether animate or inanimate, can have a voice.
    So Turberfield calls them **Entities**.
