@@ -64,7 +64,7 @@ Script file
 ===========
 
 Let's take a peek at the file which generates the dialogue. You can open
-`turberfield/dialogue/sequences/battle/combar.rst` to see it in full. Here's the gist of
+`turberfield/dialogue/sequences/battle/combat.rst` to see it in full. Here's the gist of
 it below.
 
 .. code-block:: rest
@@ -116,13 +116,13 @@ The script file also contains other sections which do not correspond to dialogue
    From now on, I'm going to start being precise in what I call things. I will avoid the words
    *Actor* and *Character*. They suggest a human being.
 
-   In screenplay any object, whether animate or inanimate, can have a voice.
+   In screenplay any thing, whether animate or inanimate, can have a voice.
    So Turberfield calls them **Entities**.
 
-   Entities can have attributes. An entity with a name is called a *Persona*. An entity which
-   changes state is called *Stateful*.
-
-   An entity can play the **role** of another entity.
+   Entities can have **attributes**. An entity with a *name* attribute is called a **Persona**.
+   An entity with *state* attributes is called **Stateful**. In addition to those, you can define
+   your own **types** for your entities.  So long as their types match, one entity can play the
+   **role** of another entity.
 
 
 
