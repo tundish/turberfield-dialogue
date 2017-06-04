@@ -4,6 +4,17 @@
 Installation
 ::::::::::::
 
+Choose a Text Editor
+====================
+
+A text editor is a program for writing text and storing it in a plain format which
+all computers understand. This is in contrast to Microsofty Word or LibreOffice which
+have their own particular file formats.
+
+If you are a developer, you may already know which you prefer. Otherwise, you might
+consider one of these:
+
+
 Install Python
 ==============
 
