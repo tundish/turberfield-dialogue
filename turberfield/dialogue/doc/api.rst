@@ -4,7 +4,10 @@
 API Reference
 :::::::::::::
 
-.. automodule:: turberfield.dialogue.model
+Data model
+==========
+
+.. autoclass:: turberfield.dialogue.model.Model
 
 .. autoattribute:: turberfield.dialogue.model.Model.Shot
    :annotation: (name, scene, items)
@@ -21,9 +24,12 @@ API Reference
 .. autoattribute:: turberfield.dialogue.model.Model.Line
    :annotation: (persona, text, html)
 
-.. autoclass:: turberfield.dialogue.model.SceneScript
-   :members: scripts, read, select, cast, run
-   :member-order: bysource
+Scene scripts
+=============
 
 .. autoattribute:: turberfield.dialogue.model.SceneScript.Folder
    :annotation: (pkg, description, metadata, paths, interludes)
+
+.. autoclass:: turberfield.dialogue.model.SceneScript
+   :members: scripts, read, select, cast, run
+   :member-order: bysource

@@ -39,6 +39,11 @@ import docutils
 
 
 class Model(docutils.nodes.GenericNodeVisitor):
+    """This class registers the necessary extensions to the docutils document model.
+
+    It also defines the types which are returned on iterating over a scene script file.
+
+    """
 
     Shot = namedtuple("Shot", ["name", "scene", "items"])
     Property = namedtuple("Property", ["entity", "object", "attr", "val"])
@@ -210,7 +215,7 @@ class SceneScript:
         :py:class:`~turberfield.dialogue.model.SceneScript.Folder` object
         like this::
 
-            SceneScripts.scripts(**folder._asdict())
+            SceneScript.scripts(**folder._asdict())
 
         The method generates a sequence of
         :py:class:`~turberfield.dialogue.model.SceneScript` objects.
@@ -264,7 +269,7 @@ class SceneScript:
         :param personae: A sequence of Personae.
         :param bool relative: Affects imports from namespace packages.
             Used for testing only.
-        :param int roles: The maximum number of roles allocated to each personae.
+        :param int roles: The maximum number of roles allocated to each persona.
         :return: An OrderedDict of {Entity: Persona}.
 
         """
