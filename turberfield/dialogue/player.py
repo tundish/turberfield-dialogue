@@ -25,6 +25,9 @@ from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.schema import SchemaBase
 
 def run_through(script, ensemble, roles=1):
+    """
+    :py:class:`turberfield.dialogue.model.SceneScript`.
+    """
     then = datetime.datetime.now()
     with script as dialogue:
         selection = dialogue.select(ensemble, roles=roles)

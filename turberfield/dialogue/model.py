@@ -156,14 +156,17 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.speaker = entity.persona
 
 class SceneScript:
+    """Gives access to a Turberfield scene script (.rst) file.
+
+    This class allows discovery and classification of scene files prior to loading
+    them in memory.
+
+    Once loaded, it allows entity selection based on the role definitions in the file.
+    Casting a selection permits the script to be iterated as a sequence of dialogue items.
+
     """
-    Holds metadata for a scene file (.rst).
 
-    A SceneScript contains one or more scenes. Each scene consists of one or more shots.
-
-    """
-
-    Folder = namedtuple("Folder", ["pkg", "doc", "metadata", "paths", "interludes"])
+    Folder = namedtuple("Folder", ["pkg", "description", "metadata", "paths", "interludes"])
 
     log = logging.getLogger("turberfield.dialogue.model.scenescript")
 
@@ -195,7 +198,23 @@ class SceneScript:
     )
 
     @classmethod
-    def scripts(cls, pkg, doc, paths=[], **kwargs):
+    def scripts(cls, pkg, metadata, paths=[], **kwargs):
+        """This class method is the preferred way to create SceneScript objects.
+
+        :param str pkg: The dotted name of the package containing the scripts.
+        :param metadata: A mapping or data object. This parameter permits searching among
+            scripts against particular criteria. Its use is application specific.
+        :param list(str) paths: A sequence of file paths to the scripts relative to the package.
+
+        You can satisfy all parameter requirements by passing in a
+        :py:class:`~turberfield.dialogue.model.SceneScript.Folder` object
+        like this::
+
+            SceneScripts.scripts(**folder._asdict())
+
+        The method generates a sequence of
+        :py:class:`~turberfield.dialogue.model.SceneScript` objects.
+        """
         for path in paths:
             try:
                 fP = pkg_resources.resource_filename(pkg, path)
@@ -209,18 +228,26 @@ class SceneScript:
                         "No script file at {}".format(os.path.join(*pkg.split(".") + [path]))
                     )
                 else:
-                    yield cls(fP, doc)
+                    yield cls(fP, metadata)
 
 
     @staticmethod
     def read(text, name=None):
+        """Read a block of text as a docutils document.
+
+        :param str text: Scene script text.
+        :param str name: An optional name for the document.
+        :return: A document object.
+
+        """
         doc = docutils.utils.new_document(name, SceneScript.settings)
         parser = docutils.parsers.rst.Parser()
         parser.parse(text, doc)
         return doc
 
-    def __init__(self, fP, doc=None):
+    def __init__(self, fP, metadata=None, doc=None):
         self.fP = fP
+        self.metadata = metadata
         self.doc = doc
 
     def __enter__(self):
@@ -232,6 +259,15 @@ class SceneScript:
         return False
 
     def select(self, personae, relative=False, roles=1):
+        """Select a persona for each entity declared in the scene.
+
+        :param personae: A sequence of Personae.
+        :param bool relative: Affects imports from namespace packages.
+            Used for testing only.
+        :param int roles: The maximum number of roles allocated to each personae.
+        :return: An OrderedDict of {Entity: Persona}.
+
+        """
 
         def constrained(entity):
             return (
@@ -289,6 +325,12 @@ class SceneScript:
         return rv
 
     def cast(self, mapping):
+        """Allocate the scene script a cast of personae for each of its entities.
+
+        :param mapping: A dictionary of {Entity, Persona}
+        :return: The SceneScript object.
+
+        """
         # See 'citation' method in
         # http://docutils.sourceforge.net/docutils/parsers/rst/states.py
         for c, p in mapping.items():
@@ -301,6 +343,10 @@ class SceneScript:
         return self
 
     def run(self):
+        """Parse the script file.
+
+        :rtype: :py:class:`~turberfield.dialogue.model.Model`
+        """
         model = Model(self.fP, self.doc)
         self.doc.walkabout(model)
         return model
