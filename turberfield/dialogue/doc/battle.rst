@@ -124,10 +124,51 @@ The script file also contains other sections which do not correspond to dialogue
    your own **types** for your entities.  So long as their types match, one entity can play the
    **role** of another entity.
 
+References
+==========
+
+Alongside the script file, there is a Python (.py) file to supply the entities it refers to.
+You should take a look at `turberfield/dialogue/sequences/battle/types.py`. Here below are its main features:
 
 
-* An ensemble_ of Actors
-* A folder_ of Dialogue
+.. code-block:: python
+
+    import itertools
+
+    from turberfield.dialogue.model import SceneScript
+    from turberfield.dialogue.types import Persona
+    from turberfield.dialogue.types import Stateful
+
+    __doc__ = """A simple drama for demonstration."""
+
+
+    class Animal(Stateful, Persona):
+        pass
+
+    class Tool(Stateful, Persona):
+        pass
+
+    references = [
+        Animal(name="Itchy").set_state(1),
+        Animal(name="Scratchy").set_state(1),
+        Tool(name="Ol' Rusty Chopper").set_state(1),
+    ]
+
+    folder = SceneScript.Folder(
+        "turberfield.dialogue.sequences.battle",
+        __doc__,
+        None,
+        ["combat.rst"],
+        itertools.repeat(None)
+    )
+
+This file dowa 4 things:
+
+    #. Imports what it needs from Python and Turberfield .
+    #. Defines some types which are necessary for the scene.
+    #. Creates some objects to be referenced by the script.
+    #. Declares a folder object which contains a scene script file
+       and the entities for it.
 
 Ensemble
 ========
