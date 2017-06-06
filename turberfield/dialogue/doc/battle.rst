@@ -171,7 +171,7 @@ This file does 5 things:
     Lines 1 - 5
         Import what we need from Python and Turberfield.
     Line 7
-        Add a description for module.
+        Add a description for the module.
     Lines 9 - 13
         Define some types which are necessary for the scene.
     Lines 16 - 20
