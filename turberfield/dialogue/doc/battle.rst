@@ -166,19 +166,21 @@ Here below are its main features.
     )
 
 
-This file does 5 things:
+This file does five important things:
 
     Lines 1 - 5
         Import what we need from Python and Turberfield.
     Line 7
         Add a description for the module.
-    Lines 9 - 13
+    Lines 10 - 14
         Define some types which are necessary for the scene.
     Lines 16 - 20
         Create some objects to be referenced by the script.
+        We also give them a state at the same time.
     Lines 22 - 28
-        Declare a folder object which contains a scene script file
-        and the entities for it.
+        Declare a folder object which contains our scene script file.
+        There are several other elements here, and we'll go into it properly
+        later.
 
 Ensemble
 ========
