@@ -169,7 +169,7 @@ Here below are its main features.
 This file does 5 things:
 
     Lines 1 - 5
-        Imports what we need from Python and Turberfield.
+        Import what we need from Python and Turberfield.
     Line 7
         Add a description for module.
     Lines 9 - 13
