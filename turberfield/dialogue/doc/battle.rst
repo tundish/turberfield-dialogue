@@ -127,8 +127,10 @@ The script file also contains other sections which do not correspond to dialogue
 References
 ==========
 
-Alongside the script file, there is a Python (.py) file to supply the entities it refers to.
-You should take a look at `turberfield/dialogue/sequences/battle/types.py`. Here below are its main features:
+Alongside the script file, there is a Python (.py) file. Python files are called `modules`.
+They supply the entities referred to in the script.
+You should take a look in detail at `turberfield/dialogue/sequences/battle/types.py`.
+Here below are its main features.
 
 
 .. code-block:: python
@@ -164,13 +166,19 @@ You should take a look at `turberfield/dialogue/sequences/battle/types.py`. Here
     )
 
 
-This file dowa 4 things:
+This file does 5 things:
 
-    #. Imports what it needs from Python and Turberfield .
-    #. Defines some types which are necessary for the scene.
-    #. Creates some objects to be referenced by the script.
-    #. Declares a folder object which contains a scene script file
-       and the entities for it.
+    Lines 1 - 5
+        Imports what we need from Python and Turberfield.
+    Line 7
+        Add a description for module.
+    Lines 9 - 13
+        Define some types which are necessary for the scene.
+    Lines 16 - 20
+        Create some objects to be referenced by the script.
+    Lines 22 - 28
+        Declare a folder object which contains a scene script file
+        and the entities for it.
 
 Ensemble
 ========
