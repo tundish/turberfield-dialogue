@@ -11,10 +11,16 @@ A text editor is a program for writing text and storing it in a plain format whi
 all computers understand. This is in contrast to Microsoft Word or LibreOffice which
 have their own particular file formats.
 
-If you are a developer, you may already know which you prefer. Otherwise, you might
-consider one of these:
+If you are a developer, you may already know which you prefer. Otherwise:
 
-.. todo:: Text editors
+#. Install `Visual Studio Code`_.
+#. Launch the editor.
+#. Go to the `View` menu.
+#. Select `Extensions`.
+#. In the search pane on the left, type `@reStructuredText`.
+#. Select and install the LeXtudio reStructuredText extension.
+#. In the search pane on the left, type `@Python`.
+#. Select and install the Don Jayamanne Python extension.
 
 Pick your Python
 ================
@@ -99,3 +105,4 @@ Download the examples
 .. _PyPI: https://pypi.python.org/pypi
 .. _Python 3.6.1 for Windows: https://www.python.org/ftp/python/3.6.1/python-3.6.1.exe
 .. _source as a zipfile: https://github.com/tundish/turberfield-dialogue/archive/master.zip
+.. _Visual Studio Code: https://code.visualstudio.com

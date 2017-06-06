@@ -132,6 +132,7 @@ You should take a look at `turberfield/dialogue/sequences/battle/types.py`. Here
 
 
 .. code-block:: python
+   :linenos:
 
     import itertools
 
@@ -161,6 +162,7 @@ You should take a look at `turberfield/dialogue/sequences/battle/types.py`. Here
         ["combat.rst"],
         itertools.repeat(None)
     )
+
 
 This file dowa 4 things:
 
