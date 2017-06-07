@@ -1,6 +1,8 @@
 ..  Titling
     ##++::==~~--''``
 
+.. _syntax:
+
 Syntax guide
 ::::::::::::
 

@@ -193,14 +193,14 @@ State
 =====
 
 The Battle Royal sequence makes use of `state`. Both fighters must be
-alive at the beginning of the scene! This is encoded as a simple integer state,
+alive at the beginning of the scene. This is encoded as a simple integer state,
 which is set in the Python module when the references are created.
 
 The entity declaration in the script file specifies the state must be 1 in
 order for a persona to be cast as one of the fighters in the scene.
 
 A property directive in the scene file zeroes the state of the smitten
-fighter. We'll look in more detail how this works in the section on syntax.
+fighter. We'll look in more detail how this works in the :ref:`syntax`.
 
 Roles
 =====
