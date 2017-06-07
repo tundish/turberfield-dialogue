@@ -46,8 +46,8 @@ On Windows 8.1::
     Further instructions will give the Linux form of commands only, and omit the prompt
     character.
 
-Over the course of a few seconds, here's what should see in your terminal window. There's also
-a sound effect at the appropriate point::
+Here's what should see in your terminal window. The dialogue is delivered incrementally.
+There's also a sound effect at the appropriate point::
 
       Scratchy
               I hate the way you use me,  Itchy  !
@@ -134,7 +134,6 @@ Here below are its main features.
 
 
 .. code-block:: python
-   :linenos:
 
     import itertools
 
@@ -166,7 +165,7 @@ Here below are its main features.
     )
 
 
-This file does five important things:
+This file performs five tasks:
 
     Lines 1 - 5
         Import what we need from Python and Turberfield.
@@ -182,27 +181,53 @@ This file does five important things:
         There are several other elements here, and we'll go into it properly
         later.
 
-Ensemble
-========
+Type
+====
 
-This is where the actors live.
-Terminology - Personae vs actors, characters.
+A type is a concept from Python. You can create types with a `class` declaration
+in a Python module. Notice that two of the entity declarations in the script file
+have a `:types:` constraint; Fighter 2 has to be some kind of Animal, and the
+Weapon a Tool.
 
-* class inheritance
-* Persona - name
-* Stateful - state
-* Assembly - use to mention --web in passing
-* integer state used for alive/dead
+State
+=====
 
-Folder
-======
+The Battle Royal sequence makes use of `state`. Both fighters must be
+alive at the beginning of the scene! This is encoded as a simple integer state,
+which is set in the Python module when the references are created.
 
-Defines the script files
+The entity declaration in the script file specifies the state must be 1 in
+order for a persona to be cast as one of the fighters in the scene.
 
-* :roles:
-* Launch again with repeat=1
+A property directive in the scene file zeroes the state of the smitten
+fighter. We'll look in more detail how this works in the section on syntax.
 
-::
+Roles
+=====
+
+Turberfield's rehearsal proceeds despite any unmatched entities. The
+lines will not be voiced for unmatched parts. In the case that none of
+the entities in the scene can be cast, the entire scene is skipped.
+
+An extra dimension to the casting of entities is the concept of `roles`.
+When roles are attached to an entity declaration it means that the
+persona which gets cast to play that entity becomes a candidate to
+play those other entities too.
+
+In this way, a scene written as a montage of ensemble dialogue could
+still be delivered as a monologue were there to be only one persona
+available to deliver the lines.
+
+Repeats
+=======
+
+By default the rehearsal tool runs through the scene just once. To see the
+effect of roles in this example, we'll need the scene to repeat. Launch
+the rehearsal again, this time specifying a repetition::
+
+    ~/py3.5/bin/turberfield-rehearse --repeat=1 @turberfield/dialogue/sequences/battle/rehearse.cli
+
+And you should see the carnage play out, with one inevitable winner left standing::
 
     Scratchy
           I hate the way you use me,  Itchy  !
