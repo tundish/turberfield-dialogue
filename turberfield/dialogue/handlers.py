@@ -37,12 +37,37 @@ from turberfield.utils.db import Creation
 
 
 class TerminalHandler:
+    """
+    The default handler for events from scene script files.
+    It generates output for a console terminal.
 
+    The class is written to be a callable, stateful object.
+    Its `__call__` method delegates to handlers specific to each type of event.
+    You can subclass it and override those methods to suit your own application.
+
+    :param terminal: A stream object.
+    :param str dbPath: An optional URL to the internal database.
+    :param float pause: The time in seconds to pause on a line of dialogue.
+    :param float dwell: The time in seconds to dwell on a word of dialogue.
+    :param log: An optional log object.
+
+    """
     pause = 1.5
     dwell = 0.2
 
     @staticmethod
     def handle_audio(obj, wait=False):
+        """Handle an audio event.
+
+        This function plays an audio file.
+        Currently only `.wav` format is supported. 
+
+        :param obj: An :py:class:`~turberfield.dialogue.model.Model.Audio`
+            object.
+        :param bool wait: Force a blocking wait until playback is complete.
+        :return: The supplied object.
+
+        """
         fp = pkg_resources.resource_filename(obj.package, obj.resource)
         data = wave.open(fp, "rb")
         nChannels = data.getnchannels()
@@ -68,12 +93,39 @@ class TerminalHandler:
         return obj
 
     def handle_interlude(self, obj, folder, index, ensemble, loop=None, **kwargs):
+        """Handle an interlude event.
+
+        Interlude functions permit branching. They return a folder which the
+        application can choose to adopt as the next supplier of dialogue.
+
+        This handler calls the interlude with the supplied arguments and
+        returns the result.
+
+        :param obj: A callable object.
+        :param folder: A
+            :py:class:`~turberfield.dialogue.model.SceneScript.Folder` object.
+        :param int index: Indicates which scene script in the folder
+            is being processed.
+        :param ensemble: A sequence of Python objects.
+        :return: A :py:class:`~turberfield.dialogue.model.SceneScript.Folder`
+            object.
+
+        """
         if obj is None:
             return folder
         else:
             return obj(folder, index, ensemble, loop=loop, **kwargs)
 
     def handle_line(self, obj):
+        """Handle a line event.
+
+        This function displays a line of dialogue. It generates a blocking wait
+        for a period of time calculated from the length of the line.
+
+        :param obj: A :py:class:`~turberfield.dialogue.model.Model.Line` object.
+        :return: The supplied object.
+
+        """
         if obj.persona is None:
             return obj
 
@@ -101,6 +153,16 @@ class TerminalHandler:
         return obj
 
     def handle_memory(self, obj):
+        """Handle a memory event.
+
+        This function accesses the internal database. It writes a record
+        containing state information and an optional note.
+
+        :param obj: A :py:class:`~turberfield.dialogue.model.Model.Memory`
+            object.
+        :return: The supplied object.
+
+        """
         if obj.subject is not None:
             with self.con as db:
                 rv = SchemaBase.note(
@@ -114,6 +176,16 @@ class TerminalHandler:
         return obj
 
     def handle_property(self, obj):
+        """Handle a property event.
+
+        This function will set an attribute on an object if the event requires
+        it.
+ 
+        :param obj: A :py:class:`~turberfield.dialogue.model.Model.Property`
+            object.
+        :return: The supplied object.
+
+        """
         try:
             setattr(obj.object, obj.attr, obj.val)
         except AttributeError as e:
@@ -128,6 +200,15 @@ class TerminalHandler:
         return obj
 
     def handle_scene(self, obj):
+        """Handle a scene event.
+
+        This function applies a blocking wait at the start of a scene.
+
+        :param obj: A :py:class:`~turberfield.dialogue.model.Model.Shot`
+            object.
+        :return: The supplied object.
+
+        """
         print(
             "{t.dim}{scene}{t.normal}".format(
                 scene=obj.scene.capitalize(), t=self.terminal
@@ -139,10 +220,23 @@ class TerminalHandler:
         return obj
 
     def handle_scenescript(self, obj):
+        """Handle a scene script event.
+
+        :param obj: A :py:class:`~turberfield.dialogue.model.SceneScript.Folder`
+            object.
+        :return: The supplied object.
+
+        """
         self.log.debug(obj.fP)
         return obj
 
     def handle_shot(self, obj):
+        """Handle a shot event.
+
+        :param obj: A :py:class:`~turberfield.dialogue.model.Model.Shot` object.
+        :return: The supplied object.
+
+        """
         print(
             "{t.dim}{shot}{t.normal}".format(
                 shot=obj.name.capitalize(), t=self.terminal

@@ -6,10 +6,21 @@
 Syntax guide
 ::::::::::::
 
+A Turberfield scene script file represents a sequence of dramatic action.
+A single file contains one or more scenes, each of which is composed of
+separate shots. A shot can contain dialogue, audio effects and other directives.
+
+A Scene script adopts the reStructuredText_ syntax. By using a defined subset
+of that syntax, along with custom extensions, Turberfield defines a format which
+visually resembles a traditional screenplay, yet which conforms to a formal data model.
+
+A key feature of the format is that it allows roles to be cast dynamically, such
+that objects must match the declared criteria for a role. It is nonetheless possible
+for dialogue to refer to personal attributes such as names, using a mechanism of
+`substitution references`_.
+
 Naming convention
 =================
-
-A Turberfield Scene script is a reStructuredText_ file.
 
 The file name should contain lower case characters only, and have a suffix of
 **.rst**.
@@ -34,9 +45,13 @@ Structure
    top-level heading_.
 #. Each scene  must contain at least one **shot** section which is created by a
    second-level heading_.
-#. Dialogue is defined by a citation_ reference in a shot section.
+#. Dialogue is defined by a citation_ in a shot section.
    The name given in the citation must match an entity declaration.
    Dialogue may contain `inline markup`_ and `substitution references`_.
+#. Shot sections may also contain one or more of these elements:
+    * `Property directive`_
+    * `FX directive`_
+    * `Memory directive`_
 
 Elements
 ========
@@ -54,7 +69,7 @@ Entity declaration
         Optional.
     ``:states:``
         A whitespace separated sequence of dotted paths.
-        Each path must resolve to a Python Enum class.
+        Each path must resolve to a Python Enum class member.
         In addition, a single integer value is also allowed.
         A candidate for this entity must match *all* these state criteria.
         Optional.
@@ -64,22 +79,60 @@ Entity declaration
         A candidate for this entity must be an instance of *at least one*
         of these types. Optional.
 
+Property directive
+~~~~~~~~~~~~~~~~~~
 
-Turberfield uses several standard idioms from resTructuredText.
+.. rst:directive:: .. property:: ATTRIBUTE [VALUE]
 
-* Field tags for authorship
-* Comments
-* Top level title section denotes a Scene
-* Second level title section denotes a Shot.
-* Inline formatting for emphasis of dialogue
-* Lines of dialogue attributed to entities via citation references
-* Substitution definitions provide a way for one entity to refer
-  to another in a line of dialogue.
+    This directive takes no other options.
 
-* Folders contain sequences of action.
-* Scripts separate action into scenes.
-* Scenes are made up of shots.
-* Shots can contain lines of dialogue or audio effects.
+    The property directive acts in two modes.
+
+        * With a single argument it is a `getter`; it returns the attribute value.
+          This is the mode to use when defining a substitution reference.
+        * With two arguments it is a `setter`; it sets the attribute value.
+          This allows you to modify entities during the delivery of dialogue.
+
+FX directive
+~~~~~~~~~~~~
+
+.. rst:directive:: .. fx:: PACKAGE RESOURCE
+
+    The FX (effects) directive plays a sound effect.
+    The first argument is the dotted name of the package which contains the audio file
+    The second argument is the path of the file relative to the package location.
+
+    ``:duration:``
+        Sets the duration of audio playback. This value is in milliseconds. Optional.
+    ``:loop:``
+        The number of times to play the audio.
+    ``:offset:``
+        Sets the point in the audio file at which playback begins.
+        This value is in milliseconds.
+
+Memory directive
+~~~~~~~~~~~~~~~~
+
+.. rst:directive:: .. memory:: STATE
+
+    The Memory directive saves a record to the dialogue database. STATE is the dotted
+    path to a Python Enum class value, or else an integer.
+
+    This directive lets you capture relationships between entities and store
+    them with a timestamp and a note of explanation.
+
+    ``:subject:``
+        The name of an entity which is primarily associated with STATE. With no `object`
+        (see below) the interpretation is that the subject is assigned the state. If
+        object is defined, the relationship between subject, object and state is
+        application-specific.
+    ``:object:``
+        The name of an entity which is the object of the relationship
+        ``(subject, state, object)``. Optional.
+
+    Any paragraphs of inline content to this directive are used as a note which
+    accompanies the record in the database. Such paragraphs may contain
+    `inline markup`_ and `substitution references`_.
 
 .. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html
 .. _field list: http://docutils.sourceforge.net/docs/user/rst/quickref.html#field-lists
