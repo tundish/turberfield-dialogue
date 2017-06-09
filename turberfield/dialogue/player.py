@@ -44,6 +44,16 @@ def run_through(script, ensemble, roles=1):
             yield from model
 
 def rehearse(folder, references, handler, repeat=0, roles=1, loop=None):
+    """Cast a set of objects into a sequence of scene scripts. Deliver the performance.
+
+    :param folder: A :py:class:`turberfield.dialogue.model.SceneScript.Folder`.
+    :param references: A sequence of Python objects.
+    :param handler: A callable object. This will be invoked with every event from the
+                    performance.
+
+    This function is a generator. It yields events from the performance.
+
+    """
 
     yield from handler(references, loop=loop)
 
