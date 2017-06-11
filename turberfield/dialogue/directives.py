@@ -18,7 +18,9 @@
 
 
 from collections import namedtuple
-import importlib
+import importlib.util
+import os.path
+import sys
 
 import docutils.nodes
 from docutils.nodes import BackLinkable, Element, General, Inline
@@ -45,9 +47,20 @@ class Pathfinder:
         start = 1 if relative else 0
         modName = ".".join(bits[start:index])
         try:
+            # Try importing an installed module
             mod = importlib.import_module(modName)
         except ImportError:
-            return None
+            # Try importing a source file at this location
+            mN = bits[index - 1]
+            spec = importlib.util.spec_from_file_location(
+                mN,
+                os.path.abspath(modName.replace(".", os.sep)) + ".py"
+            )
+            if spec is None:
+                return None
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            sys.modules[mN] = mod
 
         obj = mod
         for name in bits[index:]:
