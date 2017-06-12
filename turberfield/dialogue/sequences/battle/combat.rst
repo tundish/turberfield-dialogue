@@ -10,11 +10,11 @@
    :roles: WEAPON
 
 .. entity:: FIGHTER_2
-   :types: turberfield.dialogue.sequences.battle.types.Animal
+   :types: turberfield.dialogue.sequences.battle.logic.Animal
    :states: 1
 
 .. entity:: WEAPON
-   :types: turberfield.dialogue.sequences.battle.types.Tool
+   :types: turberfield.dialogue.sequences.battle.logic.Tool
 
 
 Combat
