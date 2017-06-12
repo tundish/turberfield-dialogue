@@ -186,17 +186,18 @@ class TerminalHandler:
         :return: The supplied object.
 
         """
-        try:
-            setattr(obj.object, obj.attr, obj.val)
-        except AttributeError as e:
-            self.log.error(". ".join(getattr(e, "args", e) or e))
-        print(
-            "{t.dim}{obj.object._name}.{obj.attr} = {obj.val!s}{t.normal}".format(
-                obj=obj, t=self.terminal
-            ),
-            end="\n" * 2,
-            file=self.terminal.stream
-        )
+        if obj.object is not None:
+            try:
+                setattr(obj.object, obj.attr, obj.val)
+            except AttributeError as e:
+                self.log.error(". ".join(getattr(e, "args", e) or e))
+            print(
+                "{t.dim}{obj.object._name}.{obj.attr} = {obj.val!s}{t.normal}".format(
+                    obj=obj, t=self.terminal
+                ),
+                end="\n" * 2,
+                file=self.terminal.stream
+            )
         return obj
 
     def handle_scene(self, obj):
