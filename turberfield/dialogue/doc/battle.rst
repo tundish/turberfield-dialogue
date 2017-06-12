@@ -34,11 +34,13 @@ Rehearsal
 
 On Linux or MacOSX::
 
-    $ ~/py3.5/bin/turberfield-rehearse @turberfield/dialogue/sequences/battle/rehearse.cli
+    $ cd demo/battle
+    $ ~/py3.5/bin/turberfield-rehearse @rehearse.cli
 
 On Windows 8.1::
 
-    > start %USERPROFILE%\py3.6\Scripts\turberfield-rehearse @turberfield/dialogue/sequences/battle/rehearse.cli
+    > cd demo\battle
+    > start %USERPROFILE%\py3.6\Scripts\turberfield-rehearse @rehearse.cli
 
 .. admonition:: You can do this.
 
@@ -64,7 +66,7 @@ Script file
 ===========
 
 Let's take a peek at the file which generates the dialogue. You can open
-`turberfield/dialogue/sequences/battle/combat.rst` to see it in full. Here's the gist of
+`demo/battle/combat.rst` to see it in full. Here's the gist of
 it below.
 
 .. code-block:: rest
@@ -75,18 +77,18 @@ it below.
        :roles: WEAPON
 
     .. entity:: FIGHTER_2
-       :types: turberfield.dialogue.sequences.battle.types.Animal
+       :types: logic.Animal
        :states: 1
 
     .. entity:: WEAPON
-       :types: turberfield.dialogue.sequences.battle.types.Tool
+       :types: logic.Tool
 
 
     [FIGHTER_1]_
 
         I hate the way you use me, |fighter2| !
 
-    .. fx:: turberfield.dialogue.sequences.battle slapwhack.wav
+    .. fx:: logic slapwhack.wav
        :offset: 0
        :duration: 3000
        :loop: 1
@@ -127,21 +129,20 @@ The script file also contains other sections which do not correspond to dialogue
 References
 ==========
 
-Alongside the script file, there is a Python (.py) file. Python files are called `modules`.
+Alongside the script file, there is a Python (.py) file.
+Python files are called `modules`.
 They supply the entities referred to in the script.
-You should take a look in detail at `turberfield/dialogue/sequences/battle/types.py`.
+You should take a look in detail at `demo/battle/logic.py`.
 Here below are its main features.
 
 
 .. code-block:: python
 
-    import itertools
+    from itertools import repeat
 
     from turberfield.dialogue.model import SceneScript
     from turberfield.dialogue.types import Persona
     from turberfield.dialogue.types import Stateful
-
-    __doc__ = """A simple drama for demonstration."""
 
 
     class Animal(Stateful, Persona):
@@ -157,11 +158,11 @@ Here below are its main features.
     ]
 
     folder = SceneScript.Folder(
-        "turberfield.dialogue.sequences.battle",
-        __doc__,
-        None,
-        ["combat.rst"],
-        itertools.repeat(None)
+        pkg=__name__,
+        description="Cartoon battle demo",
+        metadata=None,
+        paths=["combat.rst"],
+        interludes=repeat(None)
     )
 
 
@@ -169,14 +170,12 @@ This file performs five tasks:
 
     Lines 1 - 5
         Import what we need from Python and Turberfield.
-    Line 7
-        Add a description for the module.
-    Lines 10 - 14
+    Lines 8 - 12
         Define some types which are necessary for the scene.
-    Lines 16 - 20
+    Lines 14 - 18
         Create some objects to be referenced by the script.
         We also give them a state at the same time.
-    Lines 22 - 28
+    Lines 20 - 26
         Declare a folder object which contains our scene script file.
         There are several other elements here, and we'll go into it properly
         later.
@@ -185,9 +184,9 @@ Type
 ====
 
 A type is a concept from Python. You can create types with a `class` declaration
-in a Python module. Notice that two of the entity declarations in the script file
-have a `:types:` constraint; Fighter 2 has to be some kind of Animal, and the
-Weapon a Tool.
+in a Python module. Notice that two of the entity declarations in the script
+file have a `:types:` constraint; Fighter 2 has to be some kind of Animal, and
+the Weapon a Tool.
 
 State
 =====
@@ -225,7 +224,7 @@ By default the rehearsal tool runs through the scene just once. To see the
 effect of roles in this example, we'll need the scene to repeat. Launch
 the rehearsal again, this time specifying a repetition::
 
-    ~/py3.5/bin/turberfield-rehearse --repeat=1 @turberfield/dialogue/sequences/battle/rehearse.cli
+    ~/py3.5/bin/turberfield-rehearse --repeat=1 @rehearse.cli
 
 And you should see the carnage play out, with one inevitable winner left standing::
 
