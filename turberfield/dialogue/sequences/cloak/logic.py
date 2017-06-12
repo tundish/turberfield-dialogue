@@ -46,12 +46,6 @@ class Location(EnumFactory, enum.Enum):
     cloakroom = 3
     cloakroom_hook = 4
 
-@enum.unique
-class Progress(EnumFactory, enum.Enum):
-    destroyed = 0
-    described = 1
-    read = 2
-
 class Narrator(Stateful):
     pass
 
@@ -124,7 +118,7 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
 
     return folder
 
-references = ensemble + [Location, Progress]
+references = ensemble + [Location]
 
 game = SceneScript.Folder(
     "turberfield.dialogue.sequences.cloak",
