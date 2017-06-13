@@ -81,7 +81,23 @@ Logic.py
 * Types; Narrator, Cloak, Prize are not *Personae*
 * Integer state masks activity
 
-::
+The top of a Python module is where imports go:
+
+.. code-block:: python
+
+    import enum
+    from itertools import repeat
+    import random
+
+    from turberfield.dialogue.model import SceneScript
+    from turberfield.dialogue.types import EnumFactory
+    from turberfield.dialogue.types import DataObject
+    from turberfield.dialogue.types import Stateful
+
+Next we declare an enumeration state which will define the
+location of the player:
+
+.. code-block:: python
 
     @enum.unique
     class Location(EnumFactory, enum.Enum):
@@ -91,22 +107,40 @@ Logic.py
         cloakroom = 3
         cloakroom_hook = 4
 
+There are no Persona in this game; none of the voices has a name.
+But they do have state, and some of them need attributes. The
+useful types to inherit from will be *Stateful* and *DataObject*.
+
+Each of the entities in the game gets its own class declaration:
+
+.. code-block:: python
+
     class Narrator(Stateful):
         pass
 
-    class Garment(Stateful, DataObject):
+    class Cloak(Stateful, DataObject):
         pass
 
     class Prize(Stateful, DataObject):
         pass
 
+So now we can declare an ensemble of entities, setting attributes
+and initial state where appropriate:
+
+.. code-block:: python
 
     ensemble = [
         Narrator().set_state(Location.foyer),
-        Garment().set_state(Location.foyer).set_state(1),
+        Cloak().set_state(Location.foyer).set_state(1),
         Prize(message="You win!")
     ]
 
+
+This is an interactive game. We will be taking user input and
+trying to act on commands if we see them. Here is the world's
+dumbest text parser:
+
+.. code-block:: python
 
     def parse_command(cmd):
         try:
@@ -114,6 +148,8 @@ Logic.py
         except:
             return None
 
+
+::
 
     def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
         narrator, cloak, prize, *others = ensemble
@@ -165,11 +201,12 @@ Logic.py
 
     references = ensemble + [Location]
 
-    game = SceneScript.Folder(
-        "turberfield.dialogue.sequences.cloak",
-        __doc__, None,
-        ["foyer.rst", "bar.rst", "cloakroom.rst"],
-        repeat(interaction)
+    folder = SceneScript.Folder(
+        pkg=__name__,
+        description="The 'Hello World' of text games.",
+        metadata=None,
+        paths=["foyer.rst", "bar.rst", "cloakroom.rst"],
+        interludes=repeat(interaction)
     )
 
 Memory
