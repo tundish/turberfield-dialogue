@@ -199,6 +199,12 @@ dumbest text parser:
 
         return folder
 
+So now we can declare the objects turberfield-rehearse needs to
+see; a collection of all our Python references and a folder object
+with details of the game:
+
+.. code-block:: python
+
     references = ensemble + [Location]
 
     folder = SceneScript.Folder(
@@ -220,3 +226,4 @@ Memory
     "left outer join entity as o on touch.objct = o.id "
     "left outer join note on note.touch = touch.id"
 
+.. _SQLite3: https://www.sqlite.org
