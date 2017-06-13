@@ -4,7 +4,6 @@ Packaging
 :::::::::
 
 * Discovery
-* Tighter constraints
 * Metadata search::
 
     from turberfield.utils.misc import gather_installed
@@ -15,9 +14,22 @@ Packaging
         ).items()
         if "betrayal" in v.metadata,
     )
+
     references = dict(
         gather_installed("turberfield.interfaces.references")
     ).get(guid)
+
+* Tighter constraints::
+
+    def is_fully_cast(folder, references):
+        for script in SceneScript.scripts(**folder._asdict())
+            with script as dialogue:
+                selection = dialogue.select(references)
+                if all(selection.values()):
+                    continue:
+                else:
+                    return False
+        return True
 
 ::
 
