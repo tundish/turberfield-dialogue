@@ -1,7 +1,7 @@
 ..  Titling
     ##++::==~~--''``
 
-.. _rehearsal:
+.. _cli:
 
 CLI Reference
 :::::::::::::

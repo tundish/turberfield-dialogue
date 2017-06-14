@@ -1,6 +1,8 @@
 ..  Titling
     ##++::==~~--''``
 
+.. _battle:
+
 Example 1: Battle Royal
 :::::::::::::::::::::::
 
@@ -28,6 +30,8 @@ it to preview the action in the first example.
 
     To instruct the rehearsal tool to load stored options, precede the path to the options
     file with a `@` symbol.
+
+.. _rehearsal:
 
 Rehearsal
 =========

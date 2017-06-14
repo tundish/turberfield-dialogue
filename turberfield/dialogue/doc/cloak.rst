@@ -4,82 +4,87 @@
 Example 2: Cloak of Darkness
 ::::::::::::::::::::::::::::
 
-Relate as an exploration.
-
-
-* integer state used for masked/unmasked
-* no :roles: hence some parts unvoiced
-* infinite repeat
-* interlude - what depth of detail?
-
 Turberfield-dialogue is a screenplay system; it's not intended by itself to be
 a game framework.
 
-Nonetheless, it seems to me that it should be able to support you in *prototyping*
-your game if the narrative is driven by dialogue.
+Nonetheless, it strikes me that you might want to use it as a first port
+of call when prototyping ideas for a large game. Especially if that game
+is to contain a decent amount of dialogue.
 
-So I decided to implement Cloak of Darkness to prove it could be done.
-Cloak of Darkness is hello world.
+So I decided to explore the degree to which this is possible. And here
+is my implementation of `Cloak of Darkness`_.
+ 
+.. admonition:: The `Hello World` of adventure games.
 
-.. admonition:: CoD?
+    There is a tradition in programming of presenting to beginners
+    very early on, a trivial example to reassure them that their computer
+    is working properly. They have to type in some very simple code to
+    get started.
 
-    From http://www.firthworks.com/roger/cloak/:
+    That example is usually printing "Hello World" to the screen.
 
-    The Foyer of the Opera House is where the game begins. This empty room
-    has doors to the south and west, also an unusable exit to the north.
-    There is nobody else around.
+    Adventure games have their own version of *Hello World*, which is
+    a little more complicated. `Cloak of Darkness`_ is a scenario which
+    exercises several features which all game frameworks really should support.
+    By implementing the game, the framework author demonstrates how those
+    features are achieved.
 
-    The Bar lies south of the Foyer, and is initially unlit. Trying to do
-    anything other than return northwards results in a warning message about
-    disturbing things in the dark.
-
-    On the wall of the Cloakroom, to the west of the Foyer, is fixed a small
-    brass hook.
-
-    Taking an inventory of possessions reveals that the player is wearing a
-    black velvet cloak which, upon examination, is found to be light-absorbent.
-
-    The player can drop the cloak on the floor of the Cloakroom or better, put
-    it on the hook.
-
-    Returning to the Bar without the cloak reveals that the room is now lit.
-    A message is scratched in the sawdust on the floor.
-
-    The message reads either "You have won" or "You have lost", depending on
-    how much it was disturbed by the player while the room was dark.
-
-    The act of reading the message ends the game.
+    The game consists of three rooms. In one room is an invisible prize.
+    But the prize is damaged by the player every time he visits the room.
+    It turns out that the player is carrying an item which when dropped
+    in one of the other rooms, allows the prize to be seen.
 
 Interludes
 ==========
 
-When you declare a folder object with scene script files, there's also an opportunity
-for interludes. The fifth argument to :py:class:`~turberfield.dialogue.model.SceneScript.Folder`
-is a sequence of functions. We ignored that opportunity in Battle; itertools.repeat(None).
+An adventure game is *interactive*. The action frequently pauses to allow the
+player to input a command. In classic text adventures, that command is typed
+in to the console.
 
-An interlude is a function which gets called at the end of a scene file. The function
-gets access to the folder you're using. It knows which of the scenes has just finished.
+Turberfield-dialogue has a feature called *interludes*. You may have spotted
+that earlier; it's the fifth argument to a
+:py:class:`~turberfield.dialogue.model.SceneScript.Folder`.
+In :ref:`battle` we put ``repeat(None)`` which is a way of declining to use interludes. 
+
+An interlude is a function which gets called at the end of a scene script file.
+You can define a different function for each if you like. The function sees
+the folder you're using. It knows which of the scene files has just finished.
 It also gets to see all the references you passed in to the performance. An interlude
-function's return value is always a folder object; either the same folder (continue)
-or another one (change the narrative for another).
+function's return value is always a folder object. Returning the current folder in
+play is like saying *continue*. Or you can return another one and branch the
+story.
 
-So you can use the interlude to branch your story, even to add or remove personae from
-references.
+Design
+======
 
-Masking
-=======
+My first instinct was to create a scene file for each of the three rooms. Then all
+the action for a room goes in to the same file. We will repeat the sequence of
+three scenes over and over, with an interlude between them to take user input.
 
-In the previous example we used an integer state variable to mark the fighters as alive or
-dead. This time, we'll reuse that concept. As the player moves around, certain objects
-become active, or go quiet.
+Both the player and the cloak can move location. So we will need a state to
+represent that. Also, the message must change as it is damaged. That could be
+another state, but it turns out that a simple Python attribute will suffice.
 
-We'll need two other states; location of the player and the level of damage to the message.
-Logic.py
-========
+I want the game to run in :ref:`rehearsal`. Here's where the main problem
+arises. The default behaviour is to run sequentially through scenes, and
+deliver any dialogue possible. In this case, we only want the action to take
+place in the location of the player. Otherwise, we will get ghostly voices
+leaking in from other rooms. So we need to ensure that all other roles remain
+uncast outside of the current location.
+ 
+In the previous example we used an integer state variable to mark the fighters as
+alive or dead. I'll reuse that concept. By default, every entity is masked out.
+As the player moves around, certain objects become active, and others go quiet.
 
-* Adding a Location; explain enum
-* Types; Narrator, Cloak, Prize are not *Personae*
-* Integer state masks activity
+Implementation
+==============
+
+Logic
+~~~~~
+
+We're going through the code now. If Python is new to you, don't worry.
+My intention is just to introduce some essential concepts which you can
+work to understand later on.
 
 The top of a Python module is where imports go:
 
@@ -90,17 +95,16 @@ The top of a Python module is where imports go:
     import random
 
     from turberfield.dialogue.model import SceneScript
-    from turberfield.dialogue.types import EnumFactory
     from turberfield.dialogue.types import DataObject
     from turberfield.dialogue.types import Stateful
 
 Next we declare an enumeration state which will define the
-location of the player:
+location of the player and the cloak:
 
 .. code-block:: python
 
     @enum.unique
-    class Location(EnumFactory, enum.Enum):
+    class Location(enum.Enum):
         foyer = 0
         bar = 1
         cloakroom_floor = 2
@@ -136,9 +140,9 @@ and initial state where appropriate:
     ]
 
 
-This is an interactive game. We will be taking user input and
-trying to act on commands if we see them. Here is the world's
-dumbest text parser:
+We will be taking user input and trying to interpret commands.
+Here is the world's dumbest text parser. It returns the first
+letter of the last word typed into the console:
 
 .. code-block:: python
 
@@ -148,6 +152,8 @@ dumbest text parser:
         except:
             return None
 
+
+The parser function needs to be called at the end of every turn.
 
 ::
 
@@ -215,6 +221,77 @@ with details of the game:
         interludes=repeat(interaction)
     )
 
+Dialogue
+~~~~~~~~
+
+Here's where I stop explaining each component of the game. When it comes
+to understanding the dialogue, it's best just to study the *.rst* files
+in *demo/cloak*. As a taster, here's what the dialogue for the first
+room looks like. It's probably the simplest of the three.
+
+.. code-block:: rest
+
+    .. entity:: NARRATOR
+       :types: logic.Narrator
+       :states: logic.Location.foyer
+
+    .. entity:: CLOAK
+       :types: logic.Cloak
+       :states: logic.Location.foyer
+
+    After the fire, a Magician returns
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    From where you stand
+    --------------------
+
+    [NARRATOR]_
+
+        This place no longer looks much like a hotel. This would have been the foyer, though.
+        You can see the footprint of a grand reception desk running down one side
+        of the floor.
+
+    [NARRATOR]_
+
+        The room has been stripped of all it once contained.
+
+    Checking your person
+    --------------------
+
+    [CLOAK]_
+
+        You are wearing a long cloak, which gathers around you. It feels furry,
+        like velvet, although that's hard to tell by looking. It is so black
+        that its folds and textures cannot be perceived.
+
+    [CLOAK]_
+
+        It seems to swallow all light.
+
+    .. memory:: logic.Location.foyer
+       :subject: NARRATOR
+
+       The Player visited the foyer.
+
+    Looking around
+    --------------
+
+    [NARRATOR]_
+
+        To the North, the door by which you first entered is stuck fast.
+
+    [NARRATOR]_
+
+        There are other doors to the South and West.
+
+Action
+======
+
+You can run the game in a similar manner to the previous example::
+
+    cd demo/cloak
+    ~/py3.5/bin/turberfield-rehearse @rehearse.cli
+
 Memory
 ======
 
@@ -226,4 +303,5 @@ Memory
     "left outer join entity as o on touch.objct = o.id "
     "left outer join note on note.touch = touch.id"
 
+.. _Cloak of Darkness: http://www.firthworks.com/roger/cloak/
 .. _SQLite3: https://www.sqlite.org
