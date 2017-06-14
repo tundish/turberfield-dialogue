@@ -94,9 +94,29 @@ Interludes
 An interlude is a callable object (either a function, an instance
 method or a Python object with a callable interface).
 
-::
+It is called by a handler at the end of the performance of a scene script file.
+That is the `current` file as referred to below.
 
-        def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
+Here is an example to show the signature of parameters required.
+
+.. py:function:: def my_interlude(folder, index, ensemble, log=None, loop=None):
+
+    :param folder: A :py:class:`~turberfield.dialogue.model.SceneScript.Folder` object.
+    :param int index: The index position into **folder.paths** of the current
+        scene script file.
+    :param ensemble: A sequence of Python objects. It is guaranteed to contain
+        all the objects cast to roles in the current scene. It will be used to
+        select entities for the next.
+    :param log: If supplied, this will be a ``logging.Logger`` object which
+        should be used in preference over any other for logging messages from within
+        your interlude function.
+    :param loop: If supplied, this will be an instance of ``asyncio.BaseEventLoop``.
+        That will signal to your function that it operates in an asynchronous
+        environment and that no blocking function should be called within it.
+    :return: A :py:class:`~turberfield.dialogue.model.SceneScript.Folder` object.
+        If this is the same object as supplied to the function, it signals that
+        performance of this folder should continue. You could return another
+        folder to request a branching of the narrative, or else **None** to stop it.
 
 Handler
 =======
