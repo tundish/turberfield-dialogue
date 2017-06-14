@@ -35,7 +35,7 @@ Turberfield is also your publisher. When it's time to collaborate with others or
 to an audience, you'll use the Python packaging system to distribute and install your work.
 
 By the end of the creative process, you will need some familiarity with
-:ref:`packaging` techniques. That's not usually a subject for beginners, so I wrote this
+packaging techniques. That's not usually a subject for beginners, so I wrote this
 `easy tutorial`_. If you revisit this topic from time to time, you should have
 learned what you need by the time your dialogue is ready to share. 
 

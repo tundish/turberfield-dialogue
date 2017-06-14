@@ -51,7 +51,7 @@ There are command line options to change the timing of dialogue,
 to repeat the action, and to control the number of roles an
 entity may take.
 
-Example usage::
+Example::
 
     turberfield-rehearse    --references=logic:references
                             --folder=logic:folder
