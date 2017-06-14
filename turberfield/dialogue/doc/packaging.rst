@@ -29,7 +29,8 @@ Packaging gives you the following advantages:
 Attribution
 ~~~~~~~~~~~
 
-Create a `README.txt` file. 
+Not only do you get to declare your autthorship and copyright, but you
+also declare a global id for your work.
 
 Versioning
 ~~~~~~~~~~
@@ -47,49 +48,17 @@ directory and making an entry like this::
 Deployment
 ~~~~~~~~~~
 
-Add a `MANIFEST.in` file to control which of your source files get
+A `manifest` file will control which of your source files get
 installed. This will filter out any project files created by your text
-editor::
+editor, cache files and the like.::
  
-    include *.txt *.rst *.wav
+    include *.cli *.rst *.wav
 
 Distribution
 ~~~~~~~~~~~~
 
 With your work properly packaged, you can make it available to others
 to download and install via PyPI_ or Gemfury_.
-
-Make an empty `MANIFEST.in` file.
-
-You'll need to create a `setup.py` file which contains the packaging
-boilerplate.
-
-.. code-block:: python
-
-    #!/usr/bin/env python
-    # encoding: UTF-8
-
-    from distutils.core import setup
-    import os.path
-
-    __doc__ = open(os.path.join(os.path.dirname(__file__), "README.txt"),
-                   "r").read()
-    setup(
-        name="inspyration",
-        version="0.01",
-        description="A simple MOTD program to illustrate packaging techniques",
-        author="D Haynes",
-        author_email="tundish@thuswise.org",
-        url="http://pypi.python.org/pypi/inspyration",
-        long_description=__doc__,
-        classifiers=[
-            "Operating System :: OS Independent",
-            "Programming Language :: Python :: 3",
-            "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"
-        ],
-        py_modules=["inspyration"],
-        scripts=["inspyration.py"]
-    )
 
 Discoverability
 ~~~~~~~~~~~~~~~
@@ -101,10 +70,6 @@ whether to advertise through these two interfaces:
     For :py:class:`~turberfield.dialogue.model.SceneScript.Folder` objects.
 **turberfield.interfaces.references**
     For :py:class:`~turberfield.dialogue.model.SceneScript.Folder` objects.
-
-::
-
-    ~/py3.5/bin/python -c"import uuid; print(uuid.uuid4().hex)"
 
 If you've not yet done so, you should follow the `packaging tutorials`_
 I recommended earlier on. There are three of them, and they take about
@@ -121,6 +86,57 @@ Both demo examples are also supplied in packaged form:
 
     Cloak of Darkness
         turberfield/dialogue/sequences/cloak
+
+Checklist
+~~~~~~~~~
+
+my_drama
+├── begin.rst
+├── middle.rst
+├── end.rst
+├── logic.py
+├── rehearse.cli
+├── theme.wav
+├── MANIFEST.in
+├── README.txt
+└── setup.py
+
+::
+
+    ~/py3.5/bin/python -c"import uuid; print(uuid.uuid4().hex)"
+
+`setup.py` file contains the packaging boilerplate.
+
+.. code-block:: python
+
+    #!/usr/bin/env python
+    # encoding: UTF-8
+
+    from distutils.core import setup
+    import os.path
+
+    __doc__ = open(os.path.join(os.path.dirname(__file__), "README.txt"),
+                   "r").read()
+    setup(
+        name="my_drama",
+        version="0.1.0",
+        description="A dramatic screenplay",
+        author="Maddie Scribbler",
+        author_email="maddie@gmail.com",
+        url="http://pypi.python.org/pypi/my_drama",
+        long_description=__doc__,
+        classifiers=[
+            "Framework :: Turberfield",
+            "Operating System :: OS Independent",
+            "Programming Language :: Python :: 3",
+            "License :: Other/Proprietary License",
+        ],
+        py_modules=["my_drama"],
+    )
+
+MANIFEST.in::
+
+    include *.cli *.rst *.wav
 
 Global identity
 ===============
