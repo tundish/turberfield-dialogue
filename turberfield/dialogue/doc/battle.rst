@@ -188,7 +188,11 @@ Type
 ====
 
 A type is a concept from Python. You can create types with a `class` declaration
-in a Python module. Notice that two of the entity declarations in the script
+in a Python module. In all these examples, we do no more than inherit behaviour
+from other base classes, hence the single `pass` instruction in the class
+body.
+
+Notice that two of the entity declarations in the script
 file have a `:types:` constraint; Fighter 2 has to be some kind of Animal, and
 the Weapon a Tool.
 
