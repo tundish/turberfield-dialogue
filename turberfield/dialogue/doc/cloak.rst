@@ -16,12 +16,12 @@ is my implementation of `Cloak of Darkness`_.
  
 .. admonition:: The `Hello World` of adventure games.
 
-    There is a tradition in programming of presenting to beginners
-    very early on, a trivial example to reassure them that their computer
-    is working properly. They have to type in some very simple code to
+    There is a tradition in programming that there is  early on a
+    trivial example to reassure you that your computer
+    is working properly. You have to type in some very simple code to
     get started.
 
-    That example is usually printing "Hello World" to the screen.
+    That example is usually just to print "Hello World" to the screen.
 
     Adventure games have their own version of *Hello World*, which is
     a little more complicated. `Cloak of Darkness`_ is a scenario which
@@ -37,7 +37,7 @@ is my implementation of `Cloak of Darkness`_.
 Interludes
 ==========
 
-An adventure game is *interactive*. The action frequently pauses to allow the
+An adventure game is interactive. The action frequently pauses to allow the
 player to input a command. In classic text adventures, that command is typed
 in to the console.
 
@@ -62,8 +62,8 @@ the action for a room goes in to the same file. We will repeat the sequence of
 three scenes over and over, with an interlude between them to take user input.
 
 Both the player and the cloak can move location. So we will need a state to
-represent that. Also, the message must change as it is damaged. That could be
-another state, but it turns out that a simple Python attribute will suffice.
+represent that. Also, the message must change every time it is damaged. That could
+require another state, but it turns out that a simple Python attribute will suffice.
 
 I want the game to run in :ref:`rehearsal`. Here's where the main problem
 arises. The default behaviour is to run sequentially through scenes, and
@@ -112,7 +112,7 @@ location of the player and the cloak:
         cloakroom_hook = 4
 
 There are no Persona in this game; none of the voices has a name.
-But they do have state, and some of them need attributes. The
+But they do have state, and one of them needs attributes. The
 useful types to inherit from will be *Stateful* and *DataObject*.
 
 Each of the entities in the game gets its own class declaration:
@@ -122,7 +122,7 @@ Each of the entities in the game gets its own class declaration:
     class Narrator(Stateful):
         pass
 
-    class Cloak(Stateful, DataObject):
+    class Cloak(Stateful):
         pass
 
     class Prize(Stateful, DataObject):
@@ -152,10 +152,13 @@ letter of the last word typed into the console:
         except:
             return None
 
+We want user input at the end of every turn. That's done in a single
+interlude function. Should the game grow any larger, it would be better
+to give each file its own custom function, but this is good enough for
+an example. I'm just going to throw the code at you and see how you get
+on:
 
-The parser function needs to be called at the end of every turn.
-
-::
+.. code-block:: python
 
     def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
         narrator, cloak, prize, *others = ensemble
@@ -205,7 +208,7 @@ The parser function needs to be called at the end of every turn.
 
         return folder
 
-So now we can declare the objects turberfield-rehearse needs to
+So now we can declare the objects *turberfield-rehearse* needs to
 see; a collection of all our Python references and a folder object
 with details of the game:
 
@@ -220,6 +223,20 @@ with details of the game:
         paths=["foyer.rst", "bar.rst", "cloakroom.rst"],
         interludes=repeat(interaction)
     )
+
+.. admonition:: Coding.
+
+    Python is a pretty easy language to read, and so far I've been relying on
+    that to communicate the essence of how all this works. We have reached a
+    point now that you may need to take time over certain aspects of the code
+    to fully understand what is going on.
+
+    I recommend you explore the `Python manual`_. First, get to know its
+    structure; how it separates the fundamentals of the language from details
+    of specific modules which you discover when you realise you need them.
+
+    To begin with, check out the `random module`_ which is very straightforward.
+    After that, use the `module index`_ to find the documentation for *Enum*.
 
 Dialogue
 ~~~~~~~~
@@ -295,13 +312,38 @@ You can run the game in a similar manner to the previous example::
 Memory
 ======
 
-::
+We saw for the first time above the use of a :ref:`memory`. The game scatters
+them throughout the action. The result is that a record of the player's
+progress builds up in the dialogue database.
 
-    "select s.name, state.name, o.name, note.text "
-    "from state join touch on state.id = touch.state "
-    "join entity as s on touch.sbjct = s.id "
-    "left outer join entity as o on touch.objct = o.id "
-    "left outer join note on note.touch = touch.id"
+The database Turberfield uses for this is SQLite3_. You can access this database
+via Python's own `SQLite3 module`_. Or you can install a command line tool and
+issue queries that way. Try this to get a report of the passage of a game
+session::
+
+    sqlite3 cloak.sl3
+
+    sqlite> select s.name, state.name, note.text 
+       ...> from state join touch on state.id = touch.state 
+       ...> join entity as s on touch.sbjct = s.id 
+       ...> left outer join entity as o on touch.objct = o.id 
+       ...> left outer join note on note.touch = touch.id;
+
+    Narrator|foyer          |The Player visited the foyer.
+    Cloak   |bar            |The Player wore the cloak in the bar.
+    Narrator|foyer          |The Player visited the foyer.
+    Cloak   |cloakroom_floor|The Player dropped the cloak.
+    Narrator|foyer          |The Player visited the foyer.
+    Cloak   |bar            |The Player wore the cloak in the bar.
+    Narrator|foyer          |The Player visited the foyer.
+    Cloak   |cloakroom_hook |The Player hung the cloak on a hook.
+    Narrator|foyer          |The Player visited the foyer.
+    Prize   |bar            |The Player read the message as " Yo  w n! ".
+    Narrator|foyer          |The Player visited the foyer.
 
 .. _Cloak of Darkness: http://www.firthworks.com/roger/cloak/
+.. _Python manual: https://docs.python.org/3/
+.. _random module: https://docs.python.org/3/library/random.html#module-random
+.. _module index: https://docs.python.org/3/py-modindex.html
 .. _SQLite3: https://www.sqlite.org
+.. _SQLite3 module: https://docs.python.org/3/library/sqlite3.html#module-sqlite3

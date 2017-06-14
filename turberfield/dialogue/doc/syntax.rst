@@ -110,6 +110,8 @@ FX directive
         Sets the point in the audio file at which playback begins.
         This value is in milliseconds.
 
+.. _memory:
+
 Memory directive
 ~~~~~~~~~~~~~~~~
 

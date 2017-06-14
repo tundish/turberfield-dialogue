@@ -18,7 +18,7 @@ class Location(EnumFactory, enum.Enum):
 class Narrator(Stateful):
     pass
 
-class Cloak(Stateful, DataObject):
+class Cloak(Stateful):
     pass
 
 class Prize(Stateful, DataObject):
