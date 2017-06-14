@@ -9,7 +9,7 @@ Publishing
 The demo examples you've seen so far have been presented as standalone
 directories containing a Python module and some scene script files.
 
-While you can get started quickly by working this way, before your
+You can get started quickly by working this way, but before your
 screenplay is ready, you need to have properly configured it as
 a Python package.
 
@@ -18,19 +18,89 @@ Packaging
 
 Packaging gives you the following advantages:
 
+* Attribution_
 * Versioning_
-* Distribution
+* Deployment
+* Distribution_
 * Discoverability
 * Dependency management
 * Aggregation
+
+Attribution
+~~~~~~~~~~~
+
+Create a `README.txt` file. 
 
 Versioning
 ~~~~~~~~~~
 
 As soon as other people begin to use your dialogue, you'll need to give
 them a way of deciding whether they want to use your latest rewrite or
-stick with an earlier revision. Every release of your work will have a
+to stick with an earlier revision. Every release of your work will have a
 version number to identify it.
+
+You define a version by creating an `__init__.py` file in your package
+directory and making an entry like this::
+
+    __version__ = "0.1.0"
+
+Deployment
+~~~~~~~~~~
+
+Add a `MANIFEST.in` file to control which of your source files get
+installed. This will filter out any project files created by your text
+editor::
+ 
+    include *.txt *.rst *.wav
+
+Distribution
+~~~~~~~~~~~~
+
+With your work properly packaged, you can make it available to others
+to download and install via PyPI_ or Gemfury_.
+
+Make an empty `MANIFEST.in` file.
+
+You'll need to create a `setup.py` file which contains the packaging
+boilerplate.
+
+.. code-block:: python
+
+    #!/usr/bin/env python
+    # encoding: UTF-8
+
+    from distutils.core import setup
+    import os.path
+
+    __doc__ = open(os.path.join(os.path.dirname(__file__), "README.txt"),
+                   "r").read()
+    setup(
+        name="inspyration",
+        version="0.01",
+        description="A simple MOTD program to illustrate packaging techniques",
+        author="D Haynes",
+        author_email="tundish@thuswise.org",
+        url="http://pypi.python.org/pypi/inspyration",
+        long_description=__doc__,
+        classifiers=[
+            "Operating System :: OS Independent",
+            "Programming Language :: Python :: 3",
+            "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"
+        ],
+        py_modules=["inspyration"],
+        scripts=["inspyration.py"]
+    )
+
+Discoverability
+~~~~~~~~~~~~~~~
+
+When you create a `setup.py` for your installable package, you can decide
+whether to advertise through these two interfaces:
+
+**turberfield.interfaces.folder**
+    For :py:class:`~turberfield.dialogue.model.SceneScript.Folder` objects.
+**turberfield.interfaces.references**
+    For :py:class:`~turberfield.dialogue.model.SceneScript.Folder` objects.
 
 ::
 
@@ -105,3 +175,5 @@ Using Metadata
     ).get(guid)
 
 .. _packaging tutorials: http://thuswise.co.uk/packaging-python-for-scale-part-one.html
+.. _PyPI: https://pypi.python.org/pypi
+.. _Gemfury: https://gemfury.com
