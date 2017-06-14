@@ -4,14 +4,59 @@
 API Reference
 :::::::::::::
 
-This API gives you a `single function`_ for creating a performance from a
-:py:class:~`turberfield.dialogue.model.SceneScript.Folder`
+This API gives you a `simple function`_ for creating a performance from
+a :py:class:`~turberfield.dialogue.model.SceneScript.Folder`
 of Turberfield dialogue. You can modify how this performance is presented
 in your game by customising or replacing a handler_ function which processes
 events_ from the scene script files.
 
 The `scene scripts`_ themselves also have an API, allowing you to interact with
 the process by which entities are selected and cast to roles.
+
+Folders
+=======
+
+.. autoattribute:: turberfield.dialogue.model.SceneScript.Folder
+   :annotation: (pkg, description, metadata, paths, interludes)
+
+   :param pkg: The dotted (importable) name of the package which
+        installs the scene script folder.
+
+        Absent proper packaging, you must set this parameter to
+        `__name__`. The Python module which declares the folder will
+        act as the anchor location for scene files, and all
+        referencing paths will need to be made relative to the
+        module.
+   :param str description: A free text description of the contents
+        of the folder.
+   :param metadata: An optional sequence or mapping containing
+        application-specific metadata.
+
+        This parameter is for the purposes of searching or filtering
+        collections of folders against particular criteria.
+   :param paths: A list of strings, each of which is the path to a
+        scene script file relative to the object declared in the
+        parameter **pkg**.
+
+        Path separator is always "**/**" notwithstanding the local
+        Operating System.
+   :param interludes: A sequence of function objects.
+        The sequence should be such as to provide one object for
+        each of the scene script files declared in the parameter
+        **paths**.
+
+        A function object will be called when its corresponding
+        scene script file has been performed.
+
+        See `Interludes` for the required signature of an interlude
+        function object.
+
+Scene scripts
+=============
+
+.. autoclass:: turberfield.dialogue.model.SceneScript
+   :members: scripts, read, select, cast, run
+   :member-order: bysource
 
 Events
 ======
@@ -21,27 +66,37 @@ Events
 .. autoattribute:: turberfield.dialogue.model.Model.Shot
    :annotation: (name, scene, items)
 
+   An event which signals the beginning of a shot in a scene.
+
 .. autoattribute:: turberfield.dialogue.model.Model.Property
    :annotation: (entity, object, attr, val)
+
+   An event which signals a property is to be accessed.
 
 .. autoattribute:: turberfield.dialogue.model.Model.Audio
    :annotation: (package, resource, offset, duration, loop)
 
+   An event which signals an audio cue.
+
 .. autoattribute:: turberfield.dialogue.model.Model.Memory
    :annotation: (subject, object, state, text, html)
+
+   An event which signals a memory directive.
 
 .. autoattribute:: turberfield.dialogue.model.Model.Line
    :annotation: (persona, text, html)
 
-Scene scripts
-=============
+   An event which signals a line of dialogue.
 
-.. autoattribute:: turberfield.dialogue.model.SceneScript.Folder
-   :annotation: (pkg, description, metadata, paths, interludes)
+Interludes
+==========
 
-.. autoclass:: turberfield.dialogue.model.SceneScript
-   :members: scripts, read, select, cast, run
-   :member-order: bysource
+An interlude is a callable object (either a function, an instance
+method or a Python object with a callable interface).
+
+::
+
+        def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
 
 Handler
 =======
@@ -50,9 +105,9 @@ Handler
    :members: handle_audio, handle_interlude, handle_line, handle_memory, handle_property, handle_scene, handle_scenescript, handle_shot
    :member-order: bysource
 
-Players
-=======
+Player
+======
 
 .. autofunction:: turberfield.dialogue.player.rehearse
 
-.. _single function: py:func:`turberfield.dialogue.player.rehearse`.
+.. _simple function: py:func:`turberfield.dialogue.player.rehearse`.
