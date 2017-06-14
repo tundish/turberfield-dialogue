@@ -45,13 +45,20 @@ DFLT_PORT = 8080
 DFLT_DB = ":memory:"
 
 __doc__ = """
-A utility to run through a folder of dialogue.
+A utility to perform a folder of dramatic screenplay.
 
-The rehearsal can be viewed in a terminal or by web browser.
+There are command line options to change the timing of dialogue,
+to repeat the action, and to control the number of roles an
+entity may take.
 
-Eg::
+Example usage::
 
-    turberfield-rehearse @turberfield/dialogue/demo.cli
+    turberfield-rehearse    --references=logic:references
+                            --folder=logic:folder
+                            --roles=16
+                            --dwell=0.4
+                            --pause=1.0
+                            --db=action.sl3
 
 """
 
@@ -279,7 +286,7 @@ def parser(description=__doc__):
         help="Set a file path for log output")
     rv.add_argument(
         "--references", default="",
-        help="Give an import path to a list of Personae."
+        help="Give an import path to a list of Python references."
     )
     rv.add_argument(
         "--folder", default="",
@@ -309,11 +316,11 @@ def parser(description=__doc__):
         help="Database URL.")
     rv.add_argument(
         "--session", required=False, default="",
-        help="Internal session path")
+        help="Session id (internal use only)")
     rv.add_argument(
         "--locn", required=False,
         default="Scripts" if "windows" in platform.system().lower() else "bin",
-        help="Internal script location")
+        help="Script location (internal use only)")
     rv.add_argument(
         "--port", type=int, default=DFLT_PORT,
         help="Set the port number of the web interface [{}]".format(DFLT_PORT))
