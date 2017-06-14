@@ -26,6 +26,68 @@ Packaging gives you the following advantages:
 * Dependency management
 * Aggregation
 
+Checklist
+~~~~~~~~~
+
+::
+
+    my_drama
+    ├── begin.rst
+    ├── middle.rst
+    ├── end.rst
+    ├── logic.py
+    ├── rehearse.cli
+    ├── theme.wav
+    ├── MANIFEST.in
+    ├── README.txt
+    └── setup.py
+
+Create a unique global id for your work
+---------------------------------------
+
+::
+
+    ~/py3.5/bin/python -c"import uuid; print(uuid.uuid4().hex)"
+
+Create a manifest
+-----------------
+
+MANIFEST.in::
+
+    include *.cli *.rst *.wav
+
+Populate your setup.py
+----------------------
+
+`setup.py` file contains the packaging boilerplate.
+
+.. code-block:: python
+
+    #!/usr/bin/env python
+    # encoding: UTF-8
+
+    from distutils.core import setup
+    import os.path
+
+    __doc__ = open(os.path.join(os.path.dirname(__file__), "README.txt"),
+                   "r").read()
+    setup(
+        name="my_drama",
+        version="0.1.0",
+        description="A dramatic screenplay",
+        author="Maddie Scribbler",
+        author_email="maddie@gmail.com",
+        url="http://pypi.python.org/pypi/my_drama",
+        long_description=__doc__,
+        classifiers=[
+            "Framework :: Turberfield",
+            "Operating System :: OS Independent",
+            "Programming Language :: Python :: 3",
+            "License :: Other/Proprietary License",
+        ],
+        py_modules=["my_drama"],
+    )
+
 Attribution
 ~~~~~~~~~~~
 
@@ -86,57 +148,6 @@ Both demo examples are also supplied in packaged form:
 
     Cloak of Darkness
         turberfield/dialogue/sequences/cloak
-
-Checklist
-~~~~~~~~~
-
-my_drama
-├── begin.rst
-├── middle.rst
-├── end.rst
-├── logic.py
-├── rehearse.cli
-├── theme.wav
-├── MANIFEST.in
-├── README.txt
-└── setup.py
-
-::
-
-    ~/py3.5/bin/python -c"import uuid; print(uuid.uuid4().hex)"
-
-`setup.py` file contains the packaging boilerplate.
-
-.. code-block:: python
-
-    #!/usr/bin/env python
-    # encoding: UTF-8
-
-    from distutils.core import setup
-    import os.path
-
-    __doc__ = open(os.path.join(os.path.dirname(__file__), "README.txt"),
-                   "r").read()
-    setup(
-        name="my_drama",
-        version="0.1.0",
-        description="A dramatic screenplay",
-        author="Maddie Scribbler",
-        author_email="maddie@gmail.com",
-        url="http://pypi.python.org/pypi/my_drama",
-        long_description=__doc__,
-        classifiers=[
-            "Framework :: Turberfield",
-            "Operating System :: OS Independent",
-            "Programming Language :: Python :: 3",
-            "License :: Other/Proprietary License",
-        ],
-        py_modules=["my_drama"],
-    )
-
-MANIFEST.in::
-
-    include *.cli *.rst *.wav
 
 Global identity
 ===============
