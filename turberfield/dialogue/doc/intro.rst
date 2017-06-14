@@ -21,7 +21,7 @@ the pages you are reading now.
 
 As well as producing dialogue, you may be called upon to define some game logic too.
 The Turberfield framework encourages you to write game logic in Python_.
-Don't worry, it's the friendliest programming language it's possible to find.
+Luckily, it's probably the friendliest programming language you'll find.
 
 So, you're a developer.
 =======================

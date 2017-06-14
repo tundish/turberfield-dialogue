@@ -16,12 +16,12 @@ is my implementation of `Cloak of Darkness`_.
  
 .. admonition:: The `Hello World` of adventure games.
 
-    There is a tradition in programming of presenting early on,
-    a trivial example to reassure you that your computer
+    There is a tradition in programming that there is  early on a
+    trivial example to reassure you that your computer
     is working properly. You have to type in some very simple code to
     get started.
 
-    That example is usually printing "Hello World" to the screen.
+    That example is usually just to print "Hello World" to the screen.
 
     Adventure games have their own version of *Hello World*, which is
     a little more complicated. `Cloak of Darkness`_ is a scenario which
@@ -312,16 +312,38 @@ You can run the game in a similar manner to the previous example::
 Memory
 ======
 
-::
+We saw for the first time above the use of a :ref:`memory`. The game scatters
+them throughout the action. The result is that a record of the player's
+progress builds up in the dialogue database.
 
-    "select s.name, state.name, o.name, note.text "
-    "from state join touch on state.id = touch.state "
-    "join entity as s on touch.sbjct = s.id "
-    "left outer join entity as o on touch.objct = o.id "
-    "left outer join note on note.touch = touch.id"
+The database Turberfield uses for this is SQLite3_. You can access this database
+via Python's own `SQLite3 module`_. Or you can install a command line tool and
+issue queries that way. Try this to get a report of the passage of a game
+session::
+
+    sqlite3 cloak.sl3
+
+    sqlite> select s.name, state.name, note.text 
+       ...> from state join touch on state.id = touch.state 
+       ...> join entity as s on touch.sbjct = s.id 
+       ...> left outer join entity as o on touch.objct = o.id 
+       ...> left outer join note on note.touch = touch.id;
+
+    Narrator|foyer          |The Player visited the foyer.
+    Cloak   |bar            |The Player wore the cloak in the bar.
+    Narrator|foyer          |The Player visited the foyer.
+    Cloak   |cloakroom_floor|The Player dropped the cloak.
+    Narrator|foyer          |The Player visited the foyer.
+    Cloak   |bar            |The Player wore the cloak in the bar.
+    Narrator|foyer          |The Player visited the foyer.
+    Cloak   |cloakroom_hook |The Player hung the cloak on a hook.
+    Narrator|foyer          |The Player visited the foyer.
+    Prize   |bar            |The Player read the message as " Yo  w n! ".
+    Narrator|foyer          |The Player visited the foyer.
 
 .. _Cloak of Darkness: http://www.firthworks.com/roger/cloak/
 .. _Python manual: https://docs.python.org/3/
 .. _random module: https://docs.python.org/3/library/random.html#module-random
 .. _module index: https://docs.python.org/3/py-modindex.html
 .. _SQLite3: https://www.sqlite.org
+.. _SQLite3 module: https://docs.python.org/3/library/sqlite3.html#module-sqlite3
