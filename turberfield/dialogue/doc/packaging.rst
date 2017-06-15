@@ -63,9 +63,9 @@ with the other three in turn.
 
 .. important::
 
-   The naming conventions for Python packages are quite strict. You should
-   use only lower case letters. If you want to signify a space in the directory
-   name, use an underscore.
+   The naming conventions for Python packages are quite strict. Your directory
+   name should use only lower case letters. If you want to signify a space in
+   the directory name, use an underscore.
 
 Make a manifest
 ~~~~~~~~~~~~~~~
