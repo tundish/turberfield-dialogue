@@ -91,8 +91,8 @@ an assertion of your copyright. Other details are up to you.
 Write the setup.py
 ~~~~~~~~~~~~~~~~~~
 
-`setup.py` is like an electronic form which tells the packaging system all
-about your project. Here is the standard boilerplate you should use.
+`setup.py` is like an electronic form which tells the packaging system
+everything about your project. Here is the standard boilerplate you should use.
 
 .. code-block:: python
 
@@ -128,7 +128,17 @@ about your project. Here is the standard boilerplate you should use.
         zip_safe=True,
     )
 
-In the next few sections, we'll customise this a little further. 
+Of course, you'll need to alter some details to match the name of your
+particular project, here::
+
+        name="mydrama",
+
+... and here::
+
+        packages=["mydrama"],
+        package_dir={"mydrama": "."},
+
+In the next few sections, we'll customise a little further.
 
 Versioning
 ==========
