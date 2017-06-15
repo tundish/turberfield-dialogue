@@ -13,9 +13,6 @@ You can get started quickly by working this way, but before your
 screenplay is ready, you need to have properly configured it as
 a Python package.
 
-Packaging
-=========
-
 Packaging gives you the following advantages:
 
 * Versioning_
@@ -26,7 +23,7 @@ Packaging gives you the following advantages:
 * `Installability`_
 
 Checklist
-~~~~~~~~~
+=========
 
 #. `Directory structure`_
 #. `Make a manifest`_
@@ -34,7 +31,7 @@ Checklist
 #. `Write the setup.py`_
 
 Directory structure
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 Suppose your screenplay, **mydrama** is in a single directory of that name.
 You have three scene script files; `begin.rst`, `middle.rst`, and `end.rst`.
@@ -60,8 +57,14 @@ Now create four more empty files as follows::
 There is nothing more to do to `__init__.py`. It stays empty. We will deal
 with the other three in turn.
 
+.. important::
+
+   The naming conventions for Python packages are quite strict. You should
+   use only lower case letters. If you want to signify a space in the directory
+   name, use an underscore.
+
 Make a manifest
----------------
+~~~~~~~~~~~~~~~
 
 The `MANIFEST.in` file controls which of your source files get
 installed. It can filter out any project files created by your text
@@ -72,7 +75,7 @@ editor, cache files and the like. It should look like this::
     recursive-include . *.wav
 
 Write a README file
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 The `README.rst` file is an opportunity to describe your drama to
 potential collaborators. It is a reStructuredText_ file, so you can include
@@ -82,7 +85,7 @@ At a minimum, this file should contain your name, email address and
 an assertion of your copyright. Other details are up to you.
 
 Write the setup.py
-------------------
+~~~~~~~~~~~~~~~~~~
 
 `setup.py` is like an electronic form which tells the packaging system all
 about your project. Here is the standard boilerplate you should use.
@@ -124,24 +127,38 @@ about your project. Here is the standard boilerplate you should use.
 In the next few sections, we'll customise this a little further. 
 
 Versioning
-~~~~~~~~~~
+==========
 
 As soon as other people begin to use your dialogue, you'll need to give
 them a way of deciding whether they want to use your latest rewrite or
 to stick with an earlier revision. Every release of your work will have a
 version number to identify it.
 
-You define a version by creating an `__init__.py` file in your package
-directory and making an entry like this::
+You declare the version in the `setup` parameters in `setup.py`::
 
-    __version__ = "0.1.0"
+    version="0.1.0",
+
+The three digits reflect the significance of any new change:
+
+    * Trivial fixes increment the rightmost digit.
+    * Significant changes increment the middle version field. This is the
+      most frequent case; the number can go as high as you like, even into
+      the hundreds.
+    * Major changes which are incompatible with previous versions require
+      an increment to the leftmost digit. 
 
 Attribution
-~~~~~~~~~~~
+===========
 
+I'm guessing your name is not Ernest Scribbler. If it is, write in
+and let me know! Otherwise, you'll change the following parameters to match
+your online identity::
+
+    author="Ernest Scribbler",
+    author_email="escribbler@zmail.com",
 
 Distribution
-~~~~~~~~~~~~
+============
 
 The command to create a `distribution` of your project is this::
 
@@ -155,7 +172,7 @@ by uploading it to PyPI_ or Gemfury_. They will be able to install it
 with **pip**.
 
 Create a unique global id for your work
----------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Not only do you get to declare your autthorship and copyright, but you
 also declare a global id for your work.::
@@ -163,7 +180,7 @@ also declare a global id for your work.::
     ~/py3.5/bin/python -c"import uuid; print(uuid.uuid4().hex)"
 
 Installability
-~~~~~~~~~~~~~~
+==============
 
 A `manifest` file will control which of your source files get
 installed. This will filter out any project files created by your text
@@ -174,7 +191,7 @@ editor, cache files and the like.::
     recursive-include . *.wav
 
 Discoverability
-~~~~~~~~~~~~~~~
+===============
 
 When you create a `setup.py` for your installable package, you can decide
 whether to advertise through these two interfaces:
@@ -218,6 +235,9 @@ Global identity
         ],
     },
     zip_safe=False
+
+Performing
+::::::::::
 
 Constraining entity selection
 =============================
