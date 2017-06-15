@@ -18,9 +18,9 @@ Packaging gives you the following advantages:
 * Versioning_
 * Attribution_
 * Distribution_
-* Dependency management
-* Discoverability
-* `Installability`_
+* Installability_
+* `Dependency management`_
+* Discoverability_
 
 Checklist
 =========
@@ -70,7 +70,7 @@ with the other three in turn.
 Make a manifest
 ~~~~~~~~~~~~~~~
 
-The `MANIFEST.in` file controls which of your source files get
+The `MANIFEST.in` file decides which of your source files get
 installed. It can filter out any project files created by your text
 editor, cache files and the like. It should look like this::
 
@@ -199,6 +199,21 @@ the install command targets the package file like this::
 
     ~/py3.5/bin/pip install mydrama-0.1.0.tar.gz
 
+Dependency management
+=====================
+
+Your package gets to declare which other Python libraries it needs to run.
+I already gave you the one essential dependency::
+
+    install_requires=["turberfield-dialogue"],
+
+It's quite possible that your `logic.py` might rely on some other
+library to do a particular job. Perhaps you've written a role for a banker
+who needs to `calculate loan interest`_.
+
+Whatever PyPI_ package you add to this list will be automatically installed
+with your screenplay and available for use from your Python modules.
+
 Discoverability
 ===============
 
@@ -298,3 +313,4 @@ Using Metadata
 .. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html
 .. _PyPI: https://pypi.python.org/pypi
 .. _Gemfury: https://gemfury.com
+.. _calculate loan interest: https://pypi.python.org/pypi/tallywallet-common
