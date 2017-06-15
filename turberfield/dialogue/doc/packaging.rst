@@ -67,6 +67,9 @@ with the other three in turn.
    name should use only lower case letters. If you want to signify a space in
    the directory name, use an underscore.
 
+   Also, **never use the word 'turberfield' in your package name**.
+   It's for software tooling only. 
+
 Make a manifest
 ~~~~~~~~~~~~~~~
 
@@ -126,6 +129,7 @@ everything about your project. Here is the standard boilerplate you should use.
         include_package_data=True,
         install_requires=["turberfield-dialogue"],
         zip_safe=True,
+        entry_points={}
     )
 
 Of course, you'll need to alter some details to match the name of your
@@ -191,7 +195,7 @@ it gets up there::
 
 This is a bit of a chicken-and-egg situation of course. You'll have to
 anticipate what the URL is going to be before you upload it, or
-else you'll have an error in the first release which you'll need to fix
+else you'll have an misprint in the first release which you'll need to fix
 afterwards. 
 
 Installability
@@ -227,37 +231,39 @@ with your screenplay and available for use from your Python modules.
 Discoverability
 ===============
 
-Create a unique global id for your work
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Publishing your work is a crucial step. But as well as that, you have to
+advertise.  When a game developer puts out the call for some dramatic
+dialogue, you want to be able to say,
+'Yes, there's a scene for that. I wrote it. Here it is.'
 
-Not only do you get to declare your authorship and copyright, but you
-also declare a global id for your work.::
+So now you need to create a unique global id for the scene you just wrote.
+
+Python helps you here. It has a standard module called `uuid`, which is
+short for `unique user id`. Here's how you use it to generate a one-time
+code to identify a folder of scenes you just created::
 
     ~/py3.5/bin/python -c"import uuid; print(uuid.uuid4().hex)"
 
-When you create a `setup.py` for your installable package, you can decide
-whether to advertise through these two interfaces:
+What you get back is a 32-character code which looks a bit like this::
 
-**turberfield.interfaces.folder**
-    For :py:class:`~turberfield.dialogue.model.SceneScript.Folder` objects.
-**turberfield.interfaces.references**
-    For :py:class:`~turberfield.dialogue.model.SceneScript.Folder` objects.
+    c.1de5c.3f5a4abe..937.7.6e55a.8e
 
-If you've not yet done so, you should follow the `packaging tutorials`_
-I recommended earlier on. There are three of them, and they take about
-half an hour each.
+I put dots in it so you wouldn't cheat and copy mine. Dots are illegal.
+Make your own.
 
-Both demo examples are also supplied in packaged form:
+Now you go back to `setup.py` and edit the `entry_points` parameter.
+Like this:
 
-    Battle Royal
-        turberfield/dialogue/sequences/battle
+.. code-block:: python
 
-        The turberfield-dialogue package declares the scene script
-        folder as discoverable via the `turberfield.interfaces.folder`
-        interface.
+    entry_points={
+        "turberfield.interfaces.folder": [
+            "c.1de5c.3f5a4abe..937.7.6e55a.8e = mydrama.logic:folder",
+        ],
+    },
 
-    Cloak of Darkness
-        turberfield/dialogue/sequences/cloak
+Doing this advertises your folder so it can be discovered and used during
+the course of a game.
 
 Global identity
 ===============
