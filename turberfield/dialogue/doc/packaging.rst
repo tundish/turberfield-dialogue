@@ -18,21 +18,20 @@ Packaging
 
 Packaging gives you the following advantages:
 
-* Attribution_
 * Versioning_
-* Deployment
+* Attribution_
 * Distribution_
-* Discoverability
 * Dependency management
-* Aggregation
+* Discoverability
+* `Installability`_
 
 Checklist
 ~~~~~~~~~
 
 #. `Directory structure`_
-#. `Create a manifest`_
-#. `Create a README file`_
-#. `Create the setup.py`_
+#. `Make a manifest`_
+#. `Write a README file`_
+#. `Write the setup.py`_
 
 Directory structure
 -------------------
@@ -61,8 +60,8 @@ Now create four more empty files as follows::
 There is nothing more to do to `__init__.py`. It stays empty. We will deal
 with the other three in turn.
 
-Create a manifest
------------------
+Make a manifest
+---------------
 
 The `MANIFEST.in` file controls which of your source files get
 installed. It can filter out any project files created by your text
@@ -72,20 +71,21 @@ editor, cache files and the like. It should look like this::
     recursive-include . *.rst
     recursive-include . *.wav
 
-Create a README file
---------------------
+Write a README file
+-------------------
 
-The `README.rst` file is your first opportunity to describe your drama to
+The `README.rst` file is an opportunity to describe your drama to
 potential collaborators. It is a reStructuredText_ file, so you can include
 hyperlinks and other useful structures.
 
 At a minimum, this file should contain your name, email address and
 an assertion of your copyright. Other details are up to you.
 
-Create the setup.py
--------------------
+Write the setup.py
+------------------
 
-`setup.py` file contains the packaging boilerplate.
+`setup.py` is like an electronic form which tells the packaging system all
+about your project. Here is the standard boilerplate you should use.
 
 .. code-block:: python
 
@@ -121,19 +121,7 @@ Create the setup.py
         zip_safe=True,
     )
 
-
-
-Attribution
-~~~~~~~~~~~
-
-
-Create a unique global id for your work
----------------------------------------
-
-Not only do you get to declare your autthorship and copyright, but you
-also declare a global id for your work.::
-
-    ~/py3.5/bin/python -c"import uuid; print(uuid.uuid4().hex)"
+In the next few sections, we'll customise this a little further. 
 
 Versioning
 ~~~~~~~~~~
@@ -148,8 +136,34 @@ directory and making an entry like this::
 
     __version__ = "0.1.0"
 
-Deployment
-~~~~~~~~~~
+Attribution
+~~~~~~~~~~~
+
+
+Distribution
+~~~~~~~~~~~~
+
+The command to create a `distribution` of your project is this::
+
+    ~py3.5/bin/python setup.py sdist
+
+The packaging system creates an installable for you. You'll find
+it at ``dist/mydrama-0.1.0.tar.gz`` (or ``.zip``, depending on your OS).
+
+With your work properly packaged, you can make it available to others
+by uploading it to PyPI_ or Gemfury_. They will be able to install it
+with **pip**.
+
+Create a unique global id for your work
+---------------------------------------
+
+Not only do you get to declare your autthorship and copyright, but you
+also declare a global id for your work.::
+
+    ~/py3.5/bin/python -c"import uuid; print(uuid.uuid4().hex)"
+
+Installability
+~~~~~~~~~~~~~~
 
 A `manifest` file will control which of your source files get
 installed. This will filter out any project files created by your text
@@ -158,12 +172,6 @@ editor, cache files and the like.::
     recursive-include . *.cli
     recursive-include . *.rst
     recursive-include . *.wav
-
-Distribution
-~~~~~~~~~~~~
-
-With your work properly packaged, you can make it available to others
-to download and install via PyPI_ or Gemfury_.
 
 Discoverability
 ~~~~~~~~~~~~~~~
@@ -245,5 +253,6 @@ Using Metadata
     ).get(guid)
 
 .. _packaging tutorials: http://thuswise.co.uk/packaging-python-for-scale-part-one.html
+.. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html
 .. _PyPI: https://pypi.python.org/pypi
 .. _Gemfury: https://gemfury.com
