@@ -52,7 +52,7 @@ On Windows 8.1::
     Further instructions will give the Linux form of commands only, and omit the prompt
     character.
 
-Here's what should see in your terminal window. The dialogue is delivered incrementally.
+Here's what you should see in your terminal window. The dialogue is delivered incrementally.
 There's also a sound effect at the appropriate point::
 
       Scratchy
