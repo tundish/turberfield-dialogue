@@ -196,7 +196,7 @@ it gets up there::
 
 This is a bit of a chicken-and-egg situation of course. You'll have to
 anticipate what the URL is going to be before you upload it, or
-else you'll have an misprint in the first release which you'll need to fix
+else you'll have a misprint in the first release which you'll need to fix
 afterwards. 
 
 Installability
@@ -272,12 +272,48 @@ Performing
 Making a name for yourself
 ==========================
 
-Absolute paths.
+Congratulations on self-publishing your screenplay. You can build on that
+and start to socialise the use of the name you chose for your project.
+
+Remember way back when you were putting `__name__` as the **pkg** argument
+to declare your :py:class:`~turberfield.dialogue.model.SceneScript.Folder`
+object? No need to do that any more. `mydrama` (or whatever you picked
+instead) is the name of the package now.
+
+Likewise in scene script files, if there's a particular type you specify
+for an entity, that will be `mydrama.logic.VeterinarySurgeon` and so on.
+And because you have published your work, the whole world knows what you
+mean by that.
+
+Getting discovered
+==================
+
+Here's how a Python developer, after installing your package, might look
+for some dialogue suited to his modern reimagining of every Shakespearian
+tragedy:
+
+.. code-block:: python
+
+    from turberfield.utils.misc import gather_installed
+
+    guid, folder = next(
+        k, v
+        for k, v in dict(
+            gather_installed("turberfield.interfaces.folder")
+        ).items()
+        if "betrayal" in v.metadata,
+    )
 
 Constraining entity selection
 =============================
 
-::
+One last tip. The :py:func:`~turberfield.dialogue.player.rehearse` function has
+been good to us. But it is very forgiving in the way it allows even
+minimally-cast scenes to play through. Sometimes we want all or nothing.
+Here is a way to pre-filter scenes so that only those fully cast are performed.
+`The code is illustrative and lacks some error handling`.
+
+.. code-block:: python
 
     def is_fully_cast(folder, references):
         for script in SceneScript.scripts(**folder._asdict())
@@ -288,24 +324,6 @@ Constraining entity selection
                 else:
                     return False
         return True
-
-Using Metadata
-==============
-
-::
-
-    from turberfield.utils.misc import gather_installed
-    guid, folder = next(
-        k, v
-        for k, v in dict(
-            gather_installed("turberfield.interfaces.folder")
-        ).items()
-        if "betrayal" in v.metadata,
-    )
-
-    references = dict(
-        gather_installed("turberfield.interfaces.references")
-    ).get(guid)
 
 .. _packaging tutorials: http://thuswise.co.uk/packaging-python-for-scale-part-one.html
 .. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html
