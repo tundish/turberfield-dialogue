@@ -6,7 +6,7 @@
 Publishing
 ::::::::::
 
-The demo examples you've seen so far have been presented as standalone
+The demo examples you've seen so far were arranged as standalone
 directories containing a Python module and some scene script files.
 
 You can get started quickly by working this way, but before your
@@ -25,13 +25,17 @@ Packaging gives you the following advantages:
 Checklist
 =========
 
-#. `Directory structure`_
+Turning your screenplay into a package might be a pain the first time
+you do it. But you'll reap the benefits after that. Here's what you have
+to do.
+
+#. `Organise your project directory`_
 #. `Make a manifest`_
 #. `Write a README file`_
 #. `Write the setup.py`_
 
-Directory structure
-~~~~~~~~~~~~~~~~~~~
+Organise your project directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Suppose your screenplay, **mydrama** is in a single directory of that name.
 You have three scene script files; `begin.rst`, `middle.rst`, and `end.rst`.
@@ -165,33 +169,46 @@ The command to create a `distribution` of your project is this::
     ~py3.5/bin/python setup.py sdist
 
 The packaging system creates an installable for you. You'll find
-it at ``dist/mydrama-0.1.0.tar.gz`` (or ``.zip``, depending on your OS).
+it at `dist/mydrama-0.1.0.tar.gz` (or `.zip`, depending on your OS).
 
-With your work properly packaged, you can make it available to others
-by uploading it to PyPI_ or Gemfury_. They will be able to install it
-with **pip**.
+You can upload that file to a package repository. The most popular is
+PyPI_ but there are alternatives, such as Gemfury_.
 
-Create a unique global id for your work
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+So you'll need to declare the correct URL to your package once
+it gets up there::
 
-Not only do you get to declare your autthorship and copyright, but you
-also declare a global id for your work.::
+        url="http://pypi.python.org/pypi/mydrama",
 
-    ~/py3.5/bin/python -c"import uuid; print(uuid.uuid4().hex)"
+This is a bit of a chicken-and-egg situation of course. You'll have to
+anticipate what the URL is going to be before you upload it, or
+else you'll have an error in the first release which you'll need to fix
+afterwards. 
 
 Installability
 ==============
 
-A `manifest` file will control which of your source files get
-installed. This will filter out any project files created by your text
-editor, cache files and the like.::
- 
-    recursive-include . *.cli
-    recursive-include . *.rst
-    recursive-include . *.wav
+With your work properly packaged, you can be confident that others can
+start using it with a minimum of fuss.
+
+If you upload it to PyPI_, `pip` will go out and fetch it::
+
+    ~/py3.5/bin/pip install mydrama 
+
+Or you could send your package file by email or on a USB stick. Then
+the install command targets the package file like this::
+
+    ~/py3.5/bin/pip install mydrama-0.1.0.tar.gz
 
 Discoverability
 ===============
+
+Create a unique global id for your work
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Not only do you get to declare your authorship and copyright, but you
+also declare a global id for your work.::
+
+    ~/py3.5/bin/python -c"import uuid; print(uuid.uuid4().hex)"
 
 When you create a `setup.py` for your installable package, you can decide
 whether to advertise through these two interfaces:
@@ -238,6 +255,11 @@ Global identity
 
 Performing
 ::::::::::
+
+Making a name for yourself
+==========================
+
+Absolute paths.
 
 Constraining entity selection
 =============================
