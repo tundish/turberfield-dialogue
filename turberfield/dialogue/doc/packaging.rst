@@ -29,35 +29,61 @@ Packaging gives you the following advantages:
 Checklist
 ~~~~~~~~~
 
-::
+#. `Directory structure`_
+#. `Create a manifest`_
+#. `Create a README file`_
+#. `Create the setup.py`_
 
-    my_drama
+Directory structure
+-------------------
+
+Suppose your screenplay, **mydrama** is in a single directory of that name.
+You have three scene script files; `begin.rst`, `middle.rst`, and `end.rst`.
+You have an idea for a soundtrack you call `theme.wav`. And there is one
+Python module called `logic.py`. You have saved some options as a file
+called `rehearse.cli`::
+
+    mydrama
     ├── begin.rst
     ├── middle.rst
     ├── end.rst
-    ├── logic.py
-    ├── rehearse.cli
     ├── theme.wav
+    ├── logic.py
+    └── rehearse.cli
+
+Now create four more empty files as follows::
+
+    ├── __init__.py
     ├── MANIFEST.in
-    ├── README.txt
+    ├── README.rst
     └── setup.py
 
-Create a unique global id for your work
----------------------------------------
-
-::
-
-    ~/py3.5/bin/python -c"import uuid; print(uuid.uuid4().hex)"
+There is nothing more to do to `__init__.py`. It stays empty. We will deal
+with the other three in turn.
 
 Create a manifest
 -----------------
 
-MANIFEST.in::
+The `MANIFEST.in` file controls which of your source files get
+installed. It can filter out any project files created by your text
+editor, cache files and the like. It should look like this::
 
-    include *.cli *.rst *.wav
+    recursive-include . *.cli
+    recursive-include . *.rst
+    recursive-include . *.wav
 
-Populate your setup.py
-----------------------
+Create a README file
+--------------------
+
+The `README.rst` file is your first opportunity to describe your drama to
+potential collaborators. It is a reStructuredText_ file, so you can include
+hyperlinks and other useful structures.
+
+At a minimum, this file should contain your name, email address and
+an assertion of your copyright. Other details are up to you.
+
+Create the setup.py
+-------------------
 
 `setup.py` file contains the packaging boilerplate.
 
@@ -66,18 +92,21 @@ Populate your setup.py
     #!/usr/bin/env python
     # encoding: UTF-8
 
-    from distutils.core import setup
+    from setuptools import setup
     import os.path
 
-    __doc__ = open(os.path.join(os.path.dirname(__file__), "README.txt"),
-                   "r").read()
+    __doc__ = open(
+        os.path.join(os.path.dirname(__file__), "README.rst"),
+        "r"
+    ).read()
+
     setup(
-        name="my_drama",
+        name="mydrama",
         version="0.1.0",
         description="A dramatic screenplay",
-        author="Maddie Scribbler",
-        author_email="maddie@gmail.com",
-        url="http://pypi.python.org/pypi/my_drama",
+        author="Ernest Scribbler",
+        author_email="escribbler@zmail.com",
+        url="http://pypi.python.org/pypi/mydrama",
         long_description=__doc__,
         classifiers=[
             "Framework :: Turberfield",
@@ -85,14 +114,26 @@ Populate your setup.py
             "Programming Language :: Python :: 3",
             "License :: Other/Proprietary License",
         ],
-        py_modules=["my_drama"],
+        packages=["mydrama"],
+        package_dir={"mydrama": "."},
+        include_package_data=True,
+        install_requires=["turberfield-dialogue"],
+        zip_safe=True,
     )
+
+
 
 Attribution
 ~~~~~~~~~~~
 
+
+Create a unique global id for your work
+---------------------------------------
+
 Not only do you get to declare your autthorship and copyright, but you
-also declare a global id for your work.
+also declare a global id for your work.::
+
+    ~/py3.5/bin/python -c"import uuid; print(uuid.uuid4().hex)"
 
 Versioning
 ~~~~~~~~~~
@@ -114,7 +155,9 @@ A `manifest` file will control which of your source files get
 installed. This will filter out any project files created by your text
 editor, cache files and the like.::
  
-    include *.cli *.rst *.wav
+    recursive-include . *.cli
+    recursive-include . *.rst
+    recursive-include . *.wav
 
 Distribution
 ~~~~~~~~~~~~
