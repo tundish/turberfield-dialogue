@@ -183,7 +183,8 @@ The command to create a `distribution` of your project is this::
     ~py3.5/bin/python setup.py sdist
 
 The packaging system creates an installable for you. You'll find
-it at `dist/mydrama-0.1.0.tar.gz` (or `.zip`, depending on your OS).
+it at `dist/mydrama-0.1.0.tar.gz` or `dist/mydrama-0.1.0.zip`,
+depending on your OS.
 
 You can upload that file to a package repository. The most popular is
 PyPI_ but there are alternatives, such as Gemfury_.
@@ -264,25 +265,6 @@ Like this:
 
 Doing this advertises your folder so it can be discovered and used during
 the course of a game.
-
-Global identity
-===============
-
-::
-
-    entry_points={
-        "console_scripts": [
-            "addisonarches = addisonarches.main:run",
-            "addisonarches-web = addisonarches.web.main:run",
-        ],
-        "turberfield.interfaces.sequence": [
-            "stripeyhole = addisonarches.sequences.stripeyhole:contents",
-        ],
-        "turberfield.interfaces.ensemble": [
-            "sequence_01 = addisonarches.scenario.common:ensemble",
-        ],
-    },
-    zip_safe=False
 
 Performing
 ::::::::::
