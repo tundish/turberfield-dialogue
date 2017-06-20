@@ -118,6 +118,7 @@ def cgi_consumer(args):
         <header class="persona"></header>
         <p class="data"></p>
         </blockquote>
+        <audio id="cue"></audio>
         <span id="event"></span>
         <script>
             if (!!window.EventSource) {{
@@ -127,37 +128,10 @@ def cgi_consumer(args):
             }}
 
             source.addEventListener("audio", function(e) {{
-                var fx = new Promise(function(resolve, reject) {{
-                    var src = e.data;
-                    var repeat = false;
-                    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    var track = audioCtx.createBufferSource();
-                    var request = new XMLHttpRequest();
-
-                    request.open("GET", src, true);
-                    request.responseType = "arraybuffer";
-
-                    request.onload = function() {{
-                        var audioData = request.response;
-
-                        audioCtx.decodeAudioData(audioData, function(buffer) {{
-                            var myBuffer = buffer;
-                            track.buffer = myBuffer;
-                            track.connect(audioCtx.destination);
-                            track.loop = repeat;
-                            resolve(track);
-                          }},
-
-                          function(e){{reject(e)}});
-
-                    }}
-                    request.send();
-                }});
-
-                fx.then(function(result){{
-                    result.start(0);
-                }});
-
+                var audio = document.getElementById("cue");
+                audio.setAttribute("src", e.data);
+                audio.currentTime = 0;
+                audio.play();
             }}, false);
 
             source.addEventListener("line", function(e) {{
