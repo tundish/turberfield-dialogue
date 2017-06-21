@@ -128,6 +128,7 @@ def cgi_consumer(args):
             }}
 
             source.addEventListener("audio", function(e) {{
+                console.log(e);
                 var audio = document.getElementById("cue");
                 audio.setAttribute("src", e.data);
                 audio.currentTime = 0;
@@ -135,6 +136,7 @@ def cgi_consumer(args):
             }}, false);
 
             source.addEventListener("line", function(e) {{
+                console.log(e);
                 var event = document.getElementById("event");
                 event.innerHTML = "";
                 var obj = JSON.parse(e.data);
@@ -147,6 +149,12 @@ def cgi_consumer(args):
                 speaker.innerHTML += obj.persona.name.surname;
                 line.innerHTML = obj.html;
                 
+            }}, false);
+
+            source.addEventListener("property", function(e) {{
+                var obj = JSON.parse(e.data);
+                var event = document.getElementById("event");
+                event.innerHTML = obj.html;
             }}, false);
 
             source.addEventListener("memory", function(e) {{
@@ -181,11 +189,29 @@ def cgi_consumer(args):
     return rv
 
 def cgi_producer(args, stream=None):
-    handler = CGIHandler(Terminal(stream=stream), args.db, args.pause, args.dwell)
+    log = logging.getLogger("turberfield")
+    try:
+        handler = CGIHandler(
+            Terminal(stream=stream),
+            None if args.db == "None" else args.db,
+            float(args.pause),
+            float(args.dwell)
+        )
+    except Exception as e:
+        log.error(e)
+        raise
+
     print("Content-type:text/event-stream", file=handler.terminal.stream)
     print(file=handler.terminal.stream)
+
     folder, references = resolve_objects(args)
-    yield from rehearse(folder, references, handler, args.repeat, args.roles)
+    try:
+        yield from rehearse(folder, references, handler, int(args.repeat), int(args.roles))
+    except Exception as e:
+        log.error(e)
+        raise
+    else:
+        log.debug(references)
 
 def presenter(args):
     handler = TerminalHandler(Terminal(), args.db, args.pause, args.dwell)
@@ -207,7 +233,7 @@ def main(args):
             for k in (
                 "log_level", "log_path", "port",
                 "session", "locn", "references", "folder",
-                "pause", "dwell"
+                "pause", "dwell", "repeat", "roles"
             )
         }
         opts = urllib.parse.urlencode(params)
