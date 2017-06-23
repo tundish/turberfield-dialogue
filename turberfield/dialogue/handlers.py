@@ -355,6 +355,8 @@ class CGIHandler(TerminalHandler):
                 file=self.terminal.stream
             )
             self.terminal.stream.flush()
+        time.sleep(self.pause)
+        return obj
 
     def handle_scene(self, obj):
         time.sleep(self.pause)

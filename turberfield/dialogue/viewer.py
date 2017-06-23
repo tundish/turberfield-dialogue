@@ -26,6 +26,7 @@ import os
 import platform
 import sys
 import textwrap
+import time
 import urllib.parse
 import uuid
 import webbrowser
@@ -151,12 +152,6 @@ def cgi_consumer(args):
                 
             }}, false);
 
-            source.addEventListener("property", function(e) {{
-                var obj = JSON.parse(e.data);
-                var event = document.getElementById("event");
-                event.innerHTML = obj.html;
-            }}, false);
-
             source.addEventListener("memory", function(e) {{
                 var obj = JSON.parse(e.data);
                 var event = document.getElementById("event");
@@ -171,7 +166,7 @@ def cgi_consumer(args):
                 event.innerHTML += ">.";
                 event.innerHTML += obj.attr;
                 event.innerHTML += " = ";
-                event.innerHTML += obj.val.name;
+                event.innerHTML += obj.val;
             }}, false);
 
             source.addEventListener("open", function(e) {{
@@ -190,6 +185,7 @@ def cgi_consumer(args):
 
 def cgi_producer(args, stream=None):
     log = logging.getLogger("turberfield")
+    log.debug(args)
     try:
         handler = CGIHandler(
             Terminal(stream=stream),
@@ -256,6 +252,7 @@ def main(args):
         form = cgi.FieldStorage()
         params = {key: form[key].value if key in form else None for key in vars(args).keys()}
         args = argparse.Namespace(**params)
+        log = logging.getLogger("turberfield")
         cgitb.enable()
         if not args.session:
             log.info("Consumer view.")
@@ -263,6 +260,9 @@ def main(args):
         else:
             log.info("Producer view.")
             list(cgi_producer(args))
+            while True:
+                log.info("Sleeping...")
+                time.sleep(3)
     else:
         for line in presenter(args):
             log.debug(line)
