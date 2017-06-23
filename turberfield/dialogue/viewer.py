@@ -166,7 +166,7 @@ def cgi_consumer(args):
                 event.innerHTML += ">.";
                 event.innerHTML += obj.attr;
                 event.innerHTML += " = ";
-                event.innerHTML += obj.val;
+                event.innerHTML += obj.val.name || obj.val;
             }}, false);
 
             source.addEventListener("open", function(e) {{
