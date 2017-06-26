@@ -24,14 +24,14 @@ from turberfield.dialogue.directives import Pathfinder
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.schema import SchemaBase
 
-def run_through(script, ensemble, roles=1):
+def run_through(script, ensemble, roles=1, strict=False):
     """
     :py:class:`turberfield.dialogue.model.SceneScript`.
     """
     then = datetime.datetime.now()
     with script as dialogue:
         selection = dialogue.select(ensemble, roles=roles)
-        if not any(selection.values()):
+        if not any(selection.values()) or strict and not all(selection.values()):
             return
 
         try:
@@ -43,7 +43,7 @@ def run_through(script, ensemble, roles=1):
         else:
             yield from model
 
-def rehearse(folder, references, handler, repeat=0, roles=1, loop=None):
+def rehearse(folder, references, handler, repeat=0, roles=1, strict=False, loop=None):
     """Cast a set of objects into a sequence of scene scripts. Deliver the performance.
 
     :param folder: A :py:class:`turberfield.dialogue.model.SceneScript.Folder`.
@@ -62,7 +62,7 @@ def rehearse(folder, references, handler, repeat=0, roles=1, loop=None):
 
         for index, script, interlude in zip(itertools.count(), scripts, folder.interludes):
             yield from handler(script, loop=loop)
-            seq = list(run_through(script, references, roles=roles))
+            seq = list(run_through(script, references, roles=roles, strict=strict))
             for shot, item in seq:
                 yield from handler(shot, loop=loop)
                 yield from handler(item, loop=loop)

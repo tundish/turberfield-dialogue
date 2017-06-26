@@ -83,7 +83,7 @@ def resolve_objects(args):
 def cgi_consumer(args):
     folder, references = resolve_objects(args)
     resources = rehearse(
-        folder, references, yield_resources, repeat=0, roles=args.roles
+        folder, references, yield_resources, repeat=0, roles=args.roles, strict=args.strict
     )
     links = "\n".join('<link ref="prefetch" href="/{0}">'.format(i) for i in resources)
     params = vars(args)
@@ -202,7 +202,11 @@ def cgi_producer(args, stream=None):
 
     folder, references = resolve_objects(args)
     try:
-        yield from rehearse(folder, references, handler, int(args.repeat), int(args.roles))
+        yield from rehearse(
+            folder, references, handler,
+            int(args.repeat), int(args.roles),
+            args.strict
+        )
     except Exception as e:
         log.error(e)
         raise
@@ -214,10 +218,14 @@ def presenter(args):
     folder, references = resolve_objects(args)
     if args.log_level != logging.DEBUG:
         with handler.terminal.fullscreen():
-            yield from rehearse(folder, references, handler, args.repeat, args.roles)
+            yield from rehearse(
+                folder, references, handler, args.repeat, args.roles, args.strict
+            )
             input("Press return.")
     else:
-        yield from rehearse(folder, references, handler, args.repeat, args.roles)
+        yield from rehearse(
+            folder, references, handler, args.repeat, args.roles, args.strict
+        )
 
 def main(args):
     log = logging.getLogger(log_setup(args))
@@ -229,7 +237,7 @@ def main(args):
             for k in (
                 "log_level", "log_path", "port",
                 "session", "locn", "references", "folder",
-                "pause", "dwell", "repeat", "roles"
+                "pause", "dwell", "repeat", "roles", "strict"
             )
         }
         opts = urllib.parse.urlencode(params)
@@ -300,6 +308,9 @@ def parser(description=__doc__):
         "--roles", type=int, default=1,
         help="The number of roles [1] permitted for each member of cast."
     )
+    rv.add_argument(
+        "--strict", action="store_true", default=False,
+        help="Only perform fully-cast scene files.")
     rv.add_argument(
         "--pause", type=float, default=TerminalHandler.pause,
         help="Time in seconds [{th.pause}] to pause after a line.".format(th=TerminalHandler)

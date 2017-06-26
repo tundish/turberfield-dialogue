@@ -111,14 +111,15 @@ class CastingTests(unittest.TestCase):
                 "--references", "turberfield.dialogue.sequences.battle.logic:references",
                 "--folder", "turberfield.dialogue.sequences.battle.logic:folder",
                 "--db", fp,
-                "--pause", "0.5", "--dwell", "0.1", "--repeat", "1"
+                "--pause", "0.5", "--dwell", "0.1",
+                "--repeat", "1", "--roles", "2", "--strict"
             ])
             self.assertEqual("turberfield", log_setup(ns))
             stream = io.StringIO()
             then = datetime.datetime.now()
             rv = list(turberfield.dialogue.viewer.cgi_producer(ns, stream))
             elapsed = datetime.datetime.now() - then
-            self.assertTrue(5 <= elapsed.seconds <= 6, elapsed.seconds)
+            self.assertTrue(5 <= elapsed.seconds <= 7, elapsed.seconds)
 
             lines = stream.getvalue().splitlines()
             self.assertEqual("Content-type:text/event-stream", lines[0])

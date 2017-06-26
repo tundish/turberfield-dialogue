@@ -9,4 +9,5 @@ Change Log
 0.8.0
 =====
 
-* `--web` option works tolerably in Firefox.
+* `turberfield-rehearse` **--web** option works tolerably in Firefox.
+* Added **strict** mode for casting a rehearsal.

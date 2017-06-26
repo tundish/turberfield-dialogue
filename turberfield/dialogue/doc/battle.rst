@@ -212,9 +212,12 @@ fighter. We'll look in more detail how this works in the :ref:`syntax`.
 Roles
 =====
 
-Turberfield's rehearsal proceeds despite any unmatched entities. The
-lines will not be voiced for unmatched parts. In the case that none of
-the entities in the scene can be cast, the entire scene is skipped.
+By default, Turberfield's rehearsal proceeds despite any unmatched entities.
+The lines will not be voiced for unmatched parts. If you want to be strict
+about only playing fully-cast scene files, you can specify that with an option.
+
+In either case, if *none* of the entities in the scene can be cast, the entire
+scene is skipped.
 
 An extra dimension to the casting of entities is the concept of `roles`.
 When roles are attached to an entity declaration it means that the
