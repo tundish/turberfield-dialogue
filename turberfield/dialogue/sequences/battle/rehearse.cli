@@ -1,3 +1,4 @@
 --references=turberfield.dialogue.sequences.battle.logic:references
 --folder=turberfield.dialogue.sequences.battle.logic:folder
 --roles=2
+--repeat=1

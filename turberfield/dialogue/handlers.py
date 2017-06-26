@@ -323,6 +323,9 @@ class CGIHandler(TerminalHandler):
         return obj
 
     def handle_line(self, obj):
+        if obj.persona is None:
+            return obj
+
         print(
             "event: line",
             "data: {0}\n".format(Assembly.dumps(obj)),
@@ -336,10 +339,24 @@ class CGIHandler(TerminalHandler):
         return obj
 
     def handle_property(self, obj):
-        try:
-            setattr(obj.object, obj.attr, obj.val)
-        except AttributeError as e:
-            self.log.error(". ".join(getattr(e, "args", e) or e))
+        log = logging.getLogger("turberfield")
+        log.info(obj)
+        if obj.object is not None:
+            try:
+                setattr(obj.object, obj.attr, obj.val)
+            except AttributeError as e:
+                self.log.error(". ".join(getattr(e, "args", e) or e))
+
+            print(
+                "event: property",
+                "data: {0}\n".format(Assembly.dumps(obj)),
+                sep="\n",
+                end="\n",
+                file=self.terminal.stream
+            )
+            self.terminal.stream.flush()
+        time.sleep(self.pause)
+        return obj
 
     def handle_scene(self, obj):
         time.sleep(self.pause)

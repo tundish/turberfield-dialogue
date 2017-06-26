@@ -26,6 +26,7 @@ import os
 import platform
 import sys
 import textwrap
+import time
 import urllib.parse
 import uuid
 import webbrowser
@@ -118,6 +119,7 @@ def cgi_consumer(args):
         <header class="persona"></header>
         <p class="data"></p>
         </blockquote>
+        <audio id="cue"></audio>
         <span id="event"></span>
         <script>
             if (!!window.EventSource) {{
@@ -127,40 +129,15 @@ def cgi_consumer(args):
             }}
 
             source.addEventListener("audio", function(e) {{
-                var fx = new Promise(function(resolve, reject) {{
-                    var src = e.data;
-                    var repeat = false;
-                    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    var track = audioCtx.createBufferSource();
-                    var request = new XMLHttpRequest();
-
-                    request.open("GET", src, true);
-                    request.responseType = "arraybuffer";
-
-                    request.onload = function() {{
-                        var audioData = request.response;
-
-                        audioCtx.decodeAudioData(audioData, function(buffer) {{
-                            var myBuffer = buffer;
-                            track.buffer = myBuffer;
-                            track.connect(audioCtx.destination);
-                            track.loop = repeat;
-                            resolve(track);
-                          }},
-
-                          function(e){{reject(e)}});
-
-                    }}
-                    request.send();
-                }});
-
-                fx.then(function(result){{
-                    result.start(0);
-                }});
-
+                console.log(e);
+                var audio = document.getElementById("cue");
+                audio.setAttribute("src", e.data);
+                audio.currentTime = 0;
+                audio.play();
             }}, false);
 
             source.addEventListener("line", function(e) {{
+                console.log(e);
                 var event = document.getElementById("event");
                 event.innerHTML = "";
                 var obj = JSON.parse(e.data);
@@ -189,7 +166,7 @@ def cgi_consumer(args):
                 event.innerHTML += ">.";
                 event.innerHTML += obj.attr;
                 event.innerHTML += " = ";
-                event.innerHTML += obj.val.name;
+                event.innerHTML += obj.val.name || obj.val;
             }}, false);
 
             source.addEventListener("open", function(e) {{
@@ -207,11 +184,30 @@ def cgi_consumer(args):
     return rv
 
 def cgi_producer(args, stream=None):
-    handler = CGIHandler(Terminal(stream=stream), args.db, args.pause, args.dwell)
+    log = logging.getLogger("turberfield")
+    log.debug(args)
+    try:
+        handler = CGIHandler(
+            Terminal(stream=stream),
+            None if args.db == "None" else args.db,
+            float(args.pause),
+            float(args.dwell)
+        )
+    except Exception as e:
+        log.error(e)
+        raise
+
     print("Content-type:text/event-stream", file=handler.terminal.stream)
     print(file=handler.terminal.stream)
+
     folder, references = resolve_objects(args)
-    yield from rehearse(folder, references, handler, args.repeat, args.roles)
+    try:
+        yield from rehearse(folder, references, handler, int(args.repeat), int(args.roles))
+    except Exception as e:
+        log.error(e)
+        raise
+    else:
+        log.debug(references)
 
 def presenter(args):
     handler = TerminalHandler(Terminal(), args.db, args.pause, args.dwell)
@@ -233,7 +229,7 @@ def main(args):
             for k in (
                 "log_level", "log_path", "port",
                 "session", "locn", "references", "folder",
-                "pause", "dwell"
+                "pause", "dwell", "repeat", "roles"
             )
         }
         opts = urllib.parse.urlencode(params)
@@ -256,6 +252,7 @@ def main(args):
         form = cgi.FieldStorage()
         params = {key: form[key].value if key in form else None for key in vars(args).keys()}
         args = argparse.Namespace(**params)
+        log = logging.getLogger("turberfield")
         cgitb.enable()
         if not args.session:
             log.info("Consumer view.")
@@ -263,6 +260,9 @@ def main(args):
         else:
             log.info("Producer view.")
             list(cgi_producer(args))
+            while True:
+                log.info("Sleeping...")
+                time.sleep(3)
     else:
         for line in presenter(args):
             log.debug(line)
