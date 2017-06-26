@@ -70,7 +70,7 @@ def parse_command(cmd):
         return None
 
 
-def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
+def interaction(folder, index, ensemble, *args, cmd="", log=None, **kwargs):
     narrator, cloak, prize, *others = ensemble
     locn = narrator.get_state(Location)
     action = None

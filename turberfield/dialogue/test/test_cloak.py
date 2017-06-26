@@ -82,7 +82,7 @@ class SceneTests(unittest.TestCase):
                 if isinstance(obj, Callable):
                     self.calls += 1
                     interlude = obj
-                    folder, index, ensemble = args
+                    folder, index, ensemble, branches = args
                     rv = None
                     if folder.paths[index] == "foyer.rst":
                         self.visits["foyer"] += 1

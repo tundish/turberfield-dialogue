@@ -43,13 +43,23 @@ def run_through(script, ensemble, roles=1, strict=False):
         else:
             yield from model
 
-def rehearse(folder, references, handler, repeat=0, roles=1, strict=False, loop=None):
+def rehearse(
+    folder, references, handler,
+    repeat=0, roles=1, strict=False,
+    branches=None,
+    loop=None
+):
     """Cast a set of objects into a sequence of scene scripts. Deliver the performance.
 
     :param folder: A :py:class:`turberfield.dialogue.model.SceneScript.Folder`.
     :param references: A sequence of Python objects.
     :param handler: A callable object. This will be invoked with every event from the
                     performance.
+    :param int repeat: Extra repetitions of each folder.
+    :param int roles: Maximum number of roles permitted each character.
+    :param bool strict: Only fully-cast scripts to be performed.
+    :param list branches: Supplies the folders from which an interlude may
+        pick a branch in the action.
 
     This function is a generator. It yields events from the performance.
 
@@ -68,7 +78,9 @@ def rehearse(folder, references, handler, repeat=0, roles=1, strict=False, loop=
                 yield from handler(item, loop=loop)
 
             if seq:
-                branch = next(handler(interlude, folder, index, references, loop=loop))
+                branch = next(handler(
+                    interlude, folder, index, references, branches, loop=loop
+                ), None)
                 if branch is None:
                     return
                 elif branch != folder:

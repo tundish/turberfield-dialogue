@@ -92,7 +92,10 @@ class TerminalHandler:
                 playObj.wait_done()
         return obj
 
-    def handle_interlude(self, obj, folder, index, ensemble, loop=None, **kwargs):
+    def handle_interlude(
+        self, obj, folder, index, ensemble, branches,
+        loop=None, **kwargs
+    ):
         """Handle an interlude event.
 
         Interlude functions permit branching. They return a folder which the
@@ -107,6 +110,9 @@ class TerminalHandler:
         :param int index: Indicates which scene script in the folder
             is being processed.
         :param ensemble: A sequence of Python objects.
+        :param branches: A sequence of
+            :py:class:`~turberfield.dialogue.model.SceneScript.Folder` objects.
+        pick a branch in the action.
         :return: A :py:class:`~turberfield.dialogue.model.SceneScript.Folder`
             object.
 
@@ -114,7 +120,7 @@ class TerminalHandler:
         if obj is None:
             return folder
         else:
-            return obj(folder, index, ensemble, loop=loop, **kwargs)
+            return obj(folder, index, ensemble, branches, loop=loop, **kwargs)
 
     def handle_line(self, obj):
         """Handle a line event.
@@ -301,7 +307,7 @@ class TerminalHandler:
             raise NotImplementedError
         elif isinstance(obj, MutableSequence):
             yield self.handle_references(obj)
-        elif (obj is None or isinstance(obj, Callable)) and len(args) == 3:
+        elif (obj is None or isinstance(obj, Callable)) and len(args) == 4:
             yield self.handle_interlude(obj, *args, loop=loop, **kwargs)
         else:
             yield obj
