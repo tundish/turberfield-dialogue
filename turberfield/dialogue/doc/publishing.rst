@@ -250,7 +250,7 @@ What you get back is a 32-character code which looks a bit like this::
     c.1de5c.3f5a4abe..937.7.6e55a.8e
 
 I put dots in it so you wouldn't cheat and copy mine. Dots are illegal.
-Make your own.
+Make your own!
 
 Now you go back to `setup.py` and edit the `entry_points` parameter.
 Like this:
@@ -266,66 +266,6 @@ Like this:
 Doing this advertises your folder so it can be discovered and used during
 the course of a game.
 
-Performing
-::::::::::
-
-Making a name for yourself
-==========================
-
-Congratulations on self-publishing your screenplay. You can build on that
-and start to socialise the use of the name you chose for your project.
-
-Remember way back when you were putting `__name__` as the **pkg** argument
-to declare your :py:class:`~turberfield.dialogue.model.SceneScript.Folder`
-object? No need to do that any more. `mydrama` (or whatever you picked
-instead) is the name of the package now.
-
-Likewise in scene script files, if there's a particular type you specify
-for an entity, that will be `mydrama.logic.VeterinarySurgeon` and so on.
-And because you have published your work, the whole world knows what you
-mean by that.
-
-Getting discovered
-==================
-
-Here's how a Python developer, after installing your package, might look
-for some dialogue suited to his modern reimagining of every Shakespearian
-tragedy:
-
-.. code-block:: python
-
-    from turberfield.utils.misc import gather_installed
-
-    guid, folder = next(
-        k, v
-        for k, v in dict(
-            gather_installed("turberfield.interfaces.folder")
-        ).items()
-        if "betrayal" in v.metadata,
-    )
-
-Constraining entity selection
-=============================
-
-One last tip. The :py:func:`~turberfield.dialogue.player.rehearse` function has
-been good to us. But it is very forgiving in the way it allows even
-minimally-cast scenes to play through. Sometimes we want all or nothing.
-Here is a way to pre-filter scenes so that only those fully cast are performed.
-`The code is illustrative and lacks some error handling`.
-
-.. code-block:: python
-
-    def is_fully_cast(folder, references):
-        for script in SceneScript.scripts(**folder._asdict())
-            with script as dialogue:
-                selection = dialogue.select(references)
-                if all(selection.values()):
-                    continue:
-                else:
-                    return False
-        return True
-
-.. _packaging tutorials: http://thuswise.co.uk/packaging-python-for-scale-part-one.html
 .. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html
 .. _PyPI: https://pypi.python.org/pypi
 .. _Gemfury: https://gemfury.com

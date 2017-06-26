@@ -14,7 +14,9 @@ Turberfield Dialogue library
    cloak
    cli
    api
-   packaging
+   publishing
+   performing
+   changes
 
 * :ref:`genindex`
 
