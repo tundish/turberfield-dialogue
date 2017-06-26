@@ -112,7 +112,7 @@ class TerminalHandler:
         :param ensemble: A sequence of Python objects.
         :param branches: A sequence of
             :py:class:`~turberfield.dialogue.model.SceneScript.Folder` objects.
-        pick a branch in the action.
+            from which to pick a branch in the action.
         :return: A :py:class:`~turberfield.dialogue.model.SceneScript.Folder`
             object.
 

@@ -11,3 +11,4 @@ Change Log
 
 * `turberfield-rehearse` **--web** option works tolerably in Firefox.
 * Added **strict** mode for casting a rehearsal.
+* Interludes now see a sequence of folders they may **branch** to.

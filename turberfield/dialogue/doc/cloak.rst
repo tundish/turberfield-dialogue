@@ -111,7 +111,7 @@ location of the player and the cloak:
         cloakroom = 3
         cloakroom_hook = 4
 
-There are no Persona in this game; none of the voices has a name.
+There are no Personas in this game; none of the voices has a name.
 But they do have state, and one of them needs attributes. The
 useful types to inherit from will be *Stateful* and *DataObject*.
 
@@ -160,7 +160,7 @@ on:
 
 .. code-block:: python
 
-    def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
+    def interaction(folder, index, ensemble, *args, cmd="", log=None, loop=None):
         narrator, cloak, prize, *others = ensemble
         locn = narrator.get_state(Location)
         action = None
