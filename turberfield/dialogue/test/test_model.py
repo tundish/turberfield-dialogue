@@ -173,6 +173,14 @@ class SelectTests(unittest.TestCase):
         sad = 0
         happy = 1
 
+    @enum.unique
+    class Location(EnumFactory, enum.Enum):
+        pub = 0
+        pub_bar = 1
+        pub_carpark = 2
+        pub_snug = 3
+        pub_toilets = 4
+
     def test_select_with_required_state(self):
 
         content = textwrap.dedent("""
@@ -202,6 +210,35 @@ class SelectTests(unittest.TestCase):
         self.assertEqual(ensemble[0], rv[1])
         self.assertEqual(ensemble[1], rv[0])
 
+    def test_select_with_hierarchical_state(self):
+
+        content = textwrap.dedent("""
+            .. entity:: FIGHTER_1
+               :states: turberfield.dialogue.test.test_model.SelectTests.Location.pub
+
+            .. entity:: FIGHTER_2
+               :states: turberfield.dialogue.test.test_model.SelectTests.Location.pub
+
+            .. entity:: WEAPON
+
+               A weapon which makes a noise in use. 
+            """)
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
+        ensemble[0].set_state(SelectTests.Location.pub_bar)
+        self.assertEqual(
+            SelectTests.Location.pub_bar,
+            ensemble[0].get_state(SelectTests.Location)
+        )
+        ensemble[1].set_state(SelectTests.Location.pub_toilets)
+        self.assertEqual(
+            SelectTests.Location.pub_toilets,
+            ensemble[1].get_state(SelectTests.Location)
+        )
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        rv = list(script.select(ensemble).values())
+        self.assertEqual(ensemble[0], rv[1])
+        self.assertEqual(ensemble[1], rv[0])
+
     def test_select_with_integer_state(self):
 
         content = textwrap.dedent("""
@@ -220,6 +257,29 @@ class SelectTests(unittest.TestCase):
         self.assertEqual(2, ensemble[0].get_state())
         ensemble[1].set_state(1)
         self.assertEqual(1, ensemble[1].get_state())
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        rv = list(script.select(ensemble).values())
+        self.assertEqual(ensemble[0], rv[1])
+        self.assertEqual(ensemble[1], rv[0])
+
+    def test_select_with_herarchical_integer_state(self):
+
+        content = textwrap.dedent("""
+            .. entity:: FIGHTER_1
+               :states: 3
+
+            .. entity:: FIGHTER_2
+               :states: 3
+
+            .. entity:: WEAPON
+
+               A weapon which makes a noise in use.
+            """)
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
+        ensemble[0].set_state(31)
+        self.assertEqual(31, ensemble[0].get_state())
+        ensemble[1].set_state(32)
+        self.assertEqual(32, ensemble[1].get_state())
         script = SceneScript("inline", doc=SceneScript.read(content))
         rv = list(script.select(ensemble).values())
         self.assertEqual(ensemble[0], rv[1])
