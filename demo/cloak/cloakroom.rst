@@ -7,11 +7,11 @@
 
 .. entity:: NARRATOR
    :types: logic.Narrator
-   :states: logic.Location.cloakroom
+   :states: logic.Location.cloakroom_space
 
 .. entity:: CLOAK
    :types: logic.Cloak
-   :states: logic.Location.cloakroom
+   :states: logic.Location.cloakroom_space
 
 .. entity:: CLOAK_ON_THE_FLOOR
    :types: logic.Cloak

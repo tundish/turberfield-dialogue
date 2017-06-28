@@ -7,11 +7,11 @@
 
 .. entity:: NARRATOR
    :types: turberfield.dialogue.sequences.cloak.logic.Narrator
-   :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom
+   :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom_space
 
 .. entity:: CLOAK
    :types: turberfield.dialogue.sequences.cloak.logic.Garment
-   :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom
+   :states: turberfield.dialogue.sequences.cloak.logic.Location.cloakroom_space
 
 .. entity:: CLOAK_ON_THE_FLOOR
    :types: turberfield.dialogue.sequences.cloak.logic.Garment

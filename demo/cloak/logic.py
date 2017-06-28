@@ -12,7 +12,7 @@ class Location(EnumFactory, enum.Enum):
     foyer = 0
     bar = 1
     cloakroom_floor = 2
-    cloakroom = 3
+    cloakroom_space = 3
     cloakroom_hook = 4
 
 class Narrator(Stateful):
@@ -53,7 +53,7 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
             else:
                 prize.set_state(1)
         elif action == "w":
-            narrator.set_state(Location.cloakroom)
+            narrator.set_state(Location.cloakroom_space)
             cloak.set_state(1)
         else:
             return None
@@ -66,14 +66,14 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
             random.choice(prize.message), " ", 1
         )
         prize.set_state(0)
-    elif locn == Location.cloakroom:
+    elif locn == Location.cloakroom_space:
         while action not in ("c", "h", "e"):
             action = parse_command(cmd or input("Enter a command: "))
         if action == "c":
-            if cloak.get_state(Location) == Location.cloakroom:
+            if cloak.get_state(Location) == Location.cloakroom_space:
                 cloak.set_state(Location.cloakroom_floor)
             else:
-                cloak.set_state(Location.cloakroom)
+                cloak.set_state(Location.cloakroom_space)
         elif action == "h":
             cloak.set_state(Location.cloakroom_hook)
         else:
