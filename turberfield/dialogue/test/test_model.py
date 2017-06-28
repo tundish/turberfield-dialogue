@@ -236,8 +236,8 @@ class SelectTests(unittest.TestCase):
         )
         script = SceneScript("inline", doc=SceneScript.read(content))
         rv = list(script.select(ensemble).values())
-        self.assertEqual(ensemble[0], rv[1])
-        self.assertEqual(ensemble[1], rv[0])
+        self.assertEqual(ensemble[0], rv[0])
+        self.assertEqual(ensemble[1], rv[1])
 
     def test_select_with_integer_state(self):
 
@@ -282,8 +282,8 @@ class SelectTests(unittest.TestCase):
         self.assertEqual(32, ensemble[1].get_state())
         script = SceneScript("inline", doc=SceneScript.read(content))
         rv = list(script.select(ensemble).values())
-        self.assertEqual(ensemble[0], rv[1])
-        self.assertEqual(ensemble[1], rv[0])
+        self.assertEqual(ensemble[0], rv[0])
+        self.assertEqual(ensemble[1], rv[1])
 
     def test_select_with_unfulfilled_state(self):
 
