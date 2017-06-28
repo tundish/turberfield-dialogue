@@ -94,7 +94,7 @@ class SceneTests(unittest.TestCase):
                         elif self.visits["foyer"] == 2:
                             rv = interlude(folder, index, self.references, cmd="west")
                             self.parent.assertEqual(self.folder, rv)
-                            self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
+                            self.parent.assertEqual(Location.cloakroom_space, narrator.get_state(Location))
                         else:
                             self.parent.assertEqual(3, self.visits["foyer"])
 
@@ -109,7 +109,7 @@ class SceneTests(unittest.TestCase):
                     elif folder.paths[index] == "cloakroom.rst":
                         self.visits["cloakroom"] += 1
                         if self.visits["cloakroom"] == 1:
-                            self.parent.assertEqual(Location.cloakroom, narrator.get_state(Location))
+                            self.parent.assertEqual(Location.cloakroom_space, narrator.get_state(Location))
                             rv = interlude(folder, index, self.references, cmd="drop cloak")
                             self.parent.assertEqual(self.folder, rv)
                             self.parent.assertEqual(Location.cloakroom_floor, cloak.get_state(Location))
@@ -117,7 +117,7 @@ class SceneTests(unittest.TestCase):
                         elif self.visits["cloakroom"] == 2:
                             rv = interlude(folder, index, self.references, cmd="get cloak")
                             self.parent.assertEqual(self.folder, rv)
-                            self.parent.assertEqual(Location.cloakroom, cloak.get_state(Location))
+                            self.parent.assertEqual(Location.cloakroom_space, cloak.get_state(Location))
 
                         elif self.visits["cloakroom"] == 3:
                             rv = interlude(folder, index, self.references, cmd="put cloak on hook")
