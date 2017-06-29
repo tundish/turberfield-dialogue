@@ -71,6 +71,11 @@ Entity declaration
         A whitespace separated sequence of dotted paths.
         Each path must resolve to a Python Enum class member.
         In addition, a single integer value is also allowed.
+
+        The resolution rules allow for hierarchical states, eg:
+            * `3` matches integer states `301`, `38` and `3`.
+            * `Location.pub` matches `Location.pub` and `Location.pub_carpark`.
+
         A candidate for this entity must match *all* these state criteria.
         Optional.
     ``:types:``

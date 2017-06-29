@@ -99,7 +99,7 @@ That is the `current` file as referred to below.
 
 Here is an example to show the signature of parameters required.
 
-.. py:function:: def my_interlude(folder, index, ensemble, log=None, loop=None):
+.. py:function:: def my_interlude(folder, index, ensemble, branches, log=None, loop=None):
 
     :param folder: A :py:class:`~turberfield.dialogue.model.SceneScript.Folder` object.
     :param int index: The index position into **folder.paths** of the current
@@ -107,6 +107,9 @@ Here is an example to show the signature of parameters required.
     :param ensemble: A sequence of Python objects. It is guaranteed to contain
         all the objects cast to roles in the current scene. It will be used to
         select entities for the next.
+    :param branches: A sequence of
+        :py:class:`~turberfield.dialogue.model.SceneScript.Folder` objects.
+        from which to pick a branch in the action.
     :param log: If supplied, this will be a ``logging.Logger`` object which
         should be used in preference over any other for logging messages from within
         your interlude function.
