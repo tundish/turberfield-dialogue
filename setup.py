@@ -25,8 +25,8 @@ setup(
     version=version,
     description="Scripting dialogue and soundtrack for your Turberfield project.",
     author="D Haynes",
-    author_email="tundish@thuswise.org",
-    url="https://www.assembla.com/spaces/turberfield/messages",
+    author_email="tundish@gigeconomy.org.uk",
+    url="https://github.com/tundish/turberfield-dialogue/issues",
     long_description=__doc__,
     classifiers=[
         "Operating System :: POSIX",
