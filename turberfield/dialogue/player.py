@@ -68,6 +68,7 @@ def rehearse(
     yield from handler(references, loop=loop)
 
     while True:
+        branch = None
         scripts = list(SceneScript.scripts(**folder._asdict()))
 
         for index, script, interlude in zip(itertools.count(), scripts, folder.interludes):
@@ -86,7 +87,9 @@ def rehearse(
                 elif branch != folder:
                     break
         else:
-            if not repeat:
+            if branch is None:
+                break
+            elif not repeat:
                 break
             else:
                 repeat -= 1
