@@ -35,11 +35,14 @@ class Animal(Stateful, Persona):
 class Tool(Stateful, Persona):
     pass
 
-references = [
-    Animal(name="Itchy").set_state(1),
-    Animal(name="Scratchy").set_state(1),
-    Tool(name="Ol' Rusty Chopper").set_state(1),
-]
+def ensemble():
+    return  [
+        Animal(name="Itchy").set_state(1),
+        Animal(name="Scratchy").set_state(1),
+        Tool(name="Ol' Rusty Chopper").set_state(1),
+    ]
+
+references = ensemble()
 
 folder = SceneScript.Folder(
     "turberfield.dialogue.sequences.battle",
