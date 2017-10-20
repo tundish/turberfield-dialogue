@@ -161,7 +161,37 @@ class FXDirectiveTests(unittest.TestCase):
         self.assertEqual(3000, cue.duration)
         self.assertEqual(1, cue.loop)
 
-    def test_fx_with_substitution(self):
+    def test_fx_bad_substitution(self):
+        content = textwrap.dedent(
+            """
+
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            .. fx:: turberfield.dialogue.sequences.battle_royal barks/|P_NONE|/surprise.wav
+               :offset: 0
+               :duration: 3000
+               :loop: 1
+
+            """)
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([ensemble[0]]))
+        model = script.run()
+        shot, cue = next(iter(model))
+        self.assertEqual(
+            "turberfield.dialogue.sequences.battle_royal",
+            cue.package
+        )
+        self.assertEqual("whack.wav", cue.resource)
+        self.assertEqual(0, cue.offset)
+        self.assertEqual(3000, cue.duration)
+        self.assertEqual(1, cue.loop)
+
+    def test_fx_good_substitution(self):
         content = textwrap.dedent(
             """
             .. entity:: P

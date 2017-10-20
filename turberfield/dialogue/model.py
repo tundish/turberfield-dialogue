@@ -25,6 +25,7 @@ import itertools
 import logging
 import operator
 import os.path
+import re
 import sys
 
 from turberfield.dialogue.directives import Entity as EntityDirective
@@ -106,8 +107,24 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.memory = Model.Memory(subj and subj.persona, obj and obj.persona, state, None, None)
 
     def visit_Cue(self, node):
+
+        def substitute_property(matchObj):
+            try:
+                defn = self.document.substitution_defs[matchObj.group(1)]
+                getter = next(
+                    i for i in defn.children
+                    if isinstance(i, PropertyDirective.Getter)
+                )
+                ref, dot, attr = getter["arguments"][0].partition(".")
+                entity = self.get_entity(ref)
+                rv = operator.attrgetter(attr)(entity.persona)
+            except (AttributeError, KeyError, IndexError, StopIteration) as e:
+                self.log.warning("Cue has bad substitution ref {0}".format(matchObj.group(1)))
+                rv = ""
+            return rv
+
         pkg = node["arguments"][0]
-        rsrc = node["arguments"][1]
+        rsrc = re.compile("\|(\w+)\|").sub(substitute_property, node["arguments"][1])
         offset = node["options"].get("offset")
         duration = node["options"].get("duration")
         loop = node["options"].get("loop")
