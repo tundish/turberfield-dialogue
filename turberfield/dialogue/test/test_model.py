@@ -186,7 +186,7 @@ class FXDirectiveTests(unittest.TestCase):
             "turberfield.dialogue.sequences.battle_royal",
             cue.package
         )
-        self.assertEqual("whack.wav", cue.resource)
+        self.assertEqual("barks//surprise.wav", cue.resource)
         self.assertEqual(0, cue.offset)
         self.assertEqual(3000, cue.duration)
         self.assertEqual(1, cue.loop)
@@ -218,7 +218,7 @@ class FXDirectiveTests(unittest.TestCase):
             "turberfield.dialogue.sequences.battle_royal",
             cue.package
         )
-        self.assertEqual("whack.wav", cue.resource)
+        self.assertEqual("barks/William/surprise.wav", cue.resource)
         self.assertEqual(0, cue.offset)
         self.assertEqual(3000, cue.duration)
         self.assertEqual(1, cue.loop)
