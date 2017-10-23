@@ -23,8 +23,8 @@ import logging
 import shutil
 import textwrap
 
-DEFAULT_PAUSE_SECS = 1.5
-DEFAULT_DWELL_SECS = 0.2
+DEFAULT_PAUSE_SECS = 1.2
+DEFAULT_DWELL_SECS = 0.3
 
 def pause(shot, item, dwell=1.5, rate=1):
     return dwell + rate * 0.2 * item.text.count(" ")
