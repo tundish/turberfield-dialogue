@@ -49,11 +49,17 @@ python -m turberfield.dialogue.viewer \
 
 """
 
+def handler(item):
+    yield item
+
 def main(args):
     log = logging.getLogger(log_setup(args))
     folders, references = resolve_objects(args)
     performer = Performer(folders, references)
-    print(*performer.run())
+    for i in range(args.repeat + 1):
+        for item in performer.run(strict=args.strict, roles=args.roles):
+            for obj in handler(item):
+                print(obj)
 
 
 def run():
