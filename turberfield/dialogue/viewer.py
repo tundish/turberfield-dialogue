@@ -38,7 +38,7 @@ from turberfield.dialogue import __version__
 from turberfield.dialogue.cli import add_casting_options
 from turberfield.dialogue.cli import add_common_options
 from turberfield.dialogue.cli import add_performance_options
-from turberfield.dialogue.directives import Pathfinder
+from turberfield.dialogue.cli import resolve_objects
 from turberfield.dialogue.handlers import CGIHandler
 from turberfield.dialogue.handlers import TerminalHandler
 from turberfield.dialogue.model import Model
@@ -73,16 +73,6 @@ def yield_resources(obj, *args, **kwargs):
         pos = path.find("lib", len(sys.prefix))
         if pos != -1:
             yield path[pos:]
-
-def resolve_objects(args):
-    folders = [
-        Pathfinder.string_import(i, relative=False, sep=":")
-        for i in args.folder
-    ]
-    references = Pathfinder.string_import(
-        args.references, relative=False, sep=":"
-    )
-    return folders, references
 
 def cgi_consumer(args):
     folders, references = resolve_objects(args)
