@@ -21,7 +21,6 @@ import argparse
 import cgi
 import cgitb
 import http.server
-import itertools
 import logging
 import os
 import platform
@@ -87,15 +86,17 @@ def resolve_objects(args):
 
 def cgi_consumer(args):
     folders, references = resolve_objects(args)
-    resources = itertools.chain(
-        rehearse(
+    resources = [
+        resource
+        for folder in folders
+        for resource in rehearse(
             folder, references, yield_resources, repeat=0, roles=args.roles, strict=args.strict
         )
-        for folder in folders
-    )
+    ]
     links = "\n".join('<link ref="prefetch" href="/{0}">'.format(i) for i in resources)
-    params = vars(args)
-    params["session"] = uuid.uuid4().hex
+    params = [(k, v) for k, v in vars(args).items() if k not in ("folder", "session")]
+    params.append(("session", uuid.uuid4().hex))
+    params.extend([("folder", i) for i in args.folder])
     opts = urllib.parse.urlencode(params)
     url = "http://localhost:{0}/{1}/turberfield-rehearse?{2}".format(
         args.port, args.locn, opts
@@ -193,7 +194,7 @@ def cgi_consumer(args):
 
 def cgi_producer(args, stream=None):
     log = logging.getLogger("turberfield")
-    log.debug(args)
+    log.info(args)
     try:
         handler = CGIHandler(
             Terminal(stream=stream),
@@ -209,8 +210,10 @@ def cgi_producer(args, stream=None):
     print(file=handler.terminal.stream)
 
     folders, references = resolve_objects(args)
+    log.info(folders)
     try:
         for folder in folders:
+            log.info(folder)
             yield from rehearse(
                 folder, references, handler,
                 int(args.repeat), int(args.roles),
@@ -273,12 +276,15 @@ def main(args):
     elif "SERVER_NAME" in os.environ:
         form = cgi.FieldStorage()
         params = {
-            key: form.getlist(key) if key == "folder" else form[key].value if key in form else None
+            key: getattr(form[key], "value", form.getlist(key)) if key in form else None
             for key in vars(args).keys()
         }
-        args = argparse.Namespace(**params)
+        params["folder"] = form.getlist("folder")
         log = logging.getLogger("turberfield")
+        log.info("params")
+        log.info(params)
         cgitb.enable()
+        args = argparse.Namespace(**params)
         if not args.session:
             log.info("Consumer view.")
             print(cgi_consumer(args))
