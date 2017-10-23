@@ -98,8 +98,8 @@ def add_casting_options(parser):
         help="Give an import path to a list of Python references."
     )
     parser.add_argument(
-        "--sequence", default="",
-        help="Give an import path to a sequence of SceneScript folders."
+        "--folder", nargs="+",
+        help="Give a sequence of import paths to SceneScript folders."
     )
     parser.add_argument(
         "--roles", type=int, default=1,

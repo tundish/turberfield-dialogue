@@ -21,6 +21,7 @@ import argparse
 import cgi
 import cgitb
 import http.server
+import itertools
 import logging
 import os
 import platform
@@ -75,18 +76,22 @@ def yield_resources(obj, *args, **kwargs):
             yield path[pos:]
 
 def resolve_objects(args):
-    folder = Pathfinder.string_import(
-        args.folder, relative=False, sep=":"
-    )
+    folders = [
+        Pathfinder.string_import(i, relative=False, sep=":")
+        for i in args.folder
+    ]
     references = Pathfinder.string_import(
         args.references, relative=False, sep=":"
     )
-    return folder, references
+    return folders, references
 
 def cgi_consumer(args):
-    folder, references = resolve_objects(args)
-    resources = rehearse(
-        folder, references, yield_resources, repeat=0, roles=args.roles, strict=args.strict
+    folders, references = resolve_objects(args)
+    resources = itertools.chain(
+        rehearse(
+            folder, references, yield_resources, repeat=0, roles=args.roles, strict=args.strict
+        )
+        for folder in folders
     )
     links = "\n".join('<link ref="prefetch" href="/{0}">'.format(i) for i in resources)
     params = vars(args)
@@ -203,13 +208,14 @@ def cgi_producer(args, stream=None):
     print("Content-type:text/event-stream", file=handler.terminal.stream)
     print(file=handler.terminal.stream)
 
-    folder, references = resolve_objects(args)
+    folders, references = resolve_objects(args)
     try:
-        yield from rehearse(
-            folder, references, handler,
-            int(args.repeat), int(args.roles),
-            args.strict
-        )
+        for folder in folders:
+            yield from rehearse(
+                folder, references, handler,
+                int(args.repeat), int(args.roles),
+                args.strict
+            )
     except Exception as e:
         log.error(e)
         raise
@@ -218,35 +224,40 @@ def cgi_producer(args, stream=None):
 
 def presenter(args):
     handler = TerminalHandler(Terminal(), args.db, args.pause, args.dwell)
-    folder, references = resolve_objects(args)
+    folders, references = resolve_objects(args)
     if args.log_level != logging.DEBUG:
         with handler.terminal.fullscreen():
+            for folder in folders:
+                yield from rehearse(
+                    folder, references, handler, args.repeat, args.roles, args.strict
+                )
+                input("Press return.")
+    else:
+        for folder in folders:
             yield from rehearse(
                 folder, references, handler, args.repeat, args.roles, args.strict
             )
-            input("Press return.")
-    else:
-        yield from rehearse(
-            folder, references, handler, args.repeat, args.roles, args.strict
-        )
 
 def main(args):
     log = logging.getLogger(log_setup(args))
     if args.web:
         os.chdir(sys.prefix)
         log.warning("Web mode: running scripts from directory {0}".format(os.getcwd()))
-        params = {
-            k: getattr(args, k)
+        params = [
+            (k, getattr(args, k))
             for k in (
                 "log_level", "log_path", "port",
-                "session", "locn", "references", "folder",
+                "session", "locn", "references",
                 "pause", "dwell", "repeat", "roles", "strict"
             )
-        }
+        ]
+        params.extend([("folder", i) for i in args.folder])
+        log.info(params)
         opts = urllib.parse.urlencode(params)
         url = "http://localhost:{0}/{1}/turberfield-rehearse?{2}".format(
             args.port, args.locn, opts
         )
+        log.info(url)
         webbrowser.open_new_tab(url)
         Handler = http.server.CGIHTTPRequestHandler
         Handler.cgi_directories = ["/{0}".format(args.locn)]
@@ -261,7 +272,10 @@ def main(args):
 
     elif "SERVER_NAME" in os.environ:
         form = cgi.FieldStorage()
-        params = {key: form[key].value if key in form else None for key in vars(args).keys()}
+        params = {
+            key: form.getlist(key) if key == "folder" else form[key].value if key in form else None
+            for key in vars(args).keys()
+        }
         args = argparse.Namespace(**params)
         log = logging.getLogger("turberfield")
         cgitb.enable()
@@ -289,10 +303,6 @@ def parser(description=__doc__):
                 )
             )
         )
-    )
-    rv.add_argument(
-        "--folder", default="",
-        help="Give an import path to a SceneScript folder."
     )
     rv.add_argument(
         "--web", action="store_true", default=False,
