@@ -43,7 +43,7 @@ Script viewer.
 
 Example:
 
-python -m turberfield.dialogue.viewer \
+python -m turberfield.dialogue.main \
 --sequence=turberfield.dialogue.sequences.battle_royal:folder \
 --ensemble=turberfield.dialogue.sequences.battle_royal.types:ensemble
 
