@@ -23,6 +23,8 @@ import logging
 import shutil
 import textwrap
 
+DEFAULT_PAUSE_SECS = 1.5
+DEFAULT_DWELL_SECS = 0.2
 
 def pause(shot, item, dwell=1.5, rate=1):
     return dwell + rate * 0.2 * item.text.count(" ")
@@ -75,3 +77,50 @@ def parser(descr=__doc__):
         "--log", default=None, dest="log_path",
         help="Set a file path for log output")
     return rv
+
+def add_common_options(parser):
+    parser.add_argument(
+        "--version", action="store_true", default=False,
+        help="Print the current version number")
+    parser.add_argument(
+        "-v", "--verbose", required=False,
+        action="store_const", dest="log_level",
+        const=logging.DEBUG, default=logging.INFO,
+        help="Increase the verbosity of output")
+    parser.add_argument(
+        "--log", default=None, dest="log_path",
+        help="Set a file path for log output")
+    return parser
+
+def add_casting_options(parser):
+    parser.add_argument(
+        "--references", default="",
+        help="Give an import path to a list of Python references."
+    )
+    parser.add_argument(
+        "--sequence", default="",
+        help="Give an import path to a sequence of SceneScript folders."
+    )
+    parser.add_argument(
+        "--roles", type=int, default=1,
+        help="The number of roles [1] permitted for each member of cast."
+    )
+    parser.add_argument(
+        "--strict", action="store_true", default=False,
+        help="Only perform fully-cast scene files.")
+    return parser
+
+def add_performance_options(parser):
+    parser.add_argument(
+        "--repeat", type=int, default=0,
+        help="Repeat the rehearsal [0] times."
+    )
+    parser.add_argument(
+        "--pause", type=float, default=DEFAULT_PAUSE_SECS,
+        help="Time in seconds [{0}] to pause after a line.".format(DEFAULT_PAUSE_SECS)
+    )
+    parser.add_argument(
+        "--dwell", type=float, default=DEFAULT_DWELL_SECS,
+        help="Time in seconds [{0}] to dwell on each word.".format(DEFAULT_DWELL_SECS)
+    )
+    return parser

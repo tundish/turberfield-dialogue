@@ -35,6 +35,9 @@ from blessings import Terminal
 import pkg_resources
 
 from turberfield.dialogue import __version__
+from turberfield.dialogue.cli import add_casting_options
+from turberfield.dialogue.cli import add_common_options
+from turberfield.dialogue.cli import add_performance_options
 from turberfield.dialogue.directives import Pathfinder
 from turberfield.dialogue.handlers import CGIHandler
 from turberfield.dialogue.handlers import TerminalHandler
@@ -277,47 +280,19 @@ def main(args):
     return 0
 
 def parser(description=__doc__):
-    rv =  argparse.ArgumentParser(
-        description,
-        fromfile_prefix_chars="@"
-    )
-    rv.add_argument(
-        "--version", action="store_true", default=False,
-        help="Print the current version number")
-    rv.add_argument(
-        "-v", "--verbose", required=False,
-        action="store_const", dest="log_level",
-        const=logging.DEBUG, default=logging.INFO,
-        help="Increase the verbosity of output")
-    rv.add_argument(
-        "--log", default=None, dest="log_path",
-        help="Set a file path for log output")
-    rv.add_argument(
-        "--references", default="",
-        help="Give an import path to a list of Python references."
+    rv = add_performance_options(
+        add_casting_options(
+            add_common_options(
+                argparse.ArgumentParser(
+                    description,
+                    fromfile_prefix_chars="@"
+                )
+            )
+        )
     )
     rv.add_argument(
         "--folder", default="",
         help="Give an import path to a SceneScript folder."
-    )
-    rv.add_argument(
-        "--repeat", type=int, default=0,
-        help="Repeat the rehearsal [0] times."
-    )
-    rv.add_argument(
-        "--roles", type=int, default=1,
-        help="The number of roles [1] permitted for each member of cast."
-    )
-    rv.add_argument(
-        "--strict", action="store_true", default=False,
-        help="Only perform fully-cast scene files.")
-    rv.add_argument(
-        "--pause", type=float, default=TerminalHandler.pause,
-        help="Time in seconds [{th.pause}] to pause after a line.".format(th=TerminalHandler)
-    )
-    rv.add_argument(
-        "--dwell", type=float, default=TerminalHandler.dwell,
-        help="Time in seconds [{th.dwell}] to dwell on each word.".format(th=TerminalHandler)
     )
     rv.add_argument(
         "--web", action="store_true", default=False,

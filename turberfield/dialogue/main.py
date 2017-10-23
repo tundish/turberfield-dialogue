@@ -31,6 +31,7 @@ from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.types import Player
 from turberfield.utils.misc import gather_installed
+from turberfield.utils.misc import config_parser
 from turberfield.utils.misc import log_setup
 
 __doc__ = """
@@ -166,6 +167,27 @@ def run():
         rv = main(args)
     sys.exit(rv)
 
+def run():
+    p = add_common_options(
+        add_async_options(
+            add_proactor_options(
+                argparse.ArgumentParser(
+                    __doc__,
+                    fromfile_prefix_chars="@"
+                )
+            )
+        )
+    )
+    args = p.parse_args()
+    if args.version:
+        sys.stderr.write(__version__ + "\n")
+        rv = 0
+    else:
+        rv = main(args)
+    sys.exit(0)
+
+if __name__ == "__main__":
+    run()
 
 if __name__ == "__main__":
     run()

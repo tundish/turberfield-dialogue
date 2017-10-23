@@ -26,8 +26,12 @@ import time
 import wave
 
 import pkg_resources
-import simpleaudio
+try:
+    import simpleaudio
+except ImportError:
+    simpleaudio = None
 
+import turberfield.dialogue.cli
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.schema import SchemaBase
@@ -52,8 +56,8 @@ class TerminalHandler:
     :param log: An optional log object.
 
     """
-    pause = 1.5
-    dwell = 0.2
+    pause = turberfield.dialogue.cli.DEFAULT_PAUSE_SECS
+    dwell = turberfield.dialogue.cli.DEFAULT_DWELL_SECS
 
     @staticmethod
     def handle_audio(obj, wait=False):
