@@ -44,39 +44,29 @@ Script formatter.
 
 Example:
 
-~/py3.5/bin/python -m turberfield.dialogue.main @turberfield/dialogue/sequences/battle/rehearse.cli
+~/py3.5/bin/python -m turberfield.dialogue.main \
+ @turberfield/dialogue/sequences/battle/rehearse.cli | \
+ ~/py3.5/bin/weasyprint -p - dialogue.pdf
 
 """
 
 class HTMLHandler:
 
-    template = textwrap.dedent("""
-        <!doctype html>
-        <html lang="en">
-        <head>
-        <meta charset="utf-8" />
-        <title>Rehearsal</title>
-        <style>
-        #line {{
-            font-family: "monospace";
-        }}
-        #line .persona::after {{
-            content: ": ";
-        }}
-        #event {{
-            font-style: italic;
-        }}
-        </style>
-        </head>
-        <body>
-        <h1></h1>
-        </body>
-        </html>
-    """).format().lstrip()
 
     @staticmethod
     def format_metadata(**kwargs):
-        return str(kwargs)
+        return "<dl>\n{0}\n</dl>".format(
+            "\n".join(
+                "<dt>{0}</dt>\n{1}\n".format(
+                    key.capitalize(),
+                    "\n".join(
+                        "<dd>{0}</dd>".format(val)
+                        for val in kwargs[key]
+                    )
+                ) 
+                for key in kwargs
+            )
+        )
 
     def __init__(self):
         self.speaker = None
@@ -85,8 +75,31 @@ class HTMLHandler:
         yield item
 
     def write(self, metadata, **kwargs):
-        metadata = self.format_metadata(**metadata)
-        print(metadata)
+        rv = textwrap.dedent("""
+            <!doctype html>
+            <html lang="en">
+            <head>
+            <meta charset="utf-8" />
+            <title>Rehearsal</title>
+            <style>
+            #line {{
+                font-family: "monospace";
+            }}
+            #line .persona::after {{
+                content: ": ";
+            }}
+            #event {{
+                font-style: italic;
+            }}
+            </style>
+            </head>
+            <body>
+            <h1></h1>
+            {metadata}
+            </body>
+            </html>
+        """).format(metadata=self.format_metadata(**metadata)).lstrip()
+        print(rv)
 
 def main(args):
     log = logging.getLogger(log_setup(args))
@@ -95,9 +108,7 @@ def main(args):
     handler = HTMLHandler()
     for i in range(args.repeat + 1):
         for item in performer.run(strict=args.strict, roles=args.roles):
-            for obj in handler(item):
-                print(obj)
-    print(performer.metadata)
+            list(handler(item))
     handler.write(metadata=performer.metadata)
 
 
