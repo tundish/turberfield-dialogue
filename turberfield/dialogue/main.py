@@ -31,6 +31,7 @@ from turberfield.dialogue.cli import add_common_options
 from turberfield.dialogue.cli import add_performance_options
 from turberfield.dialogue.cli import resolve_objects
 from turberfield.dialogue.directives import Pathfinder
+from turberfield.dialogue.handlers import TerminalHandler
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.performer import Performer
@@ -54,6 +55,31 @@ class HTMLHandler:
 
 
     @staticmethod
+    def format_dialogue(rows):
+        return """
+            <table>
+                  <thead>
+                    <tr>
+                      <th>Header content 1</th>
+                      <th>Header content 2</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Body content 1</td>
+                      <td>Body content 2</td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td>Footer content 1</td>
+                      <td>Footer content 2</td>
+                    </tr>
+                  </tfoot>
+                </table>
+        """
+
+    @staticmethod
     def format_metadata(**kwargs):
         return "<dl>\n{0}\n</dl>".format(
             "\n".join(
@@ -68,11 +94,35 @@ class HTMLHandler:
             )
         )
 
-    def __init__(self):
+    def __init__(self, dwell, pause):
+        self.dwell = dwell
+        self.pause = pause
         self.speaker = None
+        self.rows = []
 
-    def __call__(self, item):
-        yield item
+    def __call__(self, obj):
+        if isinstance(obj, Model.Line):
+            yield self.handle_line(obj)
+        elif isinstance(obj, SceneScript):
+            yield self.handle_scenescript(obj)
+
+    def handle_line(self, obj):
+        if obj.persona is None:
+            return 0
+
+        # TODO: Fix this properly in turberfield-dialogue
+        text = obj.text.replace("   ", " ").replace("  ", " ")
+        if self.speaker is not obj.persona:
+            self.speaker = obj.persona
+            try:
+                name = "{0.firstname} {0.surname}".format(self.speaker.name).strip()
+            except AttributeError:
+                name = None
+        else:
+            name = ""
+
+        span = self.pause + self.dwell * text.count(" ")
+        self.rows.append((name, text, span))
 
     def write(self, metadata, **kwargs):
         rv = textwrap.dedent("""
@@ -96,16 +146,21 @@ class HTMLHandler:
             <body>
             <h1></h1>
             {metadata}
+            {dialogue}
             </body>
             </html>
-        """).format(metadata=self.format_metadata(**metadata)).lstrip()
+        """).format(
+            metadata=self.format_metadata(**metadata),
+            dialogue=self.format_dialogue(self.rows)
+        ).lstrip()
         print(rv)
+        print(self.rows)
 
 def main(args):
     log = logging.getLogger(log_setup(args))
     folders, references = resolve_objects(args)
     performer = Performer(folders, references)
-    handler = HTMLHandler()
+    handler = HTMLHandler(dwell=args.dwell, pause=args.pause)
     for i in range(args.repeat + 1):
         for item in performer.run(strict=args.strict, roles=args.roles):
             list(handler(item))
