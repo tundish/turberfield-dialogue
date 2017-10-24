@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
+from collections import defaultdict
 
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
@@ -47,7 +48,7 @@ class Performer:
 
     def __init__(self, folders, ensemble):
         self.shots = []
-        self.metadata = []
+        self.metadata = defaultdict(list)
         self.init(folders, ensemble)
 
     def react(self, obj):
@@ -73,6 +74,6 @@ class Performer:
                         self.shots.append(shot._replace(items=script.fP))
                 if react:
                     self.react(item)
-            for data in model.metadata:
-                if data not in self.metadata:
-                    self.metadata.append(data)
+            for key, value in model.metadata:
+                if value not in self.metadata[key]:
+                    self.metadata[key].append(value)

@@ -74,11 +74,19 @@ class HTMLHandler:
         </html>
     """).format().lstrip()
 
+    @staticmethod
+    def format_metadata(**kwargs):
+        return str(kwargs)
+
+    def __init__(self):
+        self.speaker = None
+
     def __call__(self, item):
         yield item
 
-    def write(self, **kwargs):
-        pass
+    def write(self, metadata, **kwargs):
+        metadata = self.format_metadata(**metadata)
+        print(metadata)
 
 def main(args):
     log = logging.getLogger(log_setup(args))
