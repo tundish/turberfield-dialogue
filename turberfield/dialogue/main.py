@@ -22,6 +22,7 @@ import datetime
 import itertools
 import logging
 import logging.handlers
+import math
 import sys
 import textwrap
 import time
@@ -56,28 +57,38 @@ class HTMLHandler:
 
     @staticmethod
     def format_dialogue(rows):
-        return """
+        pad = int(math.log10(len(rows))) + 1
+        return textwrap.dedent("""
             <table>
-                  <thead>
-                    <tr>
-                      <th>Header content 1</th>
-                      <th>Header content 2</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Body content 1</td>
-                      <td>Body content 2</td>
-                    </tr>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td>Footer content 1</td>
-                      <td>Footer content 2</td>
-                    </tr>
-                  </tfoot>
-                </table>
-        """
+            <thead>
+            <tr>
+            <th>Character</th>
+            <th>Dialogue</th>
+            <th>Notes</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {body}
+            </tbody>
+
+            <tfoot>
+            <tr>
+            <td></td>
+            <td></td>
+            <td>{elapsed:.1f} sec</td>
+            </tr>
+            </tfoot>
+            </table>
+        """).format(
+            elapsed=sum(i[-1] for i in rows if i is not None),
+            body = "\n".join("<tr><td>{name}</td>\n<td>{text}</td>\n<td>{notes}</td>\n</tr>".format(
+                name=" ".join(i.capitalize() for i in name.split()),
+                text=text,
+                notes="{0:02.2f} sec. {1:0{2}}".format(span, n, pad)
+            ) for n, (name, text, span) in enumerate(rows))
+        )
+
 
     @staticmethod
     def format_metadata(**kwargs):
@@ -124,8 +135,8 @@ class HTMLHandler:
         span = self.pause + self.dwell * text.count(" ")
         self.rows.append((name, text, span))
 
-    def write(self, metadata, **kwargs):
-        rv = textwrap.dedent("""
+    def to_html(self, metadata, **kwargs):
+        return textwrap.dedent("""
             <!doctype html>
             <html lang="en">
             <head>
@@ -153,8 +164,6 @@ class HTMLHandler:
             metadata=self.format_metadata(**metadata),
             dialogue=self.format_dialogue(self.rows)
         ).lstrip()
-        print(rv)
-        print(self.rows)
 
 def main(args):
     log = logging.getLogger(log_setup(args))
@@ -164,7 +173,7 @@ def main(args):
     for i in range(args.repeat + 1):
         for item in performer.run(strict=args.strict, roles=args.roles):
             list(handler(item))
-    handler.write(metadata=performer.metadata)
+    print(handler.to_html(metadata=performer.metadata))
 
 
 def run():
