@@ -61,13 +61,15 @@ class HTMLHandler:
         pad = int(math.log10(sum(len(rows) for rows in shots.values()) + 1)) + 1
         return "\n".join(textwrap.dedent("""
             <section>
+            <table>
+            <caption>
             <dl>
             <dt>Scene</dt>
             <dd>{shot.scene}</dd>
             <dt>Shot</dt>
             <dd>{shot.name}</dd>
             <dl>
-            <table>
+            </caption>
             <thead>
             <tr>
             <th>Character</th>
