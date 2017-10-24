@@ -68,6 +68,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.shots = []
         self.speaker = None
         self.memory = None
+        self.metadata = []
 
     def __iter__(self):
         for shot in self.shots:
@@ -89,6 +90,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def visit_section(self, node):
         self.section_level += 1
+
+    def visit_field(self, node):
+        if self.section_level == 0:
+            data = tuple(i.rawsource.strip() for i in node.children)
+            if data not in self.metadata:
+                self.log.debug(data)
+                self.metadata.append(data)
 
     def depart_section(self, node):
         self.section_level -= 1

@@ -47,6 +47,7 @@ class Performer:
 
     def __init__(self, folders, ensemble):
         self.shots = []
+        self.metadata = []
         self.init(folders, ensemble)
 
     def react(self, obj):
@@ -72,3 +73,6 @@ class Performer:
                         self.shots.append(shot._replace(items=script.fP))
                 if react:
                     self.react(item)
+            for data in model.metadata:
+                if data not in self.metadata:
+                    self.metadata.append(data)

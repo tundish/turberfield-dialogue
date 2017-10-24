@@ -23,6 +23,7 @@ import itertools
 import logging
 import logging.handlers
 import sys
+import textwrap
 import time
 
 from turberfield.dialogue.cli import add_casting_options
@@ -39,27 +40,57 @@ from turberfield.utils.misc import config_parser
 from turberfield.utils.misc import log_setup
 
 __doc__ = """
-Script viewer.
+Script formatter.
 
 Example:
 
-python -m turberfield.dialogue.main \
---sequence=turberfield.dialogue.sequences.battle_royal:folder \
---ensemble=turberfield.dialogue.sequences.battle_royal.types:ensemble
+~/py3.5/bin/python -m turberfield.dialogue.main @turberfield/dialogue/sequences/battle/rehearse.cli
 
 """
 
-def handler(item):
-    yield item
+class HTMLHandler:
+
+    template = textwrap.dedent("""
+        <!doctype html>
+        <html lang="en">
+        <head>
+        <meta charset="utf-8" />
+        <title>Rehearsal</title>
+        <style>
+        #line {{
+            font-family: "monospace";
+        }}
+        #line .persona::after {{
+            content: ": ";
+        }}
+        #event {{
+            font-style: italic;
+        }}
+        </style>
+        </head>
+        <body>
+        <h1></h1>
+        </body>
+        </html>
+    """).format().lstrip()
+
+    def __call__(self, item):
+        yield item
+
+    def write(self, **kwargs):
+        pass
 
 def main(args):
     log = logging.getLogger(log_setup(args))
     folders, references = resolve_objects(args)
     performer = Performer(folders, references)
+    handler = HTMLHandler()
     for i in range(args.repeat + 1):
         for item in performer.run(strict=args.strict, roles=args.roles):
             for obj in handler(item):
                 print(obj)
+    print(performer.metadata)
+    handler.write(metadata=performer.metadata)
 
 
 def run():
