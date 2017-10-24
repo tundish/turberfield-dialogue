@@ -18,6 +18,7 @@
 
 
 import argparse
+from collections import OrderedDict
 import datetime
 import itertools
 import logging
@@ -56,9 +57,9 @@ class HTMLHandler:
 
 
     @staticmethod
-    def format_dialogue(rows):
-        pad = int(math.log10(len(rows))) + 1
-        return textwrap.dedent("""
+    def format_dialogue(shots):
+        pad = int(math.log10(sum(len(rows) for rows in shots.values()) + 1)) + 1
+        return "\n".join(textwrap.dedent("""
             <table>
             <thead>
             <tr>
@@ -85,9 +86,9 @@ class HTMLHandler:
             body = "\n".join("<tr><td>{name}</td>\n<td>{text}</td>\n<td>{notes}</td>\n</tr>".format(
                 name=" ".join(i.capitalize() for i in name.split()),
                 text=text,
-                notes="{0:02.2f} sec. {1:0{2}}".format(span, n, pad)
+                notes="{0:02.2f} sec. {1:0{2}}".format(span, n + 1, pad)
             ) for n, (name, text, span) in enumerate(rows))
-        )
+        ) for shot, rows in shots.items())
 
 
     @staticmethod
@@ -109,13 +110,20 @@ class HTMLHandler:
         self.dwell = dwell
         self.pause = pause
         self.speaker = None
-        self.rows = []
+        self.shot = None
+        self.shots = OrderedDict()
 
     def __call__(self, obj):
         if isinstance(obj, Model.Line):
             yield self.handle_line(obj)
-        elif isinstance(obj, SceneScript):
-            yield self.handle_scenescript(obj)
+        elif isinstance(obj, Model.Shot):
+            shot = obj._replace(items=None)
+            if shot != self.shot:
+                self.shots[shot] = []
+                self.shot = shot
+            yield obj
+        else:
+            yield obj
 
     def handle_line(self, obj):
         if obj.persona is None:
@@ -133,7 +141,8 @@ class HTMLHandler:
             name = ""
 
         span = self.pause + self.dwell * text.count(" ")
-        self.rows.append((name, text, span))
+        self.shots[self.shot].append((name, text, span))
+        return obj
 
     def to_html(self, metadata, **kwargs):
         return textwrap.dedent("""
@@ -162,7 +171,7 @@ class HTMLHandler:
             </html>
         """).format(
             metadata=self.format_metadata(**metadata),
-            dialogue=self.format_dialogue(self.rows)
+            dialogue=self.format_dialogue(self.shots)
         ).lstrip()
 
 def main(args):
@@ -173,6 +182,7 @@ def main(args):
     for i in range(args.repeat + 1):
         for item in performer.run(strict=args.strict, roles=args.roles):
             list(handler(item))
+    print(handler.shots, file=sys.stderr)
     print(handler.to_html(metadata=performer.metadata))
 
 
