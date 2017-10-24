@@ -60,6 +60,13 @@ class HTMLHandler:
     def format_dialogue(shots):
         pad = int(math.log10(sum(len(rows) for rows in shots.values()) + 1)) + 1
         return "\n".join(textwrap.dedent("""
+            <section>
+            <dl>
+            <dt>Scene</dt>
+            <dd>{shot.scene}</dd>
+            <dt>Shot</dt>
+            <dd>{shot.name}</dd>
+            <dl>
             <table>
             <thead>
             <tr>
@@ -81,7 +88,9 @@ class HTMLHandler:
             </tr>
             </tfoot>
             </table>
+            </section>
         """).format(
+            shot=shot,
             elapsed=sum(i[-1] for i in rows if i is not None),
             body = "\n".join("<tr><td>{name}</td>\n<td>{text}</td>\n<td>{notes}</td>\n</tr>".format(
                 name=" ".join(i.capitalize() for i in name.split()),
@@ -182,7 +191,6 @@ def main(args):
     for i in range(args.repeat + 1):
         for item in performer.run(strict=args.strict, roles=args.roles):
             list(handler(item))
-    print(handler.shots, file=sys.stderr)
     print(handler.to_html(metadata=performer.metadata))
 
 
