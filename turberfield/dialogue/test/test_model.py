@@ -62,6 +62,22 @@ class PropertyDirectiveTests(unittest.TestCase):
         self.assertEqual("shot", shot.name)
         self.assertEqual("Hi, I'm  William .", line.text)
 
+    def test_property_getter_fields(self):
+        content = textwrap.dedent("""
+            .. |VERSION| property:: turberfield.dialogue.__version__
+
+            :copyright: 2017
+            :version: |VERSION|
+
+            """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([self.personae[0]]))
+        model = script.run()
+        metadata = dict(model.metadata)
+        self.assertIn("copyright", metadata)
+        self.assertIn("version", metadata)
+        self.assertEqual(2, metadata["version"].count("."))
+
     def test_nickname_getter(self):
         content = textwrap.dedent(
             """

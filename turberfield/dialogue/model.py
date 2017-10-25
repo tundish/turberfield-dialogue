@@ -30,6 +30,7 @@ import sys
 
 from turberfield.dialogue.directives import Entity as EntityDirective
 from turberfield.dialogue.directives import FX as FXDirective
+from turberfield.dialogue.directives import Pathfinder
 from turberfield.dialogue.directives import Property as PropertyDirective
 from turberfield.dialogue.directives import Memory as MemoryDirective
 from turberfield.utils.assembly import Assembly
@@ -75,6 +76,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             for item in shot.items:
                 yield shot, item
 
+
     def get_entity(self, ref):
         return next((
             entity
@@ -91,9 +93,14 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def visit_section(self, node):
         self.section_level += 1
 
-    def visit_field(self, node):
+    def depart_field(self, node):
         if self.section_level == 0:
-            data = tuple(i.rawsource.strip() for i in node.children)
+            data = tuple(
+                ("\n".join([" ".join(getattr(p, "text", [p.rawsource])) for p in f.children])
+                if f.tagname == "field_body"
+                else f.rawsource).strip()
+                for f in node.children
+            )
             if data not in self.metadata:
                 self.log.debug(data)
                 self.metadata.append(data)
@@ -168,6 +175,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
                             val = operator.attrgetter(attr)(entity.persona)
                             text.append(val)
                             html.append('<span class="ref">{0}</span>'.format(val))
+                        else:
+                            obj = Pathfinder.string_import(tgt["arguments"][0], relative=False, sep=".")
+                            text.append(str(obj))
+                            html.append(str(obj))
             elif isinstance(c, docutils.nodes.strong):
                 text.append(c.rawsource)
                 html.append('<strong class="text">{0}</strong>'.format(c.rawsource.replace("*", "")))
@@ -178,6 +189,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
         if self.memory:
             self.shots[-1].items.append(self.memory._replace(text=" ".join(text), html="\n".join(html)))
             self.memory = None
+        elif self.section_level == 0:
+            node.text = text
+            node.html = html
         elif (text or html) and self.section_level == 2:
             self.shots[-1].items.append(Model.Line(self.speaker, " ".join(text), "\n".join(html)))
 

@@ -40,9 +40,11 @@ class Pathfinder:
         bits = arg.split(".")
         if sep is None:
             index = min(n for n, i in enumerate(bits) if i and i[0].isupper())
-        else:
+        elif sep != ".":
             index = min(n for n, i in enumerate(bits) if i and sep in i) + 1
             bits = arg.replace(sep, ".").split(".")
+        else:
+            index = -1
 
         start = 1 if relative else 0
         modName = ".".join(bits[start:index])
