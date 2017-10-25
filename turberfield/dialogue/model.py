@@ -171,14 +171,14 @@ class Model(docutils.nodes.GenericNodeVisitor):
                     if isinstance(tgt, PropertyDirective.Getter):
                         ref, dot, attr = tgt["arguments"][0].partition(".")
                         entity = self.get_entity(ref)
-                        if getattr(entity, "persona", None) is not None:
-                            val = operator.attrgetter(attr)(entity.persona)
-                            text.append(val)
-                            html.append('<span class="ref">{0}</span>'.format(val))
-                        else:
+                        if entity is None:
                             obj = Pathfinder.string_import(tgt["arguments"][0], relative=False, sep=".")
                             text.append(str(obj))
                             html.append(str(obj))
+                        elif getattr(entity, "persona", None) is not None:
+                            val = operator.attrgetter(attr)(entity.persona)
+                            text.append(val)
+                            html.append('<span class="ref">{0}</span>'.format(val))
             elif isinstance(c, docutils.nodes.strong):
                 text.append(c.rawsource)
                 html.append('<strong class="text">{0}</strong>'.format(c.rawsource.replace("*", "")))
