@@ -6,6 +6,12 @@
 Change Log
 ::::::::::
 
+0.11.0
+======
+
+* Field lists at the document level are available via the  `metadata` attribute of the model.
+* Substitution references to Python values are properly resolved in the bodies of field lists.
+
 0.10.1
 ======
 
