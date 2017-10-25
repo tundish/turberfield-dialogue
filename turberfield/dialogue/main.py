@@ -92,7 +92,7 @@ class HTMLHandler:
             </table>
             </section>
         """).format(
-            shot=shot,
+            shot=shot._replace(name=shot.name.capitalize(), scene=shot.scene.capitalize()),
             elapsed=sum(i[-1] for i in rows if i is not None),
             body = "\n".join("<tr><td>{name}</td>\n<td>{text}</td>\n<td>{notes}</td>\n</tr>".format(
                 name=" ".join(i.capitalize() for i in name.split()),
@@ -163,15 +163,21 @@ class HTMLHandler:
             <meta charset="utf-8" />
             <title>Rehearsal</title>
             <style>
-            #line {{
-                font-family: "monospace";
+            dt {{
+            clear: left;
+            color: olive;
+            float: left;
+            font-family: "monospace";
+            padding-right: 0.3em;
+            text-align: right;
+            text-transform:capitalize;
+            width: 100px;
             }}
-            #line .persona::after {{
-                content: ": ";
+
+            dt:after {{
+            content: ":";
             }}
-            #event {{
-                font-style: italic;
-            }}
+
             </style>
             </head>
             <body>
