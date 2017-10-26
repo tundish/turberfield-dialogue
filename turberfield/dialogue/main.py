@@ -156,6 +156,8 @@ class HTMLHandler:
         return obj
 
     def to_html(self, metadata, **kwargs):
+        # https://www.w3.org/TR/css3-page/
+        # https://developer.mozilla.org/en-US/docs/Web/CSS/%40page
         return textwrap.dedent("""
             <!doctype html>
             <html lang="en">
