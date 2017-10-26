@@ -95,7 +95,7 @@ class HTMLHandler:
             shot=shot._replace(name=shot.name.capitalize(), scene=shot.scene.capitalize()),
             elapsed=sum(i[-1] for i in rows if i is not None),
             body = "\n".join("<tr><td>{name}</td>\n<td>{text}</td>\n<td>{notes}</td>\n</tr>".format(
-                name=" ".join(i.capitalize() for i in name.split()),
+                name=" ".join(i.capitalize() for i in name.split()) if name else "",
                 text=text,
                 notes="{0:02.2f} sec. {1:0{2}}".format(span, n + 1, pad)
             ) for n, (name, text, span) in enumerate(rows))
@@ -196,9 +196,10 @@ def main(args):
     folders, references = resolve_objects(args)
     performer = Performer(folders, references)
     handler = HTMLHandler(dwell=args.dwell, pause=args.pause)
-    for i in range(args.repeat + 1):
-        for item in performer.run(strict=args.strict, roles=args.roles):
-            list(handler(item))
+    while not performer.stopped:
+        for i in range(args.repeat + 1):
+            for item in performer.run(strict=args.strict, roles=args.roles):
+                list(handler(item))
     print(handler.to_html(metadata=performer.metadata))
 
 
