@@ -214,6 +214,7 @@ def run():
         )
     )
     args = p.parse_args()
+    print(args, file=sys.stderr)
     if args.version:
         sys.stderr.write(__version__ + "\n")
         rv = 0

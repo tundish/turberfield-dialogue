@@ -75,7 +75,7 @@ def add_casting_options(parser):
         help="Give an import path to a list of Python references."
     )
     parser.add_argument(
-        "--folder", nargs="+",
+        "--folder", action="append",
         help="Give a sequence of import paths to SceneScript folders."
     )
     parser.add_argument(
