@@ -163,6 +163,17 @@ class HTMLHandler:
             <meta charset="utf-8" />
             <title>Rehearsal</title>
             <style>
+            @page {{
+                margin: 3cm 2cm;
+                padding-left: 1.5cm;
+                @top-center {{
+                    content: counter(page) " / " counter(pages);
+                    width: 100%;
+                    vertical-align: bottom;
+                    border-bottom: .5pt solid;
+                    margin-bottom: .7cm;
+                }}
+            }}
             dt {{
             clear: left;
             color: olive;
