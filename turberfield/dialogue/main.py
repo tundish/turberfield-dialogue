@@ -163,9 +163,10 @@ class HTMLHandler:
             <html lang="en">
             <head>
             <meta charset="utf-8" />
-            <title>Rehearsal</title>
+            <title>Script</title>
             <style>
             @page {{
+                border: 1px solid;
                 margin: 3cm 2cm;
                 padding-left: 1.5cm;
                 @top-center {{
@@ -228,7 +229,6 @@ def run():
         )
     )
     args = p.parse_args()
-    print(args, file=sys.stderr)
     if args.version:
         sys.stderr.write(__version__ + "\n")
         rv = 0
