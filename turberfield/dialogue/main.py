@@ -166,8 +166,9 @@ class HTMLHandler:
             <title>Script</title>
             <style>
             @page {{
+                size: A4;
                 border: 1px solid;
-                margin: 3cm 2cm;
+                margin: 15mm 5mm 10mm 20mm;
                 padding-left: 1.5cm;
                 @top-center {{
                     content: counter(page) " / " counter(pages);
