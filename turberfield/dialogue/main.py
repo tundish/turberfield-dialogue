@@ -179,7 +179,6 @@ class HTMLHandler:
             <style>
             @page {{
                 size: A4;
-                border: 1px solid;
                 margin: 15mm 5mm 10mm 20mm;
                 @top-center {{
                     content: counter(page) " / " counter(pages);
@@ -214,11 +213,13 @@ class HTMLHandler:
             }}
 
             td.cue {{
-              border-top: #d5d5d5 dotted 1px;
+              border-top: #c5c5c5 dotted 1px;
             }}
 
             tr td:nth-child(1) {{
               padding: 0.5em;
+              padding-left: 0.1em;
+              text-align: left;
             }}
 
             tr td:nth-child(2) {{
@@ -227,18 +228,18 @@ class HTMLHandler:
 
             tr td:nth-child(3) {{
               font-size: 0.7em;
-              margin-top: 0;
               padding: 0 0.5em 0.5em 0.5em;
               text-align: left;
+              vertical-align: top;
             }}
 
             table caption {{
-                break-after: avoid;
+              break-after: avoid;
             }}
 
             td {{
-                padding: 1em 0 1em 0;
-                font-family: monospace;
+              padding: 1em 0 1em 0;
+              font-family: monospace;
             }}
 
             dt {{
