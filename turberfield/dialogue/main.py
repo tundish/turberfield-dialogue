@@ -178,6 +178,12 @@ class HTMLHandler:
                     margin-bottom: .7cm;
                 }}
             }}
+            table {{
+                break-before: page;
+            }}
+            table caption {{
+                break-after: avoid;
+            }}
             dt {{
             clear: left;
             color: olive;
