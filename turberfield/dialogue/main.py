@@ -99,9 +99,9 @@ class HTMLHandler:
             pause=pause,
             duration=sum(i[-1] for i in rows if i is not None),
             body = "\n".join('<tr><td class="{cue}">{name}</td>\n<td>{text}</td>\n<td>{notes}</td>\n</tr>'.format(
-                cue="cue" if name else "",
+                cue="cue" if name != "" else "",
                 name=" ".join(i.capitalize() for i in name.split()) if name else "",
-                text=text,
+                text="<strong>{0}</strong>".format(text) if name is None else text,
                 notes="{0:02.2f} sec. {1:0{2}}".format(span, n + 1, pad)
             ) for n, (name, text, span) in enumerate(rows))
         ) for i, (shot, rows) in enumerate(shots.items()))
@@ -115,7 +115,7 @@ class HTMLHandler:
                     key.capitalize(),
                     "\n".join(
                         "<dd>{0}</dd>".format(val)
-                        for val in kwargs[key]
+                        for val in sorted(kwargs[key])
                     )
                 ) 
                 for key in kwargs
