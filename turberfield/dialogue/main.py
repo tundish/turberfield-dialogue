@@ -102,7 +102,7 @@ class HTMLHandler:
                 cue="cue" if name != "" else "",
                 name=" ".join(i.capitalize() for i in name.split()) if name else "",
                 text="<strong>{0}</strong>".format(text) if name is None else text,
-                notes="{0:02.2f} sec. {1:0{2}}".format(span, n + 1, pad)
+                notes="{0:02.2f}s. {1:0{2}}".format(span, n + 1, pad)
             ) for n, (name, text, span) in enumerate(rows))
         ) for i, (shot, rows) in enumerate(shots.items()))
 
@@ -118,7 +118,7 @@ class HTMLHandler:
                         for val in sorted(kwargs[key])
                     )
                 ) 
-                for key in kwargs
+                for key in sorted(kwargs.keys())
             )
         )
 
