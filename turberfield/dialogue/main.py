@@ -57,7 +57,7 @@ class HTMLHandler:
 
 
     @staticmethod
-    def format_dialogue(shots):
+    def format_dialogue(shots, dwell, pause):
         pad = int(math.log10(sum(len(rows) for rows in shots.values()) + 1)) + 1
         return "\n".join(textwrap.dedent("""
             <section id="{id}">
@@ -68,6 +68,8 @@ class HTMLHandler:
             <dd>{shot.scene}</dd>
             <dt>Shot</dt>
             <dd>{shot.name}</dd>
+            <dt>Duration</dt>
+            <dd>{duration:.1f} s</dd>
             <dl>
             </caption>
             <thead>
@@ -81,20 +83,21 @@ class HTMLHandler:
             <tbody>
             {body}
             </tbody>
-
-            <tfoot>
-            <tr>
-            <td></td>
-            <td></td>
-            <td>{elapsed:.1f} sec</td>
-            </tr>
-            </tfoot>
+             <tfoot>
+             <tr>
+             <td></td>
+             <td></td>
+             <td><dl><dt>dwell</dt><dd>{dwell}</dd><dt>pause</dt><dd>{pause}</dd></dl></td>
+             </tr>
+             </tfoot>
             </table>
             </section>
         """).format(
             id=i + 1,
             shot=shot._replace(name=shot.name.capitalize(), scene=shot.scene.capitalize()),
-            elapsed=sum(i[-1] for i in rows if i is not None),
+            dwell=dwell,
+            pause=pause,
+            duration=sum(i[-1] for i in rows if i is not None),
             body = "\n".join('<tr><td class="{cue}">{name}</td>\n<td>{text}</td>\n<td>{notes}</td>\n</tr>'.format(
                 cue="cue" if name else "",
                 name=" ".join(i.capitalize() for i in name.split()) if name else "",
@@ -269,7 +272,7 @@ class HTMLHandler:
         """).format(
             metadata=self.format_metadata(**metadata),
             summary=self.format_summary(self.shots),
-            dialogue=self.format_dialogue(self.shots)
+            dialogue=self.format_dialogue(self.shots, self.dwell, self.pause)
         ).lstrip()
 
 def main(args):
