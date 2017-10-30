@@ -73,7 +73,7 @@ class HTMLHandler:
             <thead>
             <tr>
             <th>Character</th>
-            <th>Dialogue</th>
+            <th></th>
             <th>Notes</th>
             </tr>
             </thead>
@@ -95,7 +95,8 @@ class HTMLHandler:
             id=i + 1,
             shot=shot._replace(name=shot.name.capitalize(), scene=shot.scene.capitalize()),
             elapsed=sum(i[-1] for i in rows if i is not None),
-            body = "\n".join("<tr><td>{name}</td>\n<td>{text}</td>\n<td>{notes}</td>\n</tr>".format(
+            body = "\n".join('<tr><td class="{cue}">{name}</td>\n<td>{text}</td>\n<td>{notes}</td>\n</tr>'.format(
+                cue="cue" if name else "",
                 name=" ".join(i.capitalize() for i in name.split()) if name else "",
                 text=text,
                 notes="{0:02.2f} sec. {1:0{2}}".format(span, n + 1, pad)
@@ -180,7 +181,6 @@ class HTMLHandler:
                 size: A4;
                 border: 1px solid;
                 margin: 15mm 5mm 10mm 20mm;
-                padding-left: 1.5cm;
                 @top-center {{
                     content: counter(page) " / " counter(pages);
                     width: 100%;
@@ -189,12 +189,58 @@ class HTMLHandler:
                     margin-bottom: .7cm;
                 }}
             }}
+            html {{
+                font-family: 'helvetica neue', helvetica, arial, sans-serif;
+            }}
             section {{
                 break-before: page;
             }}
+            table {{
+              table-layout: fixed;
+              width: 100%;
+              border-collapse: collapse;
+            }}
+
+            thead th:nth-child(1) {{
+              width: 10%;
+            }}
+
+            thead th:nth-child(2) {{
+              width: 65%;
+            }}
+
+            thead th:nth-child(3) {{
+              width: 20%;
+            }}
+
+            td.cue {{
+              border-top: #d5d5d5 dotted 1px;
+            }}
+
+            tr td:nth-child(1) {{
+              padding: 0.5em;
+            }}
+
+            tr td:nth-child(2) {{
+              padding: 1.5em;
+            }}
+
+            tr td:nth-child(3) {{
+              font-size: 0.7em;
+              margin-top: 0;
+              padding: 0 0.5em 0.5em 0.5em;
+              text-align: left;
+            }}
+
             table caption {{
                 break-after: avoid;
             }}
+
+            td {{
+                padding: 1em 0 1em 0;
+                font-family: monospace;
+            }}
+
             dt {{
             clear: left;
             color: olive;
