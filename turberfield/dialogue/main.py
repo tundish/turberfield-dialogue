@@ -60,7 +60,7 @@ class HTMLHandler:
     def format_dialogue(shots):
         pad = int(math.log10(sum(len(rows) for rows in shots.values()) + 1)) + 1
         return "\n".join(textwrap.dedent("""
-            <section>
+            <section id="{id}">
             <table>
             <caption>
             <dl>
@@ -92,6 +92,7 @@ class HTMLHandler:
             </table>
             </section>
         """).format(
+            id=i + 1,
             shot=shot._replace(name=shot.name.capitalize(), scene=shot.scene.capitalize()),
             elapsed=sum(i[-1] for i in rows if i is not None),
             body = "\n".join("<tr><td>{name}</td>\n<td>{text}</td>\n<td>{notes}</td>\n</tr>".format(
@@ -99,7 +100,7 @@ class HTMLHandler:
                 text=text,
                 notes="{0:02.2f} sec. {1:0{2}}".format(span, n + 1, pad)
             ) for n, (name, text, span) in enumerate(rows))
-        ) for shot, rows in shots.items())
+        ) for i, (shot, rows) in enumerate(shots.items()))
 
 
     @staticmethod
@@ -115,6 +116,16 @@ class HTMLHandler:
                 ) 
                 for key in kwargs
             )
+        )
+
+    @staticmethod
+    def format_summary(shots):
+        return "<ol>\n{0}\n</ol>".format(
+            "\n".join(
+                '<li><a href="#{0}">{1}</a></li>'.format(
+                    i + 1,
+                    shot.name.capitalize(),
+            ) for i, (shot, rows) in enumerate(shots.items()))
         )
 
     def __init__(self, dwell, pause):
@@ -178,7 +189,7 @@ class HTMLHandler:
                     margin-bottom: .7cm;
                 }}
             }}
-            table {{
+            section {{
                 break-before: page;
             }}
             table caption {{
@@ -202,13 +213,15 @@ class HTMLHandler:
             </style>
             </head>
             <body>
-            <h1></h1>
+            <h1>Script</h1>
             {metadata}
+            {summary}
             {dialogue}
             </body>
             </html>
         """).format(
             metadata=self.format_metadata(**metadata),
+            summary=self.format_summary(self.shots),
             dialogue=self.format_dialogue(self.shots)
         ).lstrip()
 
