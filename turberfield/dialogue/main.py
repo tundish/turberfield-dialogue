@@ -19,27 +19,19 @@
 
 import argparse
 from collections import OrderedDict
-import datetime
-import itertools
 import logging
 import logging.handlers
 import math
 import sys
 import textwrap
-import time
 
+from turberfield.dialogue import __version__
 from turberfield.dialogue.cli import add_casting_options
 from turberfield.dialogue.cli import add_common_options
 from turberfield.dialogue.cli import add_performance_options
 from turberfield.dialogue.cli import resolve_objects
-from turberfield.dialogue.directives import Pathfinder
-from turberfield.dialogue.handlers import TerminalHandler
 from turberfield.dialogue.model import Model
-from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.performer import Performer
-from turberfield.dialogue.types import Player
-from turberfield.utils.misc import gather_installed
-from turberfield.utils.misc import config_parser
 from turberfield.utils.misc import log_setup
 
 __doc__ = """
@@ -285,11 +277,18 @@ def main(args):
     folders, references = resolve_objects(args)
     performer = Performer(folders, references)
     handler = HTMLHandler(dwell=args.dwell, pause=args.pause)
+    items = []
+    log.info("Reading sources...")
     while not performer.stopped:
+        if performer.script:
+            log.info("Script {0.fP}".format(performer.script))
         for i in range(args.repeat + 1):
             for item in performer.run(strict=args.strict, roles=args.roles):
-                list(handler(item))
+                items.extend(list(handler(item)))
+    log.info("Writing {0} items to output...".format(len(items)))
     print(handler.to_html(metadata=performer.metadata))
+    log.info("Done.")
+    return 0
 
 
 def run():
@@ -309,7 +308,7 @@ def run():
         rv = 0
     else:
         rv = main(args)
-    sys.exit(0)
+    sys.exit(rv)
 
 if __name__ == "__main__":
     run()

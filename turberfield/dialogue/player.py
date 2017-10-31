@@ -16,19 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
-import datetime
 import itertools
 import logging
 
-from turberfield.dialogue.directives import Pathfinder
 from turberfield.dialogue.model import SceneScript
-from turberfield.dialogue.schema import SchemaBase
 
 def run_through(script, ensemble, roles=1, strict=False):
     """
     :py:class:`turberfield.dialogue.model.SceneScript`.
     """
-    then = datetime.datetime.now()
     with script as dialogue:
         selection = dialogue.select(ensemble, roles=roles)
         if not any(selection.values()) or strict and not all(selection.values()):

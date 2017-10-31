@@ -21,7 +21,6 @@ import argparse
 from collections import defaultdict
 from collections import namedtuple
 from collections import OrderedDict
-import itertools
 import logging
 import operator
 import os.path

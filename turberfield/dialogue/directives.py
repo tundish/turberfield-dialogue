@@ -17,7 +17,6 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from collections import namedtuple
 import importlib.util
 import os.path
 import sys

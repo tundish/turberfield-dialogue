@@ -42,14 +42,13 @@ class Performer:
     def stopped(self):
         return not bool(self.next(self.folders, self.ensemble))
 
-    def init(self, folders, ensemble):
+    def __init__(self, folders, ensemble):
         self.folders = folders
         self.ensemble = ensemble
-
-    def __init__(self, folders, ensemble):
-        self.shots = []
         self.metadata = defaultdict(list)
-        self.init(folders, ensemble)
+        self.shots = []
+        self.script = None
+        self.selection = None
 
     def react(self, obj):
         if isinstance(obj, Model.Property):
@@ -59,19 +58,19 @@ class Performer:
 
     def run(self, react=True, strict=True, roles=1):
         try:
-            script, selection = self.next(
+            self.script, self.selection = self.next(
                 self.folders, self.ensemble,
                 strict=strict, roles=roles
             )
         except TypeError:
             raise GeneratorExit
-        with script as dialogue:
-            model = dialogue.cast(selection).run()
+        with self.script as dialogue:
+            model = dialogue.cast(self.selection).run()
             for shot, item in model:
                 yield shot
                 yield item
                 if not self.shots or self.shots[-1][:2] != shot[:2]:
-                        self.shots.append(shot._replace(items=script.fP))
+                        self.shots.append(shot._replace(items=self.script.fP))
                 if react:
                     self.react(item)
             for key, value in model.metadata:

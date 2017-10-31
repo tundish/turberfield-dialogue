@@ -18,10 +18,7 @@
 
 
 import argparse
-from collections import OrderedDict
 import logging
-import shutil
-import textwrap
 
 from turberfield.dialogue.directives import Pathfinder
 

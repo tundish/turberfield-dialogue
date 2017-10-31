@@ -21,12 +21,10 @@ import datetime
 import enum
 import logging
 import sqlite3
-import uuid
 
 from turberfield.utils.db import Insertion
 from turberfield.utils.db import SQLOperation
 from turberfield.utils.db import Table
-from turberfield.utils.misc import gather_installed
 
 
 class SchemaBase:
@@ -78,7 +76,7 @@ class SchemaBase:
         for state in states:
             for defn in state:
                 try:
-                    cur = Insertion(
+                    Insertion(
                         cls.tables["state"],
                         data={
                             "class": defn.__objclass__.__name__,
@@ -97,7 +95,7 @@ class SchemaBase:
 
         for entity in entities:
             try:
-                cur = Insertion(
+                Insertion(
                     cls.tables["entity"],
                     data={
                         "name": getattr(

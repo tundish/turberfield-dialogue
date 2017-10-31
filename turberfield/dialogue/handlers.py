@@ -175,7 +175,7 @@ class TerminalHandler:
         """
         if obj.subject is not None:
             with self.con as db:
-                rv = SchemaBase.note(
+                SchemaBase.note(
                     db,
                     obj.subject,
                     obj.state,

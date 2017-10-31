@@ -11,6 +11,7 @@ class Animal(Stateful, Persona):
 class Tool(Stateful, Persona):
     pass
 
+
 references = [
     Animal(name="Itchy").set_state(1),
     Animal(name="Scratchy").set_state(1),

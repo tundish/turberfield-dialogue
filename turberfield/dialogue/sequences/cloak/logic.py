@@ -66,7 +66,7 @@ ensemble = [
 def parse_command(cmd):
     try:
         return cmd.strip().split(" ")[-1][0].lower()
-    except:
+    except (AttributeError, IndexError):
         return None
 
 

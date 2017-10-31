@@ -35,7 +35,7 @@ ensemble = [
 def parse_command(cmd):
     try:
         return cmd.strip().split(" ")[-1][0].lower()
-    except:
+    except (AttributeError, IndexError):
         return None
 
 
@@ -86,6 +86,7 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
         cloak.set_state(1)
 
     return folder
+
 
 references = ensemble + [Location]
 
