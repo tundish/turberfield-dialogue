@@ -91,6 +91,7 @@ setup(
     tests_require=[],
     entry_points={
         "console_scripts": [
+            "turberfield-dialogue = turberfield.dialogue.main:run",
             "turberfield-rehearse = turberfield.dialogue.viewer:run",
         ],
     },
