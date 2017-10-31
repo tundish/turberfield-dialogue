@@ -87,7 +87,7 @@ def add_casting_options(parser):
 def add_performance_options(parser):
     parser.add_argument(
         "--repeat", type=int, default=0,
-        help="Repeat the rehearsal [0] times."
+        help="Repeat the performance [0] times."
     )
     parser.add_argument(
         "--pause", type=float, default=DEFAULT_PAUSE_SECS,

@@ -6,6 +6,16 @@
 CLI Reference
 :::::::::::::
 
+turberfield-dialogue
+====================
+
+.. automodule:: turberfield.dialogue.main
+
+.. argparse::
+   :ref: turberfield.dialogue.main.parser
+   :prog: turberfield-dialogue
+   :nodefault:
+
 turberfield-rehearse
 ====================
 

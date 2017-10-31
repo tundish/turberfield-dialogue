@@ -35,13 +35,26 @@ from turberfield.dialogue.performer import Performer
 from turberfield.utils.misc import log_setup
 
 __doc__ = """
-Script formatter.
+A utility to generate a printable screenplay.
 
-Example:
+The output is HTML. It is styled to be an input to WeasyPrint_, so you can ultimately
+create a script in PDF format.
 
-~/py3.5/bin/python -m turberfield.dialogue.main \
- @turberfield/dialogue/sequences/battle/rehearse.cli | \
- ~/py3.5/bin/weasyprint -p - dialogue.pdf
+There are command line options to change the timing of dialogue, to repeat the action,
+and to control the number of roles an entity may take.
+
+Example (see the episode `Blue Monday`_)::
+
+    turberfield-dialogue    --references=bluemonday78.logic:references
+                            --folder=bluemonday78.logic:ray
+                            --folder=bluemonday78.logic:justin
+                            --folder=bluemonday78.logic:local
+                            --roles=1
+                            --repeat=0
+                            --strict
+
+.. _Blue Monday: https://github.com/tundish/blue_monday_78
+.. _WeasyPrint: http://weasyprint.org/
 
 """
 
@@ -291,8 +304,8 @@ def main(args):
     return 0
 
 
-def run():
-    p = add_performance_options(
+def parser():
+    return add_performance_options(
         add_casting_options(
             add_common_options(
                 argparse.ArgumentParser(
@@ -302,6 +315,9 @@ def run():
             )
         )
     )
+
+def run():
+    p = parser()
     args = p.parse_args()
     if args.version:
         sys.stderr.write(__version__ + "\n")
