@@ -43,6 +43,7 @@ from turberfield.dialogue.handlers import CGIHandler
 from turberfield.dialogue.handlers import TerminalHandler
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.player import rehearse
+from turberfield.utils.assembly import Assembly
 from turberfield.utils.misc import log_setup
 
 DFLT_PORT = 8080
@@ -76,6 +77,8 @@ def yield_resources(obj, *args, **kwargs):
 
 def cgi_consumer(args):
     folders, references = resolve_objects(args)
+    Assembly.register(*(i if isinstance(i, type) else type(i) for i in references))
+
     resources = [
         resource
         for folder in folders
@@ -200,6 +203,7 @@ def cgi_producer(args, stream=None):
     print(file=handler.terminal.stream)
 
     folders, references = resolve_objects(args)
+    Assembly.register(*(i if isinstance(i, type) else type(i) for i in references))
     log.info(folders)
     try:
         for folder in folders:
@@ -218,6 +222,8 @@ def cgi_producer(args, stream=None):
 def presenter(args):
     handler = TerminalHandler(Terminal(), args.db, args.pause, args.dwell)
     folders, references = resolve_objects(args)
+    Assembly.register(*(i if isinstance(i, type) else type(i) for i in references))
+
     if args.log_level != logging.DEBUG:
         with handler.terminal.fullscreen():
             for folder in folders:
