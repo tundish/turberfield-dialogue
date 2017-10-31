@@ -38,11 +38,27 @@ class Performer:
         else:
             return None
 
+    @staticmethod
+    def react(obj):
+        if isinstance(obj, Model.Property):
+            if obj.object is not None:
+                setattr(obj.object, obj.attr, obj.val)
+        return obj
+
     @property
     def stopped(self):
+        """Is `True` when none of the folders can be cast, `False` otherwise."""
         return not bool(self.next(self.folders, self.ensemble))
 
     def __init__(self, folders, ensemble):
+        """An object which can select actors for a scene and run a performance.
+
+        :param folders: A sequence of
+            :py:class:`~turberfield.dialogue.model.SceneScript.Folder` objects.
+        :param ensemble: A sequence of Python objects.
+
+        """
+
         self.folders = folders
         self.ensemble = ensemble
         self.metadata = defaultdict(list)
@@ -50,13 +66,18 @@ class Performer:
         self.script = None
         self.selection = None
 
-    def react(self, obj):
-        if isinstance(obj, Model.Property):
-            if obj.object is not None:
-                setattr(obj.object, obj.attr, obj.val)
-        return obj
-
     def run(self, react=True, strict=True, roles=1):
+        """Select a cast and perform the next scene.
+
+        :param bool react: If `True`, then Property directives are executed
+            at the point they are encountered. Pass `False` to skip them
+            so they can be enacted later on.
+        :param bool strict: Only fully-cast scripts to be performed.
+        :param int roles: Maximum number of roles permitted each character.
+
+        This method is a generator. It yields events from the performance.
+
+        """
         try:
             self.script, self.selection = self.next(
                 self.folders, self.ensemble,

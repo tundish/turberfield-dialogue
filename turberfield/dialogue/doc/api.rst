@@ -4,11 +4,15 @@
 API Reference
 :::::::::::::
 
-This API gives you a `simple function`_ for creating a performance from
+This API gives you a `simple function`_ which will run a rehearsal of
 a :py:class:`~turberfield.dialogue.model.SceneScript.Folder`
 of Turberfield dialogue. You can modify how this performance is presented
 in your game by customising or replacing a handler_ function which processes
 events_ from the scene script files.
+
+If you need to integrate with a game event loop, then create a
+:py:class:`~turberfield.dialogue.performer.Performer` object instead.
+This separates event generation from sequencing.
 
 The `scene scripts`_ themselves also have an API, allowing you to interact with
 the process by which entities are selected and cast to roles.
@@ -126,6 +130,13 @@ Handler
 
 .. autoclass:: turberfield.dialogue.handlers.TerminalHandler
    :members: handle_audio, handle_interlude, handle_line, handle_memory, handle_property, handle_scene, handle_scenescript, handle_shot
+   :member-order: bysource
+
+Performer
+=========
+
+.. autoclass:: turberfield.dialogue.performer.Performer
+   :members: __init__, next, run, stopped
    :member-order: bysource
 
 Player
