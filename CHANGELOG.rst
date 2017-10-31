@@ -12,7 +12,8 @@ Change Log
 * Field lists at the document level are available via the  `metadata` attribute of the model.
 * Substitution references to Python values are properly resolved in the bodies of field lists.
 * There is a new utility, `turberfield-dialogue` for producing a printable screenplay.
-* The viewer module now registers all references with `turberfield.utils.assembly.Assembly`. 
+* The viewer module now registers all references with `turberfield.utils.assembly.Assembly`.
+* The `Performer` class is now part of the public API.
 
 0.10.1
 ======
