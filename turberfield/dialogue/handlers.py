@@ -64,7 +64,7 @@ class TerminalHandler:
         """Handle an audio event.
 
         This function plays an audio file.
-        Currently only `.wav` format is supported. 
+        Currently only `.wav` format is supported.
 
         :param obj: An :py:class:`~turberfield.dialogue.model.Model.Audio`
             object.
@@ -190,7 +190,7 @@ class TerminalHandler:
 
         This function will set an attribute on an object if the event requires
         it.
- 
+
         :param obj: A :py:class:`~turberfield.dialogue.model.Model.Property`
             object.
         :return: The supplied object.

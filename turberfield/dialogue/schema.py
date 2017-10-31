@@ -33,41 +33,41 @@ class SchemaBase:
 
     tables = OrderedDict(
         (table.name, table) for table in [
-        Table(
-            "entity",
-            cols=[
-              Table.Column("id", int, True, False, False, None, None),
-              Table.Column("name", str, False, False, True, None, None),
-            ]
-        ),
-        Table(
-            "state",
-            cols=[
-              Table.Column("id", int, True, False, False, None, None),
-              Table.Column("class", str, False, False, True, None, None),
-              Table.Column("name", str, False, False, True, None, None),
-              Table.Column("value", int, False, False, False, None, None),
-            ]
-        ),
-        Table(
-            "touch",
-            cols=[
-              Table.Column("id", int, True, False, False, None, None),
-              Table.Column("ts", datetime.datetime, False, False, False, None, None),
-              Table.Column("sbjct", int, False, False, False, None, "entity"),
-              Table.Column("state", int, False, False, False, None, "state"),
-              Table.Column("objct", int, False, True, False, None, "entity"),
-            ]
-        ),
-        Table(
-            "note",
-            cols=[
-              Table.Column("touch", int, False, False, False, None, "touch"),
-              Table.Column("text", str, False, True, False, None, None),
-              Table.Column("html", str, False, True, False, None, None),
-            ]
-        )
-    ])
+            Table(
+                "entity",
+                cols=[
+                    Table.Column("id", int, True, False, False, None, None),
+                    Table.Column("name", str, False, False, True, None, None),
+                ]
+            ),
+            Table(
+                "state",
+                cols=[
+                    Table.Column("id", int, True, False, False, None, None),
+                    Table.Column("class", str, False, False, True, None, None),
+                    Table.Column("name", str, False, False, True, None, None),
+                    Table.Column("value", int, False, False, False, None, None),
+                ]
+            ),
+            Table(
+                "touch",
+                cols=[
+                    Table.Column("id", int, True, False, False, None, None),
+                    Table.Column("ts", datetime.datetime, False, False, False, None, None),
+                    Table.Column("sbjct", int, False, False, False, None, "entity"),
+                    Table.Column("state", int, False, False, False, None, "state"),
+                    Table.Column("objct", int, False, True, False, None, "entity"),
+                ]
+            ),
+            Table(
+                "note",
+                cols=[
+                    Table.Column("touch", int, False, False, False, None, "touch"),
+                    Table.Column("text", str, False, True, False, None, None),
+                    Table.Column("html", str, False, True, False, None, None),
+                ]
+            )]
+    )
 
     @classmethod
     def populate(cls, con, items, log=None):
@@ -101,12 +101,12 @@ class SchemaBase:
                     cls.tables["entity"],
                     data={
                         "name": getattr(
-                                    entity, "_name", getattr(
-                                        entity,
-                                        "name",
-                                        entity.__class__.__name__
-                                    )
-                                )
+                            entity, "_name", getattr(
+                                entity,
+                                "name",
+                                entity.__class__.__name__
+                            )
+                        )
                     }
                 ).run(con)
             except sqlite3.IntegrityError as e:
@@ -126,8 +126,7 @@ class SchemaBase:
             if isinstance(item, enum.Enum):
                 cur.execute(
                     "select * from state where class=:cls and name=:name",
-                    {
-                     "cls": item.__objclass__.__name__, "name": item.name}
+                    {"cls": item.__objclass__.__name__, "name": item.name}
                 )
                 yield cur.fetchone()
 

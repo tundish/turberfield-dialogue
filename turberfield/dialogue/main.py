@@ -98,12 +98,15 @@ class HTMLHandler:
             dwell=dwell,
             pause=pause,
             duration=sum(i[-1] for i in rows if i is not None),
-            body = "\n".join('<tr><td class="{cue}">{name}</td>\n<td>{text}</td>\n<td>{notes}</td>\n</tr>'.format(
-                cue="cue" if name != "" else "",
-                name=" ".join(i.capitalize() for i in name.split()) if name else "",
-                text="<strong>{0}</strong>".format(text) if name is None else text,
-                notes="{0:02.2f}s. {1:0{2}}".format(span, n + 1, pad)
-            ) for n, (name, text, span) in enumerate(rows))
+            body="\n".join(
+                ('<tr><td class="{cue}">{name}</td>\n'
+                 '<td>{text}</td>\n<td>{notes}</td>\n</tr>').format(
+                    cue="cue" if name != "" else "",
+                    name=" ".join(i.capitalize() for i in name.split()) if name else "",
+                    text="<strong>{0}</strong>".format(text) if name is None else text,
+                    notes="{0:02.2f}s. {1:0{2}}".format(span, n + 1, pad)
+                ) for n, (name, text, span) in enumerate(rows)
+            )
         ) for i, (shot, rows) in enumerate(shots.items()))
 
 
@@ -117,7 +120,7 @@ class HTMLHandler:
                         "<dd>{0}</dd>".format(val)
                         for val in sorted(kwargs[key])
                     )
-                ) 
+                )
                 for key in sorted(kwargs.keys())
             )
         )
@@ -128,8 +131,10 @@ class HTMLHandler:
             "\n".join(
                 '<li><a href="#{0}">{1}</a></li>'.format(
                     i + 1,
-                    shot.name.capitalize(),
-            ) for i, (shot, rows) in enumerate(shots.items()))
+                    shot.name.capitalize()
+                )
+                for i, (shot, rows) in enumerate(shots.items())
+            )
         )
 
     def __init__(self, dwell, pause):

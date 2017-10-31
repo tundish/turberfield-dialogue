@@ -148,7 +148,7 @@ def cgi_consumer(args):
                 speaker.innerHTML += " ";
                 speaker.innerHTML += obj.persona.name.surname;
                 line.innerHTML = obj.html;
-                
+
             }}, false);
 
             source.addEventListener("memory", function(e) {{
@@ -321,7 +321,7 @@ def parser(description=__doc__):
 def run():
     p = parser()
     args = p.parse_args()
- 
+
     rv = 0
     if args.version:
         sys.stdout.write(__version__)

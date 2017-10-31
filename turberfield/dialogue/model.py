@@ -63,7 +63,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 FXDirective.Cue
             )
         )
-        self.log = logging.getLogger("turberfield.dialogue.{0}".format(os.path.basename(self.fP)))
+        self.log = logging.getLogger(
+            "turberfield.dialogue.{0}".format(os.path.basename(self.fP))
+        )
         self.section_level = 0
         self.scenes = []
         self.shots = []
@@ -97,8 +99,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         if self.section_level == 0:
             data = tuple(
                 ("\n".join([" ".join(getattr(p, "text", [p.rawsource])) for p in f.children])
-                if f.tagname == "field_body"
-                else f.rawsource).strip()
+                 if f.tagname == "field_body" else f.rawsource).strip()
                 for f in node.children
             )
             if data not in self.metadata:
@@ -119,7 +120,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
         state = node.string_import(node["arguments"][0])
         subj = self.get_entity(node["options"].get("subject"))
         obj = self.get_entity(node["options"].get("object"))
-        self.memory = Model.Memory(subj and subj.persona, obj and obj.persona, state, None, None)
+        self.memory = Model.Memory(
+            subj and subj.persona, obj and obj.persona, state, None, None
+        )
 
     def visit_Cue(self, node):
 
@@ -165,14 +168,20 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 try:
                     defn = self.document.substitution_defs[c.attributes["refname"]]
                 except KeyError:
-                    self.log.warning("Bad substitution ref before line {0}: {1.rawsource}".format(node.line, c))
+                    self.log.warning(
+                        "Bad substitution ref before line {0}: {1.rawsource}".format(
+                            node.line, c
+                        )
+                    )
                     raise
                 for tgt in defn.children:
                     if isinstance(tgt, PropertyDirective.Getter):
                         ref, dot, attr = tgt["arguments"][0].partition(".")
                         entity = self.get_entity(ref)
                         if entity is None:
-                            obj = Pathfinder.string_import(tgt["arguments"][0], relative=False, sep=".")
+                            obj = Pathfinder.string_import(
+                                tgt["arguments"][0], relative=False, sep="."
+                            )
                             text.append(str(obj))
                             html.append(str(obj))
                         elif getattr(entity, "persona", None) is not None:
@@ -181,19 +190,25 @@ class Model(docutils.nodes.GenericNodeVisitor):
                             html.append('<span class="ref">{0}</span>'.format(val))
             elif isinstance(c, docutils.nodes.strong):
                 text.append(c.rawsource)
-                html.append('<strong class="text">{0}</strong>'.format(c.rawsource.replace("*", "")))
+                html.append(
+                    '<strong class="text">{0}</strong>'.format(c.rawsource.replace("*", ""))
+                )
             elif isinstance(c, docutils.nodes.Text):
                 text.append(c.rawsource)
                 html.append('<span class="text">{0}</span>'.format(c.rawsource))
 
         if self.memory:
-            self.shots[-1].items.append(self.memory._replace(text=" ".join(text), html="\n".join(html)))
+            self.shots[-1].items.append(
+                self.memory._replace(text=" ".join(text), html="\n".join(html))
+            )
             self.memory = None
         elif self.section_level == 0:
             node.text = text
             node.html = html
         elif (text or html) and self.section_level == 2:
-            self.shots[-1].items.append(Model.Line(self.speaker, " ".join(text), "\n".join(html)))
+            self.shots[-1].items.append(
+                Model.Line(self.speaker, " ".join(text), "\n".join(html))
+            )
 
     def visit_citation_reference(self, node):
         entity = self.get_entity(node.attributes["refname"])
@@ -214,9 +229,9 @@ class SceneScript:
 
     log = logging.getLogger("turberfield.dialogue.model.scenescript")
 
-    settings=argparse.Namespace(
+    settings = argparse.Namespace(
         character_level_inline_markup=False,
-        debug = False, error_encoding="utf-8",
+        debug=False, error_encoding="utf-8",
         error_encoding_error_handler="backslashreplace", halt_level=4,
         auto_id_prefix="", id_prefix="", language_code="en",
         pep_references=1,
@@ -335,23 +350,20 @@ class SceneScript:
             types = tuple(filter(
                 None,
                 (e.string_import(t, relative)
-                 for t in e["options"].get("types", [])
-                )
+                 for t in e["options"].get("types", []))
             ))
             states = tuple(filter(
                 None,
                 (int(t) if t.isdigit() else e.string_import(t, relative)
-                 for t in e["options"].get("states", [])
-                )
+                 for t in e["options"].get("states", []))
             ))
             otherRoles = {i.lower() for i in e["options"].get("roles", [])}
             typ = types or object
             persona = next(
                 (i for i in pool
-                 if isinstance(i, typ)
-                 and all(str(i.get_state(type(s))).startswith(str(s)) for s in states)
-                 and (performing[i].issubset(otherRoles) or not otherRoles)
-                ),
+                 if isinstance(i, typ) and
+                 all(str(i.get_state(type(s))).startswith(str(s)) for s in states) and
+                 (performing[i].issubset(otherRoles) or not otherRoles)),
                 None
             )
             rv[e] = persona

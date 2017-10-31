@@ -36,7 +36,7 @@ class Tool(Stateful, Persona):
     pass
 
 def ensemble():
-    return  [
+    return [
         Animal(name="Itchy").set_state(1),
         Animal(name="Scratchy").set_state(1),
         Tool(name="Ol' Rusty Chopper").set_state(1),
