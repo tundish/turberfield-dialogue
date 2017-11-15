@@ -23,6 +23,7 @@
 
 import sys
 import os
+from unittest.mock import MagicMock
 
 try:
     import pkg_resources
@@ -34,6 +35,16 @@ except ImportError:
     sys.path.append(os.path.abspath(os.path.join("..", "..", "..")))
 
 import turberfield.dialogue
+
+class Mock(MagicMock):
+    """Mock out libraries not supported by Read the Docs build environment."""
+
+    @classmethod
+    def __getattr__(cls, name):
+        return MagicMock()
+
+MOCK_MODULES = ["simpleaudio"]
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 def setup(app):
     app.add_stylesheet("turberfield.css")
