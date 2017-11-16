@@ -5,6 +5,8 @@
 game development. This particular package is `turberfield-dialogue`. It helps you
 create dramatic dialogue or screenplay.
 
+You can read the full `documentation online`_.
+
 Roadmap
 :::::::
 
@@ -43,3 +45,4 @@ In either event, please visit the project's `issue tracker`_.
 
 .. _GNU General Public License: http://www.gnu.org/licenses/gpl.html
 .. _issue tracker: https://github.com/tundish/turberfield-dialogue/issues
+.. _documentation online: https://turberfield-dialogue.readthedocs.io
