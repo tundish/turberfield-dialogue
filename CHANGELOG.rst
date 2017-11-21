@@ -6,6 +6,12 @@
 Change Log
 ::::::::::
 
+0.12.0
+======
+
+* Refactored the `rehearse` function so it uses `Performer`. Its first argument is now
+  documented as a sequence. Legacy behaviour is preserved.
+
 0.11.0
 ======
 
