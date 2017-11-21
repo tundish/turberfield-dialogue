@@ -17,7 +17,6 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections.abc import Callable
-import itertools
 import logging
 
 from turberfield.dialogue.model import SceneScript
@@ -66,22 +65,23 @@ def rehearse(
     if isinstance(folders, SceneScript.Folder):
         folders = [folders]
 
+    yield from handler(references, loop=loop)
+
     performer = Performer(folders, references)
     while True:
-        yield from handler(references, loop=loop)
-
         folder, index, script, selection, interlude = performer.next(
             folders, references, strict=strict, roles=roles
         )
         yield from handler(script, loop=loop)
 
-        for item in performer.run(strict=strict, roles=roles):
+        for item in performer.run(react=False, strict=strict, roles=roles):
             yield from handler(item, loop=loop)
 
         if isinstance(interlude, Callable):
             branch = next(handler(
                 interlude, folder, index, references, branches, loop=loop
             ), None)
+            yield branch
             if branch is None:
                 return
             elif branch != folder:
