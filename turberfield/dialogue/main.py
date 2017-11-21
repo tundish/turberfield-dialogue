@@ -293,9 +293,9 @@ def main(args):
     items = []
     log.info("Reading sources...")
     while not performer.stopped:
-        if performer.script:
-            log.info("Script {0.fP}".format(performer.script))
         for i in range(args.repeat + 1):
+            if performer.script:
+                log.info("Script {0.fP}".format(performer.script))
             for item in performer.run(strict=args.strict, roles=args.roles):
                 items.extend(list(handler(item)))
     log.info("Writing {0} items to output...".format(len(items)))

@@ -16,10 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
+from collections.abc import Callable
 import itertools
 import logging
 
 from turberfield.dialogue.model import SceneScript
+from turberfield.dialogue.performer import Performer
+
 
 def run_through(script, ensemble, roles=1, strict=False):
     """
@@ -40,7 +43,7 @@ def run_through(script, ensemble, roles=1, strict=False):
             yield from model
 
 def rehearse(
-    folder, references, handler,
+    folders, references, handler,
     repeat=0, roles=1, strict=False,
     branches=None,
     loop=None
@@ -60,34 +63,31 @@ def rehearse(
     This function is a generator. It yields events from the performance.
 
     """
+    if isinstance(folders, SceneScript.Folder):
+        folders = [folders]
 
-    yield from handler(references, loop=loop)
-
+    performer = Performer(folders, references)
     while True:
-        branch = None
-        scripts = list(SceneScript.scripts(**folder._asdict()))
+        yield from handler(references, loop=loop)
 
-        for index, script, interlude in zip(itertools.count(), scripts, folder.interludes):
-            yield from handler(script, loop=loop)
-            seq = list(run_through(script, references, roles=roles, strict=strict))
-            for shot, item in seq:
-                yield from handler(shot, loop=loop)
-                yield from handler(item, loop=loop)
+        folder, index, script, selection, interlude = performer.next(
+            folders, references, strict=strict, roles=roles
+        )
+        yield from handler(script, loop=loop)
 
-            if seq:
-                branch = next(handler(
-                    interlude, folder, index, references, branches, loop=loop
-                ), None)
-                if branch is None:
-                    return
-                elif branch != folder:
-                    break
-        else:
+        for item in performer.run(strict=strict, roles=roles):
+            yield from handler(item, loop=loop)
+
+        if isinstance(interlude, Callable):
+            branch = next(handler(
+                interlude, folder, index, references, branches, loop=loop
+            ), None)
             if branch is None:
-                break
-            elif not repeat:
-                break
-            else:
-                repeat -= 1
+                return
+            elif branch != folder:
+                performer = Performer([branch], references)
 
-        folder = branch
+        if not repeat:
+            break
+        else:
+            repeat -= 1

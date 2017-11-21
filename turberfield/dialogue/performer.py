@@ -17,6 +17,7 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import defaultdict
+import itertools
 
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
@@ -28,13 +29,13 @@ class Performer:
     def next(folders, ensemble, strict=True, roles=1):
         for folder in folders:
             scripts = SceneScript.scripts(**folder._asdict())
-            for script in scripts:
+            for index, script, interlude in zip(itertools.count(), scripts, folder.interludes):
                 with script as dialogue:
                     selection = dialogue.select(ensemble, roles=roles)
                     if all(selection.values()):
-                        return (script, selection)
+                        return (folder, index, script, selection, interlude)
                     elif not strict and any(selection.values()):
-                        return (script, selection)
+                        return (folder, index, script, selection, interlude)
         else:
             return None
 
@@ -79,7 +80,7 @@ class Performer:
 
         """
         try:
-            self.script, self.selection = self.next(
+            folder, index, self.script, self.selection, interlude = self.next(
                 self.folders, self.ensemble,
                 strict=strict, roles=roles
             )
@@ -94,6 +95,7 @@ class Performer:
                         self.shots.append(shot._replace(items=self.script.fP))
                 if react:
                     self.react(item)
+
             for key, value in model.metadata:
                 if value not in self.metadata[key]:
                     self.metadata[key].append(value)
