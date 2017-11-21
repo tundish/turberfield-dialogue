@@ -49,7 +49,8 @@ def rehearse(
 ):
     """Cast a set of objects into a sequence of scene scripts. Deliver the performance.
 
-    :param folder: A :py:class:`turberfield.dialogue.model.SceneScript.Folder`.
+    :param folders: A sequence of
+        :py:class:`turberfield.dialogue.model.SceneScript.Folder` objects.
     :param references: A sequence of Python objects.
     :param handler: A callable object. This will be invoked with every event from the
                     performance.

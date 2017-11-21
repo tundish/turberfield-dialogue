@@ -79,13 +79,9 @@ def cgi_consumer(args):
     folders, references = resolve_objects(args)
     Assembly.register(*(i if isinstance(i, type) else type(i) for i in references))
 
-    resources = [
-        resource
-        for folder in folders
-        for resource in rehearse(
-            folder, references, yield_resources, repeat=0, roles=args.roles, strict=args.strict
-        )
-    ]
+    resources = list(rehearse(
+        folders, references, yield_resources, repeat=0, roles=args.roles, strict=args.strict
+    ))
     links = "\n".join('<link ref="prefetch" href="/{0}">'.format(i) for i in resources)
     params = [(k, v) for k, v in vars(args).items() if k not in ("folder", "session")]
     params.append(("session", uuid.uuid4().hex))
@@ -206,13 +202,11 @@ def cgi_producer(args, stream=None):
     Assembly.register(*(i if isinstance(i, type) else type(i) for i in references))
     log.info(folders)
     try:
-        for folder in folders:
-            log.info(folder)
-            yield from rehearse(
-                folder, references, handler,
-                int(args.repeat), int(args.roles),
-                args.strict
-            )
+        yield from rehearse(
+            folders, references, handler,
+            int(args.repeat), int(args.roles),
+            args.strict
+        )
     except Exception as e:
         log.error(e)
         raise
