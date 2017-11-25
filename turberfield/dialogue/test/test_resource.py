@@ -52,6 +52,8 @@ class ResourceTests(unittest.TestCase):
         def addition(self, item):
             self.resources.append(item)
 
+    Resource = namedtuple("Resource", ["label", "path"])
+
     def test_session(self):
         s = ResourceTests.Session()
         self.assertTrue(s.host)
@@ -69,8 +71,13 @@ class ResourceTests(unittest.TestCase):
     def test_resource_activation(self):
 
         references = [
+            ResourceTests.Resource(p, "phrases/{0}".format(n + 1)
+            for n, p in enumerate(ResourceTests.phrases)
+        ]
+        references.extend([
             Player(name="Mr Tim Peters"),
             Player(name="tundish"),
-        ]
+            ResourceTests.Session()
+        ])
 
-        self.assertTrue(references)
+        self.fail(references)
