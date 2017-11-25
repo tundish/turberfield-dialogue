@@ -24,17 +24,19 @@ import textwrap
 import unittest
 import uuid
 
+from turberfield.dialogue.model import SceneScript
+from turberfield.dialogue.types import Persona
 from turberfield.dialogue.types import Player
 
 class ResourceTests(unittest.TestCase):
     phrases = [
-        "Explicit is better than implicit.",
-        "Simple is better than complex.",
-        "Complex is better than complicated.",
-        "Readability counts.",
-        "Special cases aren't special enough to break the rules.",
-        "Practicality beats purity.",
-        "Errors should never pass silently."
+        "Explicit is better than implicit",
+        "Simple is better than complex",
+        "Complex is better than complicated",
+        "Readability counts",
+        "Special cases aren't special enough to break the rules",
+        "Practicality beats purity",
+        "Errors should never pass silently"
     ]
 
     class Session:
@@ -52,6 +54,10 @@ class ResourceTests(unittest.TestCase):
         def addition(self, item):
             self.resources.append(item)
 
+    class Guru(Persona):
+        pass
+
+    Player = Player
     Resource = namedtuple("Resource", ["label", "path"])
 
     def test_session(self):
@@ -71,13 +77,46 @@ class ResourceTests(unittest.TestCase):
     def test_resource_activation(self):
 
         references = [
-            ResourceTests.Resource(p, "phrases/{0}".format(n + 1)
+            ResourceTests.Resource(p, "phrases/{0}".format(n + 1))
             for n, p in enumerate(ResourceTests.phrases)
         ]
         references.extend([
-            Player(name="Mr Tim Peters"),
+            ResourceTests.Guru(name="Mr Tim Peters"),
             Player(name="tundish"),
             ResourceTests.Session()
         ])
 
-        self.fail(references)
+        content = textwrap.dedent("""
+            .. entity:: GURU
+               :types: turberfield.dialogue.test.test_resource.ResourceTests.Guru
+
+            .. entity:: STUDENT
+               :types: turberfield.dialogue.test.test_resource.ResourceTests.Player
+
+            .. entity:: PHRASE
+               :types: turberfield.dialogue.test.test_resource.ResourceTests.Resource
+
+            .. role:: raw-html(raw)
+               :format: html
+
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            [GURU]_
+
+                Remember, |S_FIRSTNAME|. |PHRASE_LABEL|.
+
+            .. |S_FIRSTNAME| property:: STUDENT.name.firstname
+            .. |PHRASE_LABEL| property:: PHRASE.label
+            .. |PHRASE_PATH| property:: PHRASE.path
+            """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        cast = script.select(references, relative=True)
+        self.assertTrue(all(cast.values()))
+        script.cast(cast)
+        model = script.run()
+        items = list(model)
+        print(*items, sep="\n\n")
