@@ -148,6 +148,54 @@ class PropertyDirectiveTests(unittest.TestCase):
         self.assertEqual("state", p.attr)
         self.assertEqual(3, p.val)
 
+    def test_property_setter_bad_substitution(self):
+        content = textwrap.dedent(
+            """
+            .. entity:: P
+
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            .. property:: P.state |S_ID|
+
+            """)
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([ensemble[0]]))
+        model = script.run()
+        p = next(l for s, l in model if isinstance(l, Model.Property))
+        self.assertEqual("state", p.attr)
+        self.assertEqual(None, p.val)
+
+    def test_property_setter_good_substitution(self):
+        content = textwrap.dedent(
+            """
+            .. entity:: P
+            .. entity:: S
+
+            .. |S_ID| property:: S.id.int
+
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            .. property:: P.state |S_ID|
+
+            """)
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([ensemble[0]]))
+        model = script.run()
+        p = next(l for s, l in model if isinstance(l, Model.Property))
+        self.assertEqual("state", p.attr)
+        self.assertIsInstance(p.val, int)
+
+
 class FXDirectiveTests(unittest.TestCase):
 
     def test_fx(self):

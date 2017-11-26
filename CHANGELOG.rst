@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.13.0
+======
+
+* DataObject `id` attribute is now a `uuid.UUID` object.
+
 0.12.0
 ======
 

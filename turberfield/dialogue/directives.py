@@ -31,8 +31,12 @@ class Pathfinder:
 
     @staticmethod
     def string_import(arg, relative=False, sep=None):
+        arg = arg.strip()
+        if not arg:
+            return None
+
         try:
-            return int(arg.strip())
+            return int(arg)
         except ValueError:
             pass
 

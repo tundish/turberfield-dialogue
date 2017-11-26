@@ -85,6 +85,21 @@ class Model(docutils.nodes.GenericNodeVisitor):
             if ref and ref.lower() in entity.attributes["names"]),
             None)
 
+    def substitute_property(self, matchObj):
+        try:
+            defn = self.document.substitution_defs[matchObj.group(1)]
+            getter = next(
+                i for i in defn.children
+                if isinstance(i, PropertyDirective.Getter)
+            )
+            ref, dot, attr = getter["arguments"][0].partition(".")
+            entity = self.get_entity(ref)
+            rv = operator.attrgetter(attr)(entity.persona)
+        except (AttributeError, KeyError, IndexError, StopIteration) as e:
+            self.log.warning("Argument has bad substitution ref {0}".format(matchObj.group(1)))
+            rv = ""
+        return rv
+
     def default_visit(self, node):
         self.log.debug(node)
 
@@ -111,7 +126,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def visit_Setter(self, node):
         ref, attr = node["arguments"][0].split(".")
         entity = self.get_entity(ref)
-        s = node["arguments"][1]
+        s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
         val = int(s) if s.isdigit() else node.string_import(s)
         self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
 
@@ -124,24 +139,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
         )
 
     def visit_Cue(self, node):
-
-        def substitute_property(matchObj):
-            try:
-                defn = self.document.substitution_defs[matchObj.group(1)]
-                getter = next(
-                    i for i in defn.children
-                    if isinstance(i, PropertyDirective.Getter)
-                )
-                ref, dot, attr = getter["arguments"][0].partition(".")
-                entity = self.get_entity(ref)
-                rv = operator.attrgetter(attr)(entity.persona)
-            except (AttributeError, KeyError, IndexError, StopIteration) as e:
-                self.log.warning("Cue has bad substitution ref {0}".format(matchObj.group(1)))
-                rv = ""
-            return rv
-
         pkg = node["arguments"][0]
-        rsrc = re.compile("\|(\w+)\|").sub(substitute_property, node["arguments"][1])
+        rsrc = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
         offset = node["options"].get("offset")
         duration = node["options"].get("duration")
         loop = node["options"].get("loop")

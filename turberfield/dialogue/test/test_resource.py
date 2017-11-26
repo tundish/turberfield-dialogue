@@ -90,6 +90,9 @@ class ResourceTests(unittest.TestCase):
             .. entity:: GURU
                :types: turberfield.dialogue.test.test_resource.ResourceTests.Guru
 
+            .. entity:: SESSION
+               :types: turberfield.dialogue.test.test_resource.ResourceTests.Session
+
             .. entity:: STUDENT
                :types: turberfield.dialogue.test.test_resource.ResourceTests.Player
 
@@ -109,7 +112,16 @@ class ResourceTests(unittest.TestCase):
 
                 Remember, |S_FIRSTNAME|. |PHRASE_LABEL|.
 
+            .. property:: SESSION.addition |PHRASE_ID|
+
+            .. memory:: 1
+               :subject: SESSION
+               :object: PHRASE
+
+               |S_FIRSTNAME| learned phrase |PHRASE_PATH| (|PHRASE_LABEL|).
+
             .. |S_FIRSTNAME| property:: STUDENT.name.firstname
+            .. |PHRASE_ID| property:: 1
             .. |PHRASE_LABEL| property:: PHRASE.label
             .. |PHRASE_PATH| property:: PHRASE.path
             """)

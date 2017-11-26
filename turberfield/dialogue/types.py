@@ -52,7 +52,7 @@ class Vocabulary(EnumFactory, enum.Enum):
 class DataObject:
 
     def __init__(self, id=None, **kwargs):
-        self.id = id or uuid.uuid4().hex
+        self.id = id or uuid.uuid4()
         for k, v in kwargs.items():
             setattr(self, k, v)
         super().__init__()
