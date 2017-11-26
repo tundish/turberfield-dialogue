@@ -189,9 +189,9 @@ class PropertyDirectiveTests(unittest.TestCase):
             """)
         ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
         script = SceneScript("inline", doc=SceneScript.read(content))
-        script.cast(script.select([ensemble[0]]))
+        script.cast(script.select(ensemble))
         model = script.run()
-        p = next(l for s, l in model if isinstance(l, Model.Property))
+        p = [l for s, l in model if isinstance(l, Model.Property)][-1]
         self.assertEqual("state", p.attr)
         self.assertIsInstance(p.val, int)
 
