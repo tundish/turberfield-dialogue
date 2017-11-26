@@ -126,7 +126,6 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def visit_Setter(self, node):
         ref, attr = node["arguments"][0].split(".")
         entity = self.get_entity(ref)
-        print("args: ", node["arguments"])
         s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
         val = int(s) if s.isdigit() else node.string_import(s)
         self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))

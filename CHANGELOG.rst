@@ -10,6 +10,7 @@ Change Log
 ======
 
 * DataObject `id` attribute is now a `uuid.UUID` object.
+* The second argument to a property directive may be a substitution reference
 
 0.12.0
 ======

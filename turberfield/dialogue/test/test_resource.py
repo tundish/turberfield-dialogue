@@ -24,6 +24,7 @@ import textwrap
 import unittest
 import uuid
 
+from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.types import Persona
 from turberfield.dialogue.types import Player
@@ -58,7 +59,7 @@ class ResourceTests(unittest.TestCase):
         pass
 
     Player = Player
-    Resource = namedtuple("Resource", ["label", "path"])
+    Resource = namedtuple("Resource", ["id", "label", "path"])
 
     def test_session(self):
         s = ResourceTests.Session()
@@ -77,7 +78,7 @@ class ResourceTests(unittest.TestCase):
     def test_resource_activation(self):
 
         references = [
-            ResourceTests.Resource(p, "phrases/{0}".format(n + 1))
+            ResourceTests.Resource(uuid.uuid4(), p, "phrases/{0}".format(n + 1))
             for n, p in enumerate(ResourceTests.phrases)
         ]
         references.extend([
@@ -112,8 +113,10 @@ class ResourceTests(unittest.TestCase):
 
                 Remember, |S_FIRSTNAME|. |PHRASE_LABEL|.
 
+            .. Property attributes accept only integers and importable objects
             .. property:: SESSION.addition |PHRASE_ID|
 
+            .. Use a Memory directive to generate an event containing formatted strings
             .. memory:: 1
                :subject: SESSION
                :object: PHRASE
@@ -121,7 +124,7 @@ class ResourceTests(unittest.TestCase):
                |S_FIRSTNAME| learned phrase |PHRASE_PATH| (|PHRASE_LABEL|).
 
             .. |S_FIRSTNAME| property:: STUDENT.name.firstname
-            .. |PHRASE_ID| property:: 1
+            .. |PHRASE_ID| property:: PHRASE.id.int
             .. |PHRASE_LABEL| property:: PHRASE.label
             .. |PHRASE_PATH| property:: PHRASE.path
             """)
@@ -131,4 +134,5 @@ class ResourceTests(unittest.TestCase):
         script.cast(cast)
         model = script.run()
         items = list(model)
-        print(*items, sep="\n\n")
+        p = [l for s, l in model if isinstance(l, Model.Property)][-1]
+        self.assertEqual(references[0].id.int, p.val)
