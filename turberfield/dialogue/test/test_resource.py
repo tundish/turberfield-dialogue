@@ -30,6 +30,15 @@ from turberfield.dialogue.types import Persona
 from turberfield.dialogue.types import Player
 
 class ResourceTests(unittest.TestCase):
+    """This code provides an example of scripted resource discovery.
+
+    In other words, you can write dialogue which introduces a player to
+    a new ability or game artifact. You can make that resource available
+    to the player from within the dialogue and at the point specified in the
+    story.
+
+    """
+
     phrases = [
         "Explicit is better than implicit",
         "Simple is better than complex",
@@ -44,7 +53,7 @@ class ResourceTests(unittest.TestCase):
 
         def __init__(self, host="localhost", id=None):
             self.host = host
-            self.id = id or uuid.uuid4().hex
+            self.id = id or uuid.uuid4()
             self.resources = []
 
         @property
@@ -100,9 +109,6 @@ class ResourceTests(unittest.TestCase):
             .. entity:: PHRASE
                :types: turberfield.dialogue.test.test_resource.ResourceTests.Resource
 
-            .. role:: raw-html(raw)
-               :format: html
-
             Scene
             ~~~~~
 
@@ -116,14 +122,18 @@ class ResourceTests(unittest.TestCase):
             .. Property attributes accept only integers and importable objects
             .. property:: SESSION.addition |PHRASE_ID|
 
-            .. Use a Memory directive to generate an event containing formatted strings
+            .. Use a Memory directive to generate an event containing formatted strings.
+            .. Here, an integer state is used for 'learned'. A 0 could signify 'forgot'.
             .. memory:: 1
                :subject: SESSION
                :object: PHRASE
 
-               |S_FIRSTNAME| learned phrase |PHRASE_PATH| (|PHRASE_LABEL|).
+               |S_FIRSTNAME| learned phrase
+               /|SESSION_ID|/|PHRASE_PATH|
+               (|PHRASE_LABEL|).
 
             .. |S_FIRSTNAME| property:: STUDENT.name.firstname
+            .. |SESSION_ID| property:: SESSION.id.hex
             .. |PHRASE_ID| property:: PHRASE.id.int
             .. |PHRASE_LABEL| property:: PHRASE.label
             .. |PHRASE_PATH| property:: PHRASE.path
