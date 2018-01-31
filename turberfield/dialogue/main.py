@@ -289,15 +289,25 @@ def main(args):
     log = logging.getLogger(log_setup(args))
     folders, references = resolve_objects(args)
     performer = Performer(folders, references)
+    interlude = None
     handler = HTMLHandler(dwell=args.dwell, pause=args.pause)
     items = []
+    folder = True
     log.info("Reading sources...")
-    while not performer.stopped:
+    while folder and not performer.stopped:
         for i in range(args.repeat + 1):
             if performer.script:
                 log.info("Script {0.fP}".format(performer.script))
+
+            folder, index, script, selection, interlude = performer.next(
+                folders, references, strict=args.strict, roles=args.roles
+            )
             for item in performer.run(strict=args.strict, roles=args.roles):
                 items.extend(list(handler(item)))
+
+            if interlude is not None:
+                folder = interlude(folder, index, references, folders)
+
     log.info("Writing {0} items to output...".format(len(items)))
     print(handler.to_html(metadata=performer.metadata))
     log.info("Done.")

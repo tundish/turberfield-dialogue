@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.14.0
+======
+
+* `turberfield-dialogue` tool calls an interlude function after every scene file.
+
 0.13.0
 ======
 
