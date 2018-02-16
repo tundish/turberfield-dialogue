@@ -35,7 +35,8 @@ class PropertyDirectiveTests(unittest.TestCase):
     personae = [
         Player(name="Prof William Fuzzer Q.A Testfixture"),
         Player(name="Ms Anna Conda"),
-        Player(name="A Big Hammer")
+        Player(name="A Big Hammer"),
+        object()
     ]
 
     def test_property_getter(self):

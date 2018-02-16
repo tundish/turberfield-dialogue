@@ -360,6 +360,7 @@ class SceneScript:
             persona = next(
                 (i for i in pool
                  if isinstance(i, typ) and
+                 getattr(i, "get_state", not states) and
                  all(str(i.get_state(type(s))).startswith(str(s)) for s in states) and
                  (performing[i].issubset(otherRoles) or not otherRoles)),
                 None
