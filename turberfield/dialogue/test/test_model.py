@@ -24,10 +24,11 @@ import textwrap
 import unittest
 
 from turberfield.dialogue.directives import Entity
-from turberfield.dialogue.types import EnumFactory
-from turberfield.dialogue.types import Player
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
+from turberfield.dialogue.types import EnumFactory
+from turberfield.dialogue.types import Stateful
+from turberfield.dialogue.types import Player
 
 
 class PropertyDirectiveTests(unittest.TestCase):
@@ -191,6 +192,65 @@ class PropertyDirectiveTests(unittest.TestCase):
         ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
         script = SceneScript("inline", doc=SceneScript.read(content))
         script.cast(script.select(ensemble))
+        model = script.run()
+        p = [l for s, l in model if isinstance(l, Model.Property)][-1]
+        self.assertEqual("state", p.attr)
+        self.assertIsInstance(p.val, int)
+
+
+class ConditionDirectiveTests(unittest.TestCase):
+
+    class Rain(Stateful): pass
+    class Sleet(Stateful): pass
+    class Snow(Stateful): pass
+
+    class Weather(EnumFactory, enum.Enum):
+        quiet = 0
+        stormy = 1
+
+    content = textwrap.dedent(
+        """
+        .. entity:: WEATHER
+           :types: turberfield.dialogue.test.test_model.ConditionDirectiveTests.Rain
+                   turberfield.dialogue.test.test_model.ConditionDirectiveTests.Snow
+           :states: turberfield.dialogue.test.test_model.ConditionDirectiveTests.Weather.stormy
+
+        A stormy night
+        ~~~~~~~~~~~~~~
+
+        Outside.
+
+        Snow storm
+        ----------
+
+        .. condition:: WEATHER.__type__
+                       turberfield.dialogue.test.test_model.ConditionDirectiveTests.Snow
+
+        [WEATHER]_
+
+            Flurry, flurry.
+
+        Rainfall
+        --------
+
+        .. condition:: WEATHER.__type__
+                       turberfield.dialogue.test.test_model.ConditionDirectiveTests.Rain
+
+        [WEATHER]_
+
+            Pitter patter.
+        """)
+
+    def test_condition_evaluation_one(self):
+        effects = [
+            ConditionDirectiveTests.Rain().set_state(ConditionDirectiveTests.Weather.stormy),
+            ConditionDirectiveTests.Sleet().set_state(ConditionDirectiveTests.Weather.stormy),
+        ]
+
+        script = SceneScript("inline", doc=SceneScript.read(self.content))
+        selection = script.select(effects)
+        self.fail(selection)
+        script.cast(selection)
         model = script.run()
         p = [l for s, l in model if isinstance(l, Model.Property)][-1]
         self.assertEqual("state", p.attr)
