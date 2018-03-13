@@ -18,6 +18,7 @@
 
 from collections import defaultdict
 import itertools
+import operator
 
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
@@ -39,8 +40,10 @@ class Performer:
         else:
             return None
 
-    @staticmethod
-    def react(obj):
+    def react(self, obj):
+        if self.condition is False:
+            return obj
+
         if isinstance(obj, Model.Property):
             if obj.object is not None:
                 setattr(obj.object, obj.attr, obj.val)
@@ -66,6 +69,7 @@ class Performer:
         self.shots = []
         self.script = None
         self.selection = None
+        self.condition = None
 
     def run(self, react=True, strict=True, roles=1):
         """Select a cast and perform the next scene.
@@ -89,10 +93,19 @@ class Performer:
         with self.script as dialogue:
             model = dialogue.cast(self.selection).run()
             for shot, item in model:
-                yield shot
-                yield item
+                if isinstance(item, Model.Condition):
+                    self.condition = item.operator(
+                        operator.attrgetter(item.attr)(item.object),
+                        item.val,
+                    )
+
+                if self.condition is not False:
+                    yield shot
+                    yield item
+
                 if not self.shots or self.shots[-1][:2] != shot[:2]:
-                        self.shots.append(shot._replace(items=self.script.fP))
+                    self.shots.append(shot._replace(items=self.script.fP))
+                    self.condition = None
                 if react:
                     self.react(item)
 
