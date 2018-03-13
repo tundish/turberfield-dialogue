@@ -51,6 +51,7 @@ Structure
 #. Shot sections may also contain one or more of these elements:
     * `Property directive`_
     * `FX directive`_
+    * `Condition directive`_
     * `Memory directive`_
 
 Elements
@@ -114,6 +115,18 @@ FX directive
     ``:offset:``
         Sets the point in the audio file at which playback begins.
         This value is in milliseconds.
+
+Condition directive
+~~~~~~~~~~~~~~~~~~~
+
+.. rst:directive:: .. condition:: ATTRIBUTE VALUE
+
+    This directive takes no other options.
+
+    The condition directive specifies that a comparison be evaluated.
+
+    The intended purpose of this directive is to mask off sections of dialogue
+    which do not satisfy certain criteria.
 
 .. _memory:
 

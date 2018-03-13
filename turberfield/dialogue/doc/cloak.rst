@@ -16,15 +16,9 @@ is my implementation of `Cloak of Darkness`_.
  
 .. admonition:: The `Hello World` of adventure games.
 
-    There is a programming tradition that early on you try a
-    trivial example to test that your computer is working properly.
-    You type in some very simple code to get started.
+    `Cloak of Darkness`_ is a scenario which exercises several features
+    that all game frameworks really should support.
 
-    That example is usually just to print "Hello World" to the screen.
-
-    Adventure games have their own version of *Hello World*, which is
-    a little more complicated. `Cloak of Darkness`_ is a scenario which
-    exercises several features which all game frameworks really should support.
     By implementing the game, the framework author demonstrates how those
     features are achieved.
 

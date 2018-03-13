@@ -165,7 +165,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'turberfield-dialogue.tex', 'turberfield-dialogue Documentation',
-     'D HAynes', 'manual'),
+     'D Haynes', 'manual'),
 ]
 
 

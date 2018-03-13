@@ -4,7 +4,7 @@
 API Reference
 :::::::::::::
 
-This API gives you a `simple function`_ which will run a rehearsal of
+This API lets you customise the rehearsal of
 a :py:class:`~turberfield.dialogue.model.SceneScript.Folder`
 of Turberfield dialogue. You can modify how this performance is presented
 in your game by customising or replacing a handler_ function which processes
@@ -52,7 +52,7 @@ Folders
         A function object will be called when its corresponding
         scene script file has been performed.
 
-        See `Interludes` for the required signature of an interlude
+        See Interludes_ for the required signature of an interlude
         function object.
 
 Scene scripts
@@ -91,6 +91,11 @@ Events
    :annotation: (persona, text, html)
 
    An event which signals a line of dialogue.
+
+.. autoattribute:: turberfield.dialogue.model.Model.Condition
+   :annotation: (object, attr, val, operator)
+
+   An event which evaluates a conditional expression.
 
 Interludes
 ==========

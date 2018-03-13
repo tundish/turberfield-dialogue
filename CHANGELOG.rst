@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.15.0
+======
+
+* Added the `condition` directive.
+
 0.14.0
 ======
 

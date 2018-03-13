@@ -82,6 +82,13 @@ class Performer:
 
         This method is a generator. It yields events from the performance.
 
+        If a :py:class:`~turberfield.dialogue.model.Model.Condition` is
+        encountered, it is evaluated. No events are generated while the most recent
+        condition is False.
+
+        A new :py:class:`~turberfield.dialogue.model.Model.Shot` resets the
+        current condition.
+
         """
         try:
             folder, index, self.script, self.selection, interlude = self.next(

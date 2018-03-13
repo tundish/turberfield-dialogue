@@ -46,7 +46,6 @@ One last tip. The :py:func:`~turberfield.dialogue.player.rehearse` function has
 been good to us. But it is very forgiving in the way it allows even
 minimally-cast scenes to play through. Sometimes we want all or nothing.
 Here is a way to pre-filter scenes so that only those fully cast are performed.
-`The code is illustrative and lacks some error handling`.
 
 .. code-block:: python
 
