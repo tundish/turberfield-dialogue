@@ -27,6 +27,7 @@ import os.path
 import re
 import sys
 
+from turberfield.dialogue.directives import Condition as ConditionDirective
 from turberfield.dialogue.directives import Entity as EntityDirective
 from turberfield.dialogue.directives import FX as FXDirective
 from turberfield.dialogue.directives import Pathfinder
@@ -51,6 +52,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
     Audio = namedtuple("Audio", ["package", "resource", "offset", "duration", "loop"])
     Memory = namedtuple("Memory", ["subject", "object", "state", "text", "html"])
     Line = namedtuple("Line", ["persona", "text", "html"])
+    Condition = namedtuple("Condition", ["object", "attr", "val", "operator"])
 
     def __init__(self, fP, document):
         super().__init__(document)
@@ -59,7 +61,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             i.__name__ for i in (
                 EntityDirective.Declaration, MemoryDirective.Definition,
                 PropertyDirective.Getter, PropertyDirective.Setter,
-                FXDirective.Cue
+                FXDirective.Cue, ConditionDirective.Evaluation
             )
         )
         self.log = logging.getLogger(
@@ -137,6 +139,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.memory = Model.Memory(
             subj and subj.persona, obj and obj.persona, state, None, None
         )
+
+    def visit_Evaluation(self, node):
+        ref, attr = node["arguments"][0].split(".")
+        entity = self.get_entity(ref)
+        s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
+        val = int(s) if s.isdigit() else node.string_import(s)
+        self.shots[-1].items.append(Model.Condition(entity.persona, attr, val, operator.eq))
 
     def visit_Cue(self, node):
         pkg = node["arguments"][0]
@@ -252,6 +261,10 @@ class SceneScript:
 
     docutils.parsers.rst.directives.register_directive(
         "memory", MemoryDirective
+    )
+
+    docutils.parsers.rst.directives.register_directive(
+        "condition", ConditionDirective
     )
 
     @classmethod

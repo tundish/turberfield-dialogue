@@ -19,6 +19,7 @@
 
 import copy
 import enum
+import operator
 import sys
 import textwrap
 import unittest
@@ -198,6 +199,11 @@ class PropertyDirectiveTests(unittest.TestCase):
         self.assertIsInstance(p.val, int)
 
 
+@unittest.skipIf(
+    "discover" in sys.argv,
+    ("Testing condition directive: "
+    "Needs ~/py3.5/bin/python -m unittest turberfield.dialogue.test.test_model")
+)
 class ConditionDirectiveTests(unittest.TestCase):
 
     class Rain(Stateful): pass
@@ -223,7 +229,7 @@ class ConditionDirectiveTests(unittest.TestCase):
         Snow storm
         ----------
 
-        .. condition:: WEATHER.__type__
+        .. condition:: WEATHER.__class__
                        turberfield.dialogue.test.test_model.ConditionDirectiveTests.Snow
 
         [WEATHER]_
@@ -233,7 +239,7 @@ class ConditionDirectiveTests(unittest.TestCase):
         Rainfall
         --------
 
-        .. condition:: WEATHER.__type__
+        .. condition:: WEATHER.__class__
                        turberfield.dialogue.test.test_model.ConditionDirectiveTests.Rain
 
         [WEATHER]_
@@ -245,16 +251,59 @@ class ConditionDirectiveTests(unittest.TestCase):
         effects = [
             ConditionDirectiveTests.Rain().set_state(ConditionDirectiveTests.Weather.stormy),
             ConditionDirectiveTests.Sleet().set_state(ConditionDirectiveTests.Weather.stormy),
+            ConditionDirectiveTests.Snow().set_state(ConditionDirectiveTests.Weather.quiet),
         ]
 
         script = SceneScript("inline", doc=SceneScript.read(self.content))
         selection = script.select(effects)
-        self.fail(selection)
+        self.assertTrue(all(selection.values()))
         script.cast(selection)
         model = script.run()
-        p = [l for s, l in model if isinstance(l, Model.Property)][-1]
-        self.assertEqual("state", p.attr)
-        self.assertIsInstance(p.val, int)
+        conditions = [l for s, l in model if isinstance(l, Model.Condition)]
+        self.assertEqual(2, len(conditions))
+
+        self.assertFalse(
+            conditions[0].operator(
+                operator.attrgetter(conditions[0].attr)(conditions[0].object),
+                conditions[0].val,
+            )
+        )
+
+        self.assertTrue(
+            conditions[1].operator(
+                operator.attrgetter(conditions[1].attr)(conditions[1].object),
+                conditions[1].val,
+            )
+        )
+
+    def test_condition_evaluation_two(self):
+        effects = [
+            ConditionDirectiveTests.Rain().set_state(ConditionDirectiveTests.Weather.quiet),
+            ConditionDirectiveTests.Sleet().set_state(ConditionDirectiveTests.Weather.stormy),
+            ConditionDirectiveTests.Snow().set_state(ConditionDirectiveTests.Weather.stormy),
+        ]
+
+        script = SceneScript("inline", doc=SceneScript.read(self.content))
+        selection = script.select(effects)
+        self.assertTrue(all(selection.values()))
+        script.cast(selection)
+        model = script.run()
+        conditions = [l for s, l in model if isinstance(l, Model.Condition)]
+        self.assertEqual(2, len(conditions))
+
+        self.assertTrue(
+            conditions[0].operator(
+                operator.attrgetter(conditions[0].attr)(conditions[0].object),
+                conditions[0].val,
+            )
+        )
+
+        self.assertFalse(
+            conditions[1].operator(
+                operator.attrgetter(conditions[1].attr)(conditions[1].object),
+                conditions[1].val,
+            )
+        )
 
 
 class FXDirectiveTests(unittest.TestCase):
