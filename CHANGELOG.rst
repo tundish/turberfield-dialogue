@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.16.0
+======
+
+* `Performer` allows `condition` directives to access object `state`.
+
 0.15.0
 ======
 
