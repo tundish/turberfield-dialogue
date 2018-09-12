@@ -49,6 +49,13 @@ class Performer:
                 setattr(obj.object, obj.attr, obj.val)
         return obj
 
+    @staticmethod
+    def allows(item: Model.Condition):
+        return item.operator(
+            operator.attrgetter(item.attr)(item.object),
+            item.val,
+        )
+
     @property
     def stopped(self):
         """Is `True` when none of the folders can be cast, `False` otherwise."""
@@ -101,10 +108,7 @@ class Performer:
             model = dialogue.cast(self.selection).run()
             for shot, item in model:
                 if isinstance(item, Model.Condition):
-                    self.condition = item.operator(
-                        operator.attrgetter(item.attr)(item.object),
-                        item.val,
-                    )
+                    self.condition = self.allows(item)
 
                 if self.condition is not False:
                     yield shot

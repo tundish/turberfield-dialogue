@@ -27,6 +27,7 @@ import unittest
 from turberfield.dialogue.directives import Entity
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
+from turberfield.dialogue.performer import Performer
 from turberfield.dialogue.types import EnumFactory
 from turberfield.dialogue.types import Stateful
 from turberfield.dialogue.types import Player
@@ -262,19 +263,8 @@ class ConditionDirectiveTests(unittest.TestCase):
         conditions = [l for s, l in model if isinstance(l, Model.Condition)]
         self.assertEqual(2, len(conditions))
 
-        self.assertFalse(
-            conditions[0].operator(
-                operator.attrgetter(conditions[0].attr)(conditions[0].object),
-                conditions[0].val,
-            )
-        )
-
-        self.assertTrue(
-            conditions[1].operator(
-                operator.attrgetter(conditions[1].attr)(conditions[1].object),
-                conditions[1].val,
-            )
-        )
+        self.assertFalse(Performer.allows(conditions[0]))
+        self.assertTrue(Performer.allows(conditions[1]))
 
     def test_condition_evaluation_two(self):
         effects = [
