@@ -227,6 +227,16 @@ class ConditionDirectiveTests(unittest.TestCase):
 
         Outside.
 
+        Summary
+        -------
+
+        .. condition:: WEATHER.state
+                       turberfield.dialogue.test.test_model.ConditionDirectiveTests.Weather.stormy
+
+        [WEATHER]_
+
+            It's stormy!
+
         Snow storm
         ----------
 
@@ -261,10 +271,11 @@ class ConditionDirectiveTests(unittest.TestCase):
         script.cast(selection)
         model = script.run()
         conditions = [l for s, l in model if isinstance(l, Model.Condition)]
-        self.assertEqual(2, len(conditions))
+        self.assertEqual(3, len(conditions))
 
-        self.assertFalse(Performer.allows(conditions[0]))
-        self.assertTrue(Performer.allows(conditions[1]))
+        self.assertTrue(Performer.allows(conditions[0]))
+        self.assertFalse(Performer.allows(conditions[1]))
+        self.assertTrue(Performer.allows(conditions[2]))
 
     def test_condition_evaluation_two(self):
         effects = [
@@ -279,21 +290,11 @@ class ConditionDirectiveTests(unittest.TestCase):
         script.cast(selection)
         model = script.run()
         conditions = [l for s, l in model if isinstance(l, Model.Condition)]
-        self.assertEqual(2, len(conditions))
+        self.assertEqual(3, len(conditions))
 
-        self.assertTrue(
-            conditions[0].operator(
-                operator.attrgetter(conditions[0].attr)(conditions[0].object),
-                conditions[0].val,
-            )
-        )
-
-        self.assertFalse(
-            conditions[1].operator(
-                operator.attrgetter(conditions[1].attr)(conditions[1].object),
-                conditions[1].val,
-            )
-        )
+        self.assertTrue(Performer.allows(conditions[0]))
+        self.assertTrue(Performer.allows(conditions[1]))
+        self.assertFalse(Performer.allows(conditions[2]))
 
 
 class FXDirectiveTests(unittest.TestCase):

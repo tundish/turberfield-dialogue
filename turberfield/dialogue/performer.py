@@ -22,6 +22,7 @@ import operator
 
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
+from turberfield.dialogue.types import Stateful
 
 
 class Performer:
@@ -51,10 +52,11 @@ class Performer:
 
     @staticmethod
     def allows(item: Model.Condition):
-        return item.operator(
-            operator.attrgetter(item.attr)(item.object),
-            item.val,
-        )
+        if item.attr == "state" and isinstance(item.object, Stateful):
+            value = item.object.get_state(type(item.val))
+        else:
+            value = operator.attrgetter(item.attr)(item.object)
+        return item.operator(value, item.val)
 
     @property
     def stopped(self):
