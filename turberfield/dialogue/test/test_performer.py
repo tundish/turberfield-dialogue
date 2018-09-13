@@ -17,12 +17,18 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 import copy
+import itertools
+from pathlib import Path
+import tempfile
 import unittest
 
 from turberfield.utils.misc import group_by_type
 
+from turberfield.dialogue.model import Model
+from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.performer import Performer
 from turberfield.dialogue.sequences.battle.logic import ensemble, folder
+from turberfield.dialogue.test.test_model import ConditionDirectiveTests
 
 
 class TestPerformer(unittest.TestCase):
@@ -45,7 +51,33 @@ class TestPerformer(unittest.TestCase):
         self.assertEqual(1, len(performer.shots))
         self.assertEqual("action", performer.shots[-1].name)
 
-    def test_run(self):
+    def test_run_game(self):
         performer = Performer(self.schedule, self.ensemble)
         while not performer.stopped:
             list(performer.run())
+
+    def test_run_filters_conditional_content(self):
+
+        parent = str(Path(__file__).parent)
+        with tempfile.NamedTemporaryFile(
+            dir=parent,
+            suffix=".rst"
+        ) as scriptFile:
+            scriptFile.write(
+                ConditionDirectiveTests.content.replace(
+                    "test_model", "test_performer"
+                ).encode("utf8")
+            )
+            scriptFile.flush()
+
+            folder = SceneScript.Folder(
+                pkg=__name__,
+                description="Test dialogue",
+                metadata={},
+                paths=[str(Path(scriptFile.name).relative_to(parent))],
+                interludes=itertools.repeat(None)
+            )
+
+            performer = Performer([folder], ConditionDirectiveTests.effects[0:1])
+            output = list(performer.run())
+            self.assertEqual(2, len([i for i in output if isinstance(i, Model.Line)]))

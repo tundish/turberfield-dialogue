@@ -258,6 +258,12 @@ class ConditionDirectiveTests(unittest.TestCase):
             Pitter patter.
         """)
 
+    effects = [
+        Rain().set_state(Weather.stormy),
+        Sleet().set_state(Weather.stormy),
+        Snow().set_state(Weather.quiet),
+    ]
+
     def test_condition_evaluation_one(self):
         effects = [
             ConditionDirectiveTests.Rain().set_state(ConditionDirectiveTests.Weather.stormy),

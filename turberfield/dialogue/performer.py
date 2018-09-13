@@ -34,7 +34,7 @@ class Performer:
             for index, script, interlude in zip(itertools.count(), scripts, folder.interludes):
                 with script as dialogue:
                     selection = dialogue.select(ensemble, roles=roles)
-                    if all(selection.values()):
+                    if selection and all(selection.values()):
                         return (folder, index, script, selection, interlude)
                     elif not strict and any(selection.values()):
                         return (folder, index, script, selection, interlude)
@@ -109,8 +109,6 @@ class Performer:
         with self.script as dialogue:
             model = dialogue.cast(self.selection).run()
             for shot, item in model:
-                if isinstance(item, Model.Condition):
-                    self.condition = self.allows(item)
 
                 if self.condition is not False:
                     yield shot
@@ -119,6 +117,10 @@ class Performer:
                 if not self.shots or self.shots[-1][:2] != shot[:2]:
                     self.shots.append(shot._replace(items=self.script.fP))
                     self.condition = None
+
+                if isinstance(item, Model.Condition):
+                    self.condition = self.allows(item)
+
                 if react:
                     self.react(item)
 
