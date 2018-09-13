@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.17.0
+======
+
+* Fixed a bug in `Performer` which affected `condition` directives.
+
 0.16.0
 ======
 
