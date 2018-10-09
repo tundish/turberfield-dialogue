@@ -109,7 +109,7 @@ class MatcherTests(unittest.TestCase):
         matcher = Matcher(self.folders)
         self.assertEqual(4, len(matcher.keys))
         rv = list(matcher.options({"pos": 3}))
-        self.assertEqual(1, len(rv))
+        self.assertEqual(1, len(rv), rv)
         self.assertIsInstance(rv[0], SceneScript.Folder)
         self.assertEqual({"pos": 3}, rv[0].metadata)
 

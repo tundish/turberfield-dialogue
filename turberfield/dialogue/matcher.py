@@ -11,9 +11,9 @@ class Matcher:
     @staticmethod
     def flatten_mapping(obj, path=[]):
         leaves = {k: v for k, v in obj.items() if not isinstance(v, Mapping)}
-        children = (k for k in obj if k not in leaves)
-        for key in children:
-            yield from Matcher.flatten_mapping(obj[key], path=path[:] + [key])
+        children = {k: v for k, v in obj.items() if k not in leaves}
+        for k, v in children.items():
+            yield from Matcher.flatten_mapping(v, path=path[:] + [k])
 
         yield from (
             (tuple(path + [k]), Matcher.simplify(getattr(v, "value", v)))
@@ -39,8 +39,9 @@ class Matcher:
         self.folders = sorted(folders or [], key=lambda x: self.mapping_key(x.metadata))
         self.keys = sorted([self.mapping_key(i.metadata) for i in self.folders] ) 
     def options(self, data):
-        if data in self.keys:
+        if self.mapping_key(data) in self.keys:
             yield next(i for i in self.folders if i.metadata == data)
         else:
-            pos = bisect.bisect_left(self.keys, self.mapping_key(data))
-            yield self.folders[pos]
+            index = bisect.bisect_left(self.keys, self.mapping_key(data))
+            posns = sorted(set([max(0, index - 1), index]))
+            yield from (self.folders[i] for i in posns)
