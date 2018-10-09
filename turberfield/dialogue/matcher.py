@@ -36,8 +36,11 @@ class Matcher:
             return val
 
     def __init__(self, folders=None):
-        self.folders = folders or []
-        self.keys = sorted([i.metadata for i in self.folders], key=self.mapping_key)
-
-    def choice(self, data):
-       return self.folders[0] or None
+        self.folders = sorted(folders or [], key=lambda x: self.mapping_key(x.metadata))
+        self.keys = sorted([self.mapping_key(i.metadata) for i in self.folders] ) 
+    def options(self, data):
+        if data in self.keys:
+            yield next(i for i in self.folders if i.metadata == data)
+        else:
+            pos = bisect.bisect_left(self.keys, self.mapping_key(data))
+            yield self.folders[pos]

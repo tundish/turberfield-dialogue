@@ -108,6 +108,14 @@ class MatcherTests(unittest.TestCase):
     def test_exact_match(self):
         matcher = Matcher(self.folders)
         self.assertEqual(4, len(matcher.keys))
-        rv = list(matcher.choice(self.folders[2].metadata))
+        rv = list(matcher.options({"pos": 3}))
         self.assertEqual(1, len(rv))
+        self.assertIsInstance(rv[0], SceneScript.Folder)
         self.assertEqual({"pos": 3}, rv[0].metadata)
+
+    def test_multi_match(self):
+        matcher = Matcher(self.folders)
+        rv = list(matcher.options({"pos": 1.5}))
+        self.assertEqual(2, len(rv))
+        self.assertEqual({"pos": 1}, rv[0].metadata)
+        self.assertEqual({"pos": 2}, rv[1].metadata)
