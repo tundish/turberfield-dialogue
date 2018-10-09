@@ -92,20 +92,22 @@ class MatcherTests(unittest.TestCase):
     def setUp(self):
         self.folders = [
             SceneScript.Folder(
-                "turberfield.dialogue.test", "Folder 1", {},
-                ["one.rst"], None),
-            SceneScript.Folder(
-                "turberfield.dialogue.test", "Folder 2", {},
+                "turberfield.dialogue.test", "Folder 2", {"pos": 1},
                 ["two.rst"], None),
             SceneScript.Folder(
-                "turberfield.dialogue.test", "Folder 3", {},
-                ["three.rst"], None),
+                "turberfield.dialogue.test", "Folder 1", {"pos": 0},
+                ["one.rst"], None),
             SceneScript.Folder(
-                "turberfield.dialogue.test", "Folder 4", {},
+                "turberfield.dialogue.test", "Folder 4", {"pos": 3},
                 ["four.rst"], None),
+            SceneScript.Folder(
+                "turberfield.dialogue.test", "Folder 3", {"pos": 2},
+                ["three.rst"], None),
         ]
 
     def test_exact_match(self):
         matcher = Matcher(self.folders)
-        rv = list(matcher.choice(self.folders[1].metadata))
+        self.assertEqual(4, len(matcher.keys))
+        rv = list(matcher.choice(self.folders[2].metadata))
         self.assertEqual(1, len(rv))
+        self.assertEqual({"pos": 3}, rv[0].metadata)

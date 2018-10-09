@@ -37,7 +37,7 @@ class Matcher:
 
     def __init__(self, folders=None):
         self.folders = folders or []
-        self.keys = [self.mapping_key(i.metadata) for i in self.folders]
+        self.keys = sorted([i.metadata for i in self.folders], key=self.mapping_key)
 
     def choice(self, data):
        return self.folders[0] or None
