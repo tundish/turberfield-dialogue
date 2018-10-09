@@ -119,3 +119,9 @@ class MatcherTests(unittest.TestCase):
         self.assertEqual(2, len(rv))
         self.assertEqual({"pos": 1}, rv[0].metadata)
         self.assertEqual({"pos": 2}, rv[1].metadata)
+
+    def test_single_match(self):
+        matcher = Matcher(self.folders)
+        rv = list(matcher.options({"pos": 0}))
+        self.assertEqual(1, len(rv), rv)
+        self.assertEqual({"pos": 0}, rv[0].metadata)

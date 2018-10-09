@@ -7,6 +7,13 @@ import numbers
 
 
 class Matcher:
+    """Match Turberfield Folders by their metadata
+
+    This class has methods to normalise arbitrary dictionaries.
+    It provides a search API, so you can discover which folders are a metadata
+    match.
+
+    """
 
     @staticmethod
     def flatten_mapping(obj, path=[]):
