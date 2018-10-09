@@ -95,7 +95,7 @@ class MatcherTests(unittest.TestCase):
                 "turberfield.dialogue.test", "Folder 2", {"pos": 1},
                 ["two.rst"], None),
             SceneScript.Folder(
-                "turberfield.dialogue.test", "Folder 1", {"pos": 0},
+                "turberfield.dialogue.test", "Folder 1", {"pos": 0.5},
                 ["one.rst"], None),
             SceneScript.Folder(
                 "turberfield.dialogue.test", "Folder 4", {"pos": 3},
@@ -124,4 +124,4 @@ class MatcherTests(unittest.TestCase):
         matcher = Matcher(self.folders)
         rv = list(matcher.options({"pos": 0}))
         self.assertEqual(1, len(rv), rv)
-        self.assertEqual({"pos": 0}, rv[0].metadata)
+        self.assertEqual({"pos": 0.5}, rv[0].metadata)
