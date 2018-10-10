@@ -44,6 +44,7 @@ class Matcher:
 
     @staticmethod
     def mapping_key(obj):
+        obj = obj or {}
         return sorted(list(Matcher.flatten_mapping(obj)))
 
     @staticmethod

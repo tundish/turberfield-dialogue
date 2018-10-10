@@ -19,6 +19,7 @@
 from collections.abc import Callable
 import logging
 
+from turberfield.dialogue.matcher import Matcher
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.performer import Performer
 
@@ -68,6 +69,7 @@ def rehearse(
 
     yield from handler(references, loop=loop)
 
+    matcher = Matcher(folders)
     performer = Performer(folders, references)
     while True:
         folder, index, script, selection, interlude = performer.next(
@@ -79,13 +81,15 @@ def rehearse(
             yield from handler(item, loop=loop)
 
         if isinstance(interlude, Callable):
-            branch = next(handler(
+            metadata = next(handler(
                 interlude, folder, index, references, branches, loop=loop
             ), None)
-            yield branch
-            if branch is None:
+            yield metadata
+            if metadata is None:
                 return
-            elif branch != folder:
+
+            branch = next(matcher.options(metadata))
+            if branch != folder:
                 performer = Performer([branch], references)
 
         if not repeat:

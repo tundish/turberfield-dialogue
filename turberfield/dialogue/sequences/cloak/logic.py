@@ -116,13 +116,13 @@ def interaction(folder, index, ensemble, *args, cmd="", log=None, **kwargs):
         cloak.set_state(narrator.get_state(Location))
         cloak.set_state(1)
 
-    return folder
+    return folder.metadata
 
 references = ensemble + [Location]
 
 game = SceneScript.Folder(
     "turberfield.dialogue.sequences.cloak",
-    __doc__, None,
+    __doc__, {},
     ["foyer.rst", "bar.rst", "cloakroom.rst"],
     repeat(interaction)
 )
