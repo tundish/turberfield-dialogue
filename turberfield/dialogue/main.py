@@ -30,6 +30,7 @@ from turberfield.dialogue.cli import add_casting_options
 from turberfield.dialogue.cli import add_common_options
 from turberfield.dialogue.cli import add_performance_options
 from turberfield.dialogue.cli import resolve_objects
+from turberfield.dialogue.matcher import Matcher
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.performer import Performer
 from turberfield.utils.misc import log_setup
@@ -288,6 +289,7 @@ class HTMLHandler:
 def main(args):
     log = logging.getLogger(log_setup(args))
     folders, references = resolve_objects(args)
+    matcher = Matcher(folders)
     performer = Performer(folders, references)
     interlude = None
     handler = HTMLHandler(dwell=args.dwell, pause=args.pause)
@@ -306,7 +308,8 @@ def main(args):
                 items.extend(list(handler(item)))
 
             if interlude is not None:
-                folder = interlude(folder, index, references, folders)
+                metadata = interlude(folder, index, references, folders)
+                folder = next(matcher.options(metadata))
 
     log.info("Writing {0} items to output...".format(len(items)))
     print(handler.to_html(metadata=performer.metadata))
