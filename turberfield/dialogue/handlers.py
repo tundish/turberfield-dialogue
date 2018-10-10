@@ -72,6 +72,9 @@ class TerminalHandler:
         :return: The supplied object.
 
         """
+        if not simpleaudio:
+            return obj
+
         fp = pkg_resources.resource_filename(obj.package, obj.resource)
         data = wave.open(fp, "rb")
         nChannels = data.getnchannels()
