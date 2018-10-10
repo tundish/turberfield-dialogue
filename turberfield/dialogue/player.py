@@ -18,6 +18,7 @@
 
 from collections.abc import Callable
 import logging
+import sys
 
 from turberfield.dialogue.matcher import Matcher
 from turberfield.dialogue.model import SceneScript
@@ -45,7 +46,6 @@ def run_through(script, ensemble, roles=1, strict=False):
 def rehearse(
     folders, references, handler,
     repeat=0, roles=1, strict=False,
-    branches=None,
     loop=None
 ):
     """Cast a set of objects into a sequence of scene scripts. Deliver the performance.
@@ -82,12 +82,13 @@ def rehearse(
 
         if isinstance(interlude, Callable):
             metadata = next(handler(
-                interlude, folder, index, references, branches, loop=loop
+                interlude, folder, index, references, loop=loop
             ), None)
             yield metadata
             if metadata is None:
                 return
 
+            print(metadata, file=sys.stderr)
             branch = next(matcher.options(metadata))
             if branch != folder:
                 performer = Performer([branch], references)

@@ -100,7 +100,7 @@ class TerminalHandler:
         return obj
 
     def handle_interlude(
-        self, obj, folder, index, ensemble, branches,
+        self, obj, folder, index, ensemble,
         loop=None, **kwargs
     ):
         """Handle an interlude event.
@@ -125,9 +125,9 @@ class TerminalHandler:
 
         """
         if obj is None:
-            return folder
+            return folder.metadata
         else:
-            return obj(folder, index, ensemble, branches, loop=loop, **kwargs)
+            return obj(folder, index, ensemble, loop=loop, **kwargs)
 
     def handle_line(self, obj):
         """Handle a line event.
@@ -317,7 +317,7 @@ class TerminalHandler:
             raise NotImplementedError
         elif isinstance(obj, MutableSequence):
             yield self.handle_references(obj)
-        elif (obj is None or isinstance(obj, Callable)) and len(args) == 4:
+        elif (obj is None or isinstance(obj, Callable)) and len(args) == 3:
             yield self.handle_interlude(obj, *args, loop=loop, **kwargs)
         else:
             yield obj

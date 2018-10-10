@@ -11,9 +11,10 @@ Change Log
 
 * Added a Matcher class which can select folders by their metadata.
 * `rehearse` function uses the matcher to branch to different folders.
-* Interludes from now on must return a metadata dictionary. Fixed the demo
-  scenarios accordingly.
-* Fixed a bug affecting the TerminalHandler when simpleaudio is not available.
+* `turberfield-dialogue` utility uses the matcher likewise.
+* **Interludes from now on must return a metadata dictionary**. Fixed the
+  documentation and demo scenarios accordingly.
+* Fixed a bug affecting the TerminalHandler when *simpleaudio* is not available.
 * Simplified the documentation relating to VSCode.
 
 0.17.0

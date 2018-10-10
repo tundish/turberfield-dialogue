@@ -108,7 +108,7 @@ That is the `current` file as referred to below.
 
 Here is an example to show the signature of parameters required.
 
-.. py:function:: def my_interlude(folder, index, ensemble, branches, log=None, loop=None):
+.. py:function:: def my_interlude(folder, index, ensemble, log=None, loop=None):
 
     :param folder: A :py:class:`~turberfield.dialogue.model.SceneScript.Folder` object.
     :param int index: The index position into **folder.paths** of the current
@@ -125,10 +125,15 @@ Here is an example to show the signature of parameters required.
     :param loop: If supplied, this will be an instance of ``asyncio.BaseEventLoop``.
         That will signal to your function that it operates in an asynchronous
         environment and that no blocking function should be called within it.
-    :return: A :py:class:`~turberfield.dialogue.model.SceneScript.Folder` object.
-        If this is the same object as supplied to the function, it signals that
-        performance of this folder should continue. You could return another
-        folder to request a branching of the narrative, or else **None** to stop it.
+    :returntype: dict
+        Returning a value gives you the option to control branching of
+        your narrative.
+
+        The dictionary data you pass back is matched against the metadata of
+        each folder. The folder whose metadata matches closest is the next
+        folder to run.
+
+        Return **None** to stop the performance.
 
 Handler
 =======

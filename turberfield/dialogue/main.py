@@ -308,7 +308,7 @@ def main(args):
                 items.extend(list(handler(item)))
 
             if interlude is not None:
-                metadata = interlude(folder, index, references, folders)
+                metadata = interlude(folder, index, references)
                 folder = next(matcher.options(metadata))
 
     log.info("Writing {0} items to output...".format(len(items)))
