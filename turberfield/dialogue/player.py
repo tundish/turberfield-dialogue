@@ -57,8 +57,6 @@ def rehearse(
     :param int repeat: Extra repetitions of each folder.
     :param int roles: Maximum number of roles permitted each character.
     :param bool strict: Only fully-cast scripts to be performed.
-    :param list branches: Supplies the folders from which an interlude may
-        pick a branch in the action.
 
     This function is a generator. It yields events from the performance.
 

@@ -42,10 +42,11 @@ In :ref:`battle` we put ``repeat(None)`` which is a way of declining to use inte
 An interlude is a function which gets called at the end of a scene script file.
 You can define a different function for each if you like. The function sees
 the folder you're using. It knows which of the scene files has just finished.
-It also gets to see all the references you passed in to the performance. An interlude
-function's return value is always a folder object. Returning the current folder in
-play is like saying *continue*. Or you can return another one and branch the
-story.
+It also gets to see all the references you passed in to the performance.
+
+An interlude function's return value is the metadata for a folder object.
+Returning the current folder's metadata is like saying *continue*. Or you can
+return different metadata matching another folder and thereby branch the story.
 
 Design
 ======
