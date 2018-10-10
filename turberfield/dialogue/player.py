@@ -18,7 +18,6 @@
 
 from collections.abc import Callable
 import logging
-import sys
 
 from turberfield.dialogue.matcher import Matcher
 from turberfield.dialogue.model import SceneScript
@@ -88,7 +87,6 @@ def rehearse(
             if metadata is None:
                 return
 
-            print(metadata, file=sys.stderr)
             branch = next(matcher.options(metadata))
             if branch != folder:
                 performer = Performer([branch], references)
