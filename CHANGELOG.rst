@@ -6,6 +6,12 @@
 Change Log
 ::::::::::
 
+0.19.0
+======
+
+* Added documentation for the `Matcher` class.
+* Added guidance on alternative for file suffix.
+
 0.18.0
 ======
 

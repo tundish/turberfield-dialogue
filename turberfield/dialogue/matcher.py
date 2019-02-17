@@ -22,13 +22,6 @@ import numbers
 
 
 class Matcher:
-    """Match Turberfield Folders by their metadata
-
-    This class has methods to normalise arbitrary dictionaries.
-    It provides a search API, so you can discover which folders are a metadata
-    match.
-
-    """
 
     @staticmethod
     def flatten_mapping(obj, path=[]):
@@ -44,6 +37,9 @@ class Matcher:
 
     @staticmethod
     def mapping_key(obj):
+        """ A keying function which allows nested objects to be sorted.
+
+        """
         obj = obj or {}
         return sorted(list(Matcher.flatten_mapping(obj)))
 
@@ -59,10 +55,30 @@ class Matcher:
             return val
 
     def __init__(self, folders=None):
+        """Match Turberfield Folders by their metadata.
+
+        This class has methods to normalise arbitrary dictionaries.
+        It provides a search API, so you can discover which folders are a metadata
+        match.
+
+        :param folders: A sequence of
+            :py:class:`turberfield.dialogue.model.SceneScript.Folder` objects.
+        """
         self.folders = sorted(folders or [], key=lambda x: self.mapping_key(x.metadata))
         self.keys = sorted([self.mapping_key(i.metadata) for i in self.folders])
 
     def options(self, data):
+        """Generate folders to best match metadata.
+
+        The results will be a single, perfectly matched folder, or the two nearest
+        neighbours of an imperfect match.
+
+        :param dict data: metadata matching criteria.
+
+        This method is a generator. It yields
+        :py:class:`turberfield.dialogue.model.SceneScript.Folder` objects.
+
+        """
         if self.mapping_key(data) in self.keys:
             yield next(i for i in self.folders if i.metadata == data)
         else:

@@ -22,10 +22,11 @@ for dialogue to refer to personal attributes such as names, using a mechanism of
 Naming convention
 =================
 
-The file name should contain lower case characters only, and have a suffix of
-**.rst**.
-It should contain no whitespace or punctuation characters. Underscores should
-be used to represent spaces.
+The file name should contain lower case characters only. It should contain no whitespace
+or punctuation characters. Underscores should be used to represent spaces.
+
+The file must have a suffix of **.rst**. If you'd like to distinguish between dialogue
+text and regular reStructuredText, then give your scene script file a **.dlg.rst** suffix.
 
 Structure
 =========

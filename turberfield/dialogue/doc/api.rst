@@ -17,6 +17,9 @@ This separates event generation from sequencing.
 The `scene scripts`_ themselves also have an API, allowing you to interact with
 the process by which entities are selected and cast to roles.
 
+There is also a simple :py:class:`~turberfield.dialogue.matcher.Matcher` class
+which you can use to compare folder metadata.
+
 Folders
 =======
 
@@ -138,6 +141,13 @@ Handler
 
 .. autoclass:: turberfield.dialogue.handlers.TerminalHandler
    :members: handle_audio, handle_interlude, handle_line, handle_memory, handle_property, handle_scene, handle_scenescript, handle_shot
+   :member-order: bysource
+
+Matcher
+=======
+
+.. autoclass:: turberfield.dialogue.matcher.Matcher
+   :members: __init__, mapping_key, options
    :member-order: bysource
 
 Performer
