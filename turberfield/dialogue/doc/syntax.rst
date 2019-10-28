@@ -105,8 +105,8 @@ FX directive
 
 .. rst:directive:: .. fx:: PACKAGE RESOURCE
 
-    The FX (effects) directive cues up a visual or a sound effect.
-    The first argument is the dotted name of the package which contains the asset file
+    The FX (effects) directive calls up a visual cue or a sound effect.
+    The first argument is the dotted name of the package which contains the asset file.
     The second argument is the path of the file relative to the package location.
 
     ``:duration:``
