@@ -51,6 +51,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
     Shot = namedtuple("Shot", ["name", "scene", "items"])
     Property = namedtuple("Property", ["entity", "object", "attr", "val"])
     Audio = namedtuple("Audio", ["package", "resource", "offset", "duration", "loop"])
+    Still = namedtuple("Still", ["package", "resource", "offset", "duration", "loop"])
     Memory = namedtuple("Memory", ["subject", "object", "state", "text", "html"])
     Line = namedtuple("Line", ["persona", "text", "html"])
     Condition = namedtuple("Condition", ["object", "attr", "val", "operator"])
@@ -159,6 +160,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
         try:
             if typ.startswith("audio"):
                 item = Model.Audio(pkg, rsrc, offset, duration, loop)
+            elif typ.startswith("image"):
+                item = Model.Still(pkg, rsrc, offset, duration, loop)
         except AttributeError:
             pass
 

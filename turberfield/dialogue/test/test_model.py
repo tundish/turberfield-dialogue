@@ -314,24 +314,58 @@ class FXDirectiveTests(unittest.TestCase):
             Shot
             ----
 
-            .. fx:: turberfield.dialogue.sequences.battle_royal whack.wav
+            .. fx:: turberfield.dialogue.sequences.battle_royal whack.{0}
                :offset: 0
                :duration: 3000
                :loop: 1
 
             """)
-        script = SceneScript("inline", doc=SceneScript.read(content))
-        model = script.run()
-        shot, cue = next(iter(model))
-        self.assertIsInstance(cue, Model.Audio)
-        self.assertEqual(
-            "turberfield.dialogue.sequences.battle_royal",
-            cue.package
-        )
-        self.assertEqual("whack.wav", cue.resource)
-        self.assertEqual(0, cue.offset)
-        self.assertEqual(3000, cue.duration)
-        self.assertEqual(1, cue.loop)
+        for suffix in ("mp3", "ogg", "wav"):
+            with self.subTest(suffix=suffix):
+                text = content.format(suffix)
+                script = SceneScript("inline", doc=SceneScript.read(text))
+                model = script.run()
+                shot, cue = next(iter(model))
+                self.assertIsInstance(cue, Model.Audio)
+                self.assertEqual(
+                    "turberfield.dialogue.sequences.battle_royal",
+                    cue.package
+                )
+                self.assertEqual("whack.{0}".format(suffix), cue.resource)
+                self.assertEqual(0, cue.offset)
+                self.assertEqual(3000, cue.duration)
+                self.assertEqual(1, cue.loop)
+
+    def test_fx_image(self):
+        content = textwrap.dedent(
+            """
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            .. fx:: turberfield.dialogue.sequences.battle_royal whack.{0}
+               :offset: 0
+               :duration: 3000
+               :loop: 1
+
+            """)
+        for suffix in ("jpg", "jpeg", "png"):
+            with self.subTest(suffix=suffix):
+                text = content.format(suffix)
+                script = SceneScript("inline", doc=SceneScript.read(text))
+                model = script.run()
+                shot, cue = next(iter(model))
+                self.assertIsInstance(cue, Model.Still)
+                self.assertEqual(
+                    "turberfield.dialogue.sequences.battle_royal",
+                    cue.package
+                )
+                self.assertEqual("whack.{0}".format(suffix), cue.resource)
+                self.assertEqual(0, cue.offset)
+                self.assertEqual(3000, cue.duration)
+                self.assertEqual(1, cue.loop)
 
     def test_fx_unhandled(self):
         content = textwrap.dedent(
@@ -432,6 +466,7 @@ class FXDirectiveTests(unittest.TestCase):
         self.assertEqual(0, cue.offset)
         self.assertEqual(3000, cue.duration)
         self.assertEqual(1, cue.loop)
+
 
 class SelectTests(unittest.TestCase):
 
