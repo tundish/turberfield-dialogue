@@ -1,2 +1,3 @@
+include COPYING
 include *.txt
 recursive-include turberfield *.cfg *.css *.html *.ini *.jpg *.js *.png *.prt *.rst *.txt *.wav 

@@ -323,6 +323,7 @@ class FXDirectiveTests(unittest.TestCase):
         script = SceneScript("inline", doc=SceneScript.read(content))
         model = script.run()
         shot, cue = next(iter(model))
+        self.assertIsInstance(cue, Model.Audio)
         self.assertEqual(
             "turberfield.dialogue.sequences.battle_royal",
             cue.package
