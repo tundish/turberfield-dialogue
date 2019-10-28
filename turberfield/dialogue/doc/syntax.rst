@@ -105,16 +105,17 @@ FX directive
 
 .. rst:directive:: .. fx:: PACKAGE RESOURCE
 
-    The FX (effects) directive plays a sound effect.
-    The first argument is the dotted name of the package which contains the audio file
+    The FX (effects) directive cues up a visual or a sound effect.
+    The first argument is the dotted name of the package which contains the asset file
     The second argument is the path of the file relative to the package location.
 
     ``:duration:``
-        Sets the duration of audio playback. This value is in milliseconds. Optional.
+        Sets the duration (audio playback, display of still image).
+        This value is in milliseconds. Optional.
     ``:loop:``
-        The number of times to play the audio.
+        The number of times to play the audio or display a still image.
     ``:offset:``
-        Sets the point in the audio file at which playback begins.
+        Sets the point in an audio file at which playback begins.
         This value is in milliseconds.
 
 Condition directive

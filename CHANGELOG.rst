@@ -9,6 +9,7 @@ Change Log
 0.19.0
 ======
 
+* The `fx` declaration now generates Audio and Stills
 * Added documentation for the `Matcher` class.
 * Added guidance on alternative for file suffix.
 
