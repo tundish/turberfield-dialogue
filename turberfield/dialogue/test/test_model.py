@@ -305,7 +305,7 @@ class ConditionDirectiveTests(unittest.TestCase):
 
 class FXDirectiveTests(unittest.TestCase):
 
-    def test_fx(self):
+    def test_fx_audio(self):
         content = textwrap.dedent(
             """
             Scene
@@ -332,6 +332,44 @@ class FXDirectiveTests(unittest.TestCase):
         self.assertEqual(0, cue.offset)
         self.assertEqual(3000, cue.duration)
         self.assertEqual(1, cue.loop)
+
+    def test_fx_unhandled(self):
+        content = textwrap.dedent(
+            """
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            .. fx:: turberfield.dialogue.sequences.battle_royal whack.bin
+               :offset: 0
+               :duration: 3000
+               :loop: 1
+
+            """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        self.assertRaises(StopIteration, next, iter(model))
+
+    def test_fx_unknown(self):
+        content = textwrap.dedent(
+            """
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            .. fx:: turberfield.dialogue.sequences.battle_royal whack.nomime
+               :offset: 0
+               :duration: 3000
+               :loop: 1
+
+            """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        self.assertRaises(StopIteration, next, iter(model))
 
     def test_fx_bad_substitution(self):
         content = textwrap.dedent(

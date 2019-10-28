@@ -22,6 +22,7 @@ from collections import defaultdict
 from collections import namedtuple
 from collections import OrderedDict
 import logging
+import mimetypes
 import operator
 import os.path
 import re
@@ -153,8 +154,16 @@ class Model(docutils.nodes.GenericNodeVisitor):
         offset = node["options"].get("offset")
         duration = node["options"].get("duration")
         loop = node["options"].get("loop")
-        item = Model.Audio(pkg, rsrc, offset, duration, loop)
-        self.shots[-1].items.append(item)
+        typ = mimetypes.guess_type(rsrc)[0]
+        item = None
+        try:
+            if typ.startswith("audio"):
+                item = Model.Audio(pkg, rsrc, offset, duration, loop)
+        except AttributeError:
+            pass
+
+        if item is not None:
+            self.shots[-1].items.append(item)
 
     def visit_title(self, node):
         self.log.debug(self.section_level)
