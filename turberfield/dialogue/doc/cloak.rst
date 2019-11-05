@@ -37,7 +37,7 @@ in to the console.
 Turberfield-dialogue has a feature called *interludes*. You may have spotted
 that earlier; it's the fifth argument to a
 :py:class:`~turberfield.dialogue.model.SceneScript.Folder`.
-In :ref:`battle` we put ``repeat(None)`` which is a way of declining to use interludes. 
+In :ref:`battle` we put ``None`` which is a way of declining to use interludes. 
 
 An interlude is a function which gets called at the end of a scene script file.
 You can define a different function for each if you like. The function sees

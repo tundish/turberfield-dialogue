@@ -22,7 +22,6 @@ from collections import namedtuple
 import datetime
 import enum
 import io
-import itertools
 import logging
 import os
 import sys
@@ -46,7 +45,7 @@ class LoaderTests(unittest.TestCase):
     def test_scripts(self):
         folder = SceneScript.Folder(
             "turberfield.dialogue.sequences.battle.logic", "test", None,
-            ["combat.rst"], itertools.repeat(None)
+            ["combat.rst"], None
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertEqual(1, len(rv))
@@ -55,7 +54,7 @@ class LoaderTests(unittest.TestCase):
     def test_scripts_bad_pkg(self):
         folder = SceneScript.Folder(
             "turberfield.dialogue.sequences.not_there", "test", None,
-            ["combat.rst"], itertools.repeat(None)
+            ["combat.rst"], None
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertFalse(rv)
@@ -63,7 +62,7 @@ class LoaderTests(unittest.TestCase):
     def test_scripts_bad_scenefile(self):
         folder = SceneScript.Folder(
             "turberfield.dialogue.sequences.battle.logic", "test", None,
-            ["not_there.rst"], itertools.repeat(None)
+            ["not_there.rst"], None
         )
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertFalse(rv)
@@ -81,7 +80,7 @@ class CastingTests(unittest.TestCase):
         }
         folder = SceneScript.Folder(
             "turberfield.dialogue.sequences.battle.logic", "test", None,
-            ["combat.rst"], itertools.repeat(None)
+            ["combat.rst"], None
         )
         self.script = next(SceneScript.scripts(**folder._asdict()))
 

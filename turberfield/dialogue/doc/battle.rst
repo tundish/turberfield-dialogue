@@ -142,8 +142,6 @@ Here below are its main features.
 
 .. code-block:: python
 
-    from itertools import repeat
-
     from turberfield.dialogue.model import SceneScript
     from turberfield.dialogue.types import Persona
     from turberfield.dialogue.types import Stateful
@@ -166,14 +164,14 @@ Here below are its main features.
         description="Cartoon battle demo",
         metadata=None,
         paths=["combat.rst"],
-        interludes=repeat(None)
+        interludes=None
     )
 
 
 This file performs five tasks:
 
     Lines 1 - 5
-        Import what we need from Python and Turberfield.
+        Import what we need from Turberfield.
     Lines 8 - 12
         Define some types which are necessary for the scene.
     Lines 14 - 18

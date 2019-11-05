@@ -17,7 +17,6 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 import copy
-import itertools
 from pathlib import Path
 import tempfile
 import unittest
@@ -75,7 +74,7 @@ class TestPerformer(unittest.TestCase):
                 description="Test dialogue",
                 metadata={},
                 paths=[str(Path(scriptFile.name).relative_to(parent))],
-                interludes=itertools.repeat(None)
+                interludes=None
             )
 
             performer = Performer([folder], ConditionDirectiveTests.effects[0:1])

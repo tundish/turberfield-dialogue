@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
-import itertools
-
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.types import Persona
 from turberfield.dialogue.types import Stateful
@@ -46,8 +44,7 @@ references = ensemble()
 
 folder = SceneScript.Folder(
     "turberfield.dialogue.sequences.battle",
-    __doc__, None,
-    ["combat.rst"], itertools.repeat(None)
+    __doc__, None, ["combat.rst"], None
 )
 
 Assembly.register(Animal, Tool)
