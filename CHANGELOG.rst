@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.20.0
+======
+
+* `SceneScript.Folder` interludes may be `None`.
+
 0.19.0
 ======
 

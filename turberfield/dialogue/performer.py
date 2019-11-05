@@ -31,7 +31,8 @@ class Performer:
     def next(folders, ensemble, strict=True, roles=1):
         for folder in folders:
             scripts = SceneScript.scripts(**folder._asdict())
-            for index, script, interlude in zip(itertools.count(), scripts, folder.interludes):
+            interludes = folder.interludes or itertools.repeat(None)
+            for index, script, interlude in zip(itertools.count(), scripts, interludes):
                 with script as dialogue:
                     selection = dialogue.select(ensemble, roles=roles)
                     if selection and all(selection.values()):
