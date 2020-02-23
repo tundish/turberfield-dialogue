@@ -63,7 +63,6 @@ class EntityDeclarationTests(unittest.TestCase):
         "discover" not in sys.argv,
         "Testing relative import: Needs ~/py3.5/bin/python -m unittest discover turberfield"
     )
-
     def test_string_import_relative_with_separator(self):
         rv = Entity.Declaration.string_import(
             ".dialogue.test.test_directives:EntityDeclarationTests",

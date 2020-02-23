@@ -51,7 +51,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
     Shot = namedtuple("Shot", ["name", "scene", "items"])
     Property = namedtuple("Property", ["entity", "object", "attr", "val"])
     Audio = namedtuple("Audio", ["package", "resource", "offset", "duration", "loop"])
-    Still = namedtuple("Still", ["package", "resource", "offset", "duration", "loop"])
+    Still = namedtuple("Still", ["package", "resource", "offset", "duration", "loop", "label"])
     Memory = namedtuple("Memory", ["subject", "object", "state", "text", "html"])
     Line = namedtuple("Line", ["persona", "text", "html"])
     Condition = namedtuple("Condition", ["object", "attr", "val", "operator"])
@@ -150,10 +150,12 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.shots[-1].items.append(Model.Condition(entity.persona, attr, val, operator.eq))
 
     def visit_Cue(self, node):
+        subref_re = re.compile("\|(\w+)\|")
         pkg = node["arguments"][0]
-        rsrc = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
+        rsrc = subref_re.sub(self.substitute_property, node["arguments"][1])
         offset = node["options"].get("offset")
         duration = node["options"].get("duration")
+        label = subref_re.sub(self.substitute_property, node["options"].get("label", ""))
         loop = node["options"].get("loop")
         typ = mimetypes.guess_type(rsrc)[0]
         item = None
@@ -161,7 +163,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             if typ.startswith("audio"):
                 item = Model.Audio(pkg, rsrc, offset, duration, loop)
             elif typ.startswith("image"):
-                item = Model.Still(pkg, rsrc, offset, duration, loop)
+                item = Model.Still(pkg, rsrc, offset, duration, loop, label)
         except AttributeError:
             pass
 

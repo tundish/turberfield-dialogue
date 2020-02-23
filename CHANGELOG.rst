@@ -6,6 +6,15 @@
 Change Log
 ::::::::::
 
+0.21.0
+======
+
+* The `fx` declaration now has a `label` option. A label may may contain
+  substitution references.
+* `Still` cues now have a label attribute which takes its value from the `fx`
+  declaration. The main use case for this is to provide content for the `alt`
+  attribute of an HTML `img` tag.
+
 0.20.0
 ======
 

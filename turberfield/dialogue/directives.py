@@ -173,6 +173,7 @@ class FX(docutils.parsers.rst.Directive):
         "offset": int,
         "duration": int,
         "loop": int,
+        "label": str,
     }
     has_content = False
 

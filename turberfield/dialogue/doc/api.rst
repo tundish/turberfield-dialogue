@@ -86,7 +86,7 @@ Events
    An event which signals an audio cue.
 
 .. autoattribute:: turberfield.dialogue.model.Model.Still
-   :annotation: (package, resource, offset, duration, loop)
+   :annotation: (package, resource, offset, duration, loop, label)
 
    An event which signals a still image cue.
 

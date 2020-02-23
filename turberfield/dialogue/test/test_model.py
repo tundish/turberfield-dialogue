@@ -467,6 +467,38 @@ class FXDirectiveTests(unittest.TestCase):
         self.assertEqual(3000, cue.duration)
         self.assertEqual(1, cue.loop)
 
+    def test_fx_label_substitution(self):
+        content = textwrap.dedent(
+            """
+            .. entity:: P
+
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            .. fx:: turberfield.dialogue.sequences.battle_royal faces/|P_NAME|/surprise.png
+               :offset: 0
+               :duration: 3000
+               :label: |P_NAME| looks surprised
+
+            .. |P_NAME| property:: P.name.firstname
+            """)
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([ensemble[0]]))
+        model = script.run()
+        shot, cue = next(iter(model))
+        self.assertEqual(
+            "turberfield.dialogue.sequences.battle_royal",
+            cue.package
+        )
+        self.assertEqual("faces/William/surprise.png", cue.resource)
+        self.assertEqual(0, cue.offset)
+        self.assertEqual(3000, cue.duration)
+        self.assertEqual("William looks surprised", cue.label)
+
 
 class SelectTests(unittest.TestCase):
 

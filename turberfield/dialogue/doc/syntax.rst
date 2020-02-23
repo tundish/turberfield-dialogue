@@ -117,6 +117,8 @@ FX directive
     ``:offset:``
         Sets the point in an audio file at which playback begins.
         This value is in milliseconds.
+    ``:label:``
+        A text label for the resource. May contain substitution references.
 
 Condition directive
 ~~~~~~~~~~~~~~~~~~~
