@@ -63,12 +63,17 @@ class DataObject:
 class Persona(DataObject):
 
     def __init__(self, **kwargs):
-        self._name = kwargs.pop("name")
-        bits = self._name.split()
+        self._name = kwargs.pop("name", None)
+
         try:
+            bits = self._name.split()
             self.name = Name(bits[0], bits[1], bits[2:-1], bits[-1])
+        except AttributeError:
+            # self._name not a string, assume a Name
+            self.name = self._name
         except IndexError:
             self.name = Name("", self._name, [], "")
+
         super().__init__(**kwargs)
 
     @property

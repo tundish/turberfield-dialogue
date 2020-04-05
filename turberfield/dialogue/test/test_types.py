@@ -18,7 +18,11 @@
 
 import unittest
 
+from turberfield.dialogue.types import Name
+from turberfield.dialogue.types import Player
 from turberfield.dialogue.types import Stateful
+
+from turberfield.utils.assembly import Assembly
 
 class TestStateful(unittest.TestCase):
 
@@ -27,3 +31,19 @@ class TestStateful(unittest.TestCase):
         s.set_state(3)
         self.assertEqual(3, s.get_state())
         self.assertEqual(3, s.state)
+
+class TestPlayer(unittest.TestCase):
+
+    def test_no_name(self):
+        player = Player(name=None)
+        self.assertIsNone(player._name)
+        self.assertIsNone(player.name)
+
+    def test_round_trip_assembly(self):
+        Assembly.register(Player)
+        player = Player(name="Mr Dick Turpin").set_state(12)
+        text = Assembly.dumps(player)
+        clone = Assembly.loads(text)
+        self.assertEqual(player.id, clone.id)
+        self.assertEqual(player.name, clone.name)
+        self.assertEqual(player.state, clone.state)

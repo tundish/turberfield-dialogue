@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.22.0
+======
+
+* Fix a bug in creating a Persona from an Assembly
+
 0.21.0
 ======
 
