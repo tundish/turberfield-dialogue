@@ -95,8 +95,9 @@ class Stateful:
     def state(self, value):
         return self.set_state(value)
 
-    def set_state(self, value):
-        self._states[type(value).__name__] = value
+    def set_state(self, *args):
+        for value in args:
+            self._states[type(value).__name__] = value
         return self
 
     def get_state(self, typ=int, default=0):

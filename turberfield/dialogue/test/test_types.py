@@ -32,6 +32,19 @@ class TestStateful(unittest.TestCase):
         self.assertEqual(3, s.get_state())
         self.assertEqual(3, s.state)
 
+    def test_state_as_int_twice(self):
+        s = Stateful()
+        s.set_state(3).set_state(4)
+        self.assertEqual(4, s.get_state())
+        self.assertEqual(4, s.state)
+
+    def test_state_as_int_args(self):
+        s = Stateful()
+        s.set_state(3, 4)
+        self.assertEqual(4, s.get_state())
+        self.assertEqual(4, s.state)
+
+
 class TestPlayer(unittest.TestCase):
 
     def test_no_name(self):

@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.23.0
+======
+
+* `Stateful.set_state` now takes multiple positional arguments.
+
 0.22.0
 ======
 
