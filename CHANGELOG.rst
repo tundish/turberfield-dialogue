@@ -6,6 +6,12 @@
 Change Log
 ::::::::::
 
+0.24.0
+======
+
+* `Performer.react` now sets state on the subject of a memory when there's no defined object.
+* Fix the interlude in `Cloak` so it works properly in rehearsal.
+
 0.23.0
 ======
 

@@ -55,6 +55,22 @@ class TestPerformer(unittest.TestCase):
         while not performer.stopped:
             list(performer.run())
 
+    def test_react_on_property(self):
+        performer = Performer(self.schedule, self.ensemble)
+        self.assertEqual(1, self.ensemble[0].state)
+        action = Model.Property(None, self.ensemble[0], "state", 0)
+        rv = performer.react(action)
+        self.assertIs(action, rv)
+        self.assertEqual(0, self.ensemble[0].state)
+
+    def test_react_on_memory(self):
+        performer = Performer(self.schedule, self.ensemble)
+        self.assertEqual(1, self.ensemble[0].state)
+        action = Model.Memory(self.ensemble[0], None, 0, "text", "<html/>")
+        rv = performer.react(action)
+        self.assertIs(action, rv)
+        self.assertEqual(0, self.ensemble[0].state)
+
     def test_run_filters_conditional_content(self):
 
         parent = str(Path(__file__).parent)

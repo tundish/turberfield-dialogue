@@ -49,6 +49,9 @@ class Performer:
         if isinstance(obj, Model.Property):
             if obj.object is not None:
                 setattr(obj.object, obj.attr, obj.val)
+        elif isinstance(obj, Model.Memory):
+            if obj.subject and obj.object is None and obj.state is not None:
+                obj.subject.state = obj.state
         return obj
 
     @staticmethod
