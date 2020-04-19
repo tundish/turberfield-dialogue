@@ -85,7 +85,7 @@ def interaction(folder, index, ensemble, cmd="", log=None, loop=None):
         cloak.set_state(narrator.get_state(Location))
         cloak.set_state(1)
 
-    return folder
+    return folder.metadata
 
 
 references = ensemble + [Location]
@@ -93,7 +93,7 @@ references = ensemble + [Location]
 folder = SceneScript.Folder(
     pkg=__name__,
     description="The 'Hello World' of text games.",
-    metadata=None,
+    metadata={},
     paths=["foyer.rst", "bar.rst", "cloakroom.rst"],
     interludes=repeat(interaction)
 )

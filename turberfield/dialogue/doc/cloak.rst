@@ -200,7 +200,7 @@ on:
             cloak.set_state(narrator.get_state(Location))
             cloak.set_state(1)
 
-        return folder
+        return folder.metadata
 
 So now we can declare the objects *turberfield-rehearse* needs to
 see; a collection of all our Python references and a folder object
@@ -213,7 +213,7 @@ with details of the game:
     folder = SceneScript.Folder(
         pkg=__name__,
         description="The 'Hello World' of text games.",
-        metadata=None,
+        metadata={},
         paths=["foyer.rst", "bar.rst", "cloakroom.rst"],
         interludes=repeat(interaction)
     )
