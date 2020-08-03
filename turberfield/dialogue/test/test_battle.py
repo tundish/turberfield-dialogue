@@ -34,7 +34,11 @@ from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.sequences.battle.logic import Animal
 from turberfield.dialogue.sequences.battle.logic import Tool
-import turberfield.dialogue.viewer
+try:
+    import turberfield.dialogue.viewer as viewer
+except ImportError:
+    viewer = None
+
 from turberfield.utils.misc import log_setup
 
 import pkg_resources
@@ -102,8 +106,9 @@ class CastingTests(unittest.TestCase):
                 c, p = next((c, p) for c, p in casting.items() if "fighter_2" in c["names"])
                 self.assertIsInstance(p, Animal, p)
 
+    @unittest.skipUnless(viewer, "Could not import viewer")
     def test_cgi(self):
-        p = turberfield.dialogue.viewer.parser()
+        p = viewer.parser()
         fd, fp = tempfile.mkstemp(suffix=".db")
         try:
             ns = p.parse_args([
@@ -116,7 +121,7 @@ class CastingTests(unittest.TestCase):
             self.assertEqual("turberfield", log_setup(ns))
             stream = io.StringIO()
             then = datetime.datetime.now()
-            rv = list(turberfield.dialogue.viewer.cgi_producer(ns, stream))
+            rv = list(viewer.cgi_producer(ns, stream))
             elapsed = datetime.datetime.now() - then
             self.assertTrue(5 <= elapsed.seconds <= 7, elapsed.seconds)
 

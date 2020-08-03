@@ -110,44 +110,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def default_departure(self, node):
         pass
 
-    def visit_section(self, node):
-        self.section_level += 1
-
-    def depart_field(self, node):
-        if self.section_level == 0:
-            data = tuple(
-                ("\n".join([" ".join(getattr(p, "text", [p.rawsource])) for p in f.children])
-                 if f.tagname == "field_body" else f.rawsource).strip()
-                for f in node.children
-            )
-            if data not in self.metadata:
-                self.log.debug(data)
-                self.metadata.append(data)
-
-    def depart_section(self, node):
-        self.section_level -= 1
-
-    def visit_Setter(self, node):
-        ref, attr = node["arguments"][0].split(".")
-        entity = self.get_entity(ref)
-        s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
-        val = int(s) if s.isdigit() else node.string_import(s)
-        self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
-
-    def visit_Definition(self, node):
-        state = node.string_import(node["arguments"][0])
-        subj = self.get_entity(node["options"].get("subject"))
-        obj = self.get_entity(node["options"].get("object"))
-        self.memory = Model.Memory(
-            subj and subj.persona, obj and obj.persona, state, None, None
-        )
-
-    def visit_Evaluation(self, node):
-        ref, attr = node["arguments"][0].split(".")
-        entity = self.get_entity(ref)
-        s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
-        val = int(s) if s.isdigit() else node.string_import(s)
-        self.shots[-1].items.append(Model.Condition(entity.persona, attr, val, operator.eq))
+    def visit_citation_reference(self, node):
+        entity = self.get_entity(node.attributes["refname"])
+        self.speaker = entity.persona
 
     def visit_Cue(self, node):
         subref_re = re.compile("\|(\w+)\|")
@@ -170,53 +135,45 @@ class Model(docutils.nodes.GenericNodeVisitor):
         if item is not None:
             self.shots[-1].items.append(item)
 
-    def visit_title(self, node):
-        self.log.debug(self.section_level)
-        if isinstance(node.parent, docutils.nodes.section):
-            if self.section_level == 1:
-                self.scenes.append(node.parent.attributes["names"][0])
-            elif self.section_level == 2:
-                self.shots.append(Model.Shot(
-                    node.parent.attributes["names"][0],
-                    self.scenes[-1],
-                    []))
+    def visit_Definition(self, node):
+        state = node.string_import(node["arguments"][0])
+        subj = self.get_entity(node["options"].get("subject"))
+        obj = self.get_entity(node["options"].get("object"))
+        self.memory = Model.Memory(
+            subj and subj.persona, obj and obj.persona, state, None, None
+        )
+
+    def visit_Evaluation(self, node):
+        ref, attr = node["arguments"][0].split(".")
+        entity = self.get_entity(ref)
+        s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
+        val = int(s) if s.isdigit() else node.string_import(s)
+        self.shots[-1].items.append(Model.Condition(entity.persona, attr, val, operator.eq))
+
+    def depart_field(self, node):
+        if self.section_level == 0:
+            data = tuple(
+                ("\n".join([" ".join(getattr(p, "text", [p.rawsource])) for p in f.children])
+                 if f.tagname == "field_body" else f.rawsource).strip()
+                for f in node.children
+            )
+            if data not in self.metadata:
+                self.log.debug(data)
+                self.metadata.append(data)
+
+    def depart_section(self, node):
+        self.section_level -= 1
+
+    def visit_Setter(self, node):
+        ref, attr = node["arguments"][0].split(".")
+        entity = self.get_entity(ref)
+        s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
+        val = int(s) if s.isdigit() else node.string_import(s)
+        self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
 
     def visit_paragraph(self, node):
         self.text = []
         self.html = []
-        for c in node.children:
-            if isinstance(c, docutils.nodes.substitution_reference):
-                try:
-                    defn = self.document.substitution_defs[c.attributes["refname"]]
-                except KeyError:
-                    self.log.warning(
-                        "Bad substitution ref before line {0}: {1.rawsource}".format(
-                            node.line, c
-                        )
-                    )
-                    raise
-                for tgt in defn.children:
-                    if isinstance(tgt, PropertyDirective.Getter):
-                        ref, dot, attr = tgt["arguments"][0].partition(".")
-                        entity = self.get_entity(ref)
-                        if entity is None:
-                            obj = Pathfinder.string_import(
-                                tgt["arguments"][0], relative=False, sep="."
-                            )
-                            self.text.append(str(obj))
-                            self.html.append(str(obj))
-                        elif getattr(entity, "persona", None) is not None:
-                            val = operator.attrgetter(attr)(entity.persona)
-                            self.text.append(val)
-                            self.html.append('<span class="ref">{0}</span>'.format(val))
-            elif isinstance(c, docutils.nodes.strong):
-                self.text.append(c.rawsource)
-                self.html.append(
-                    '<strong class="text">{0}</strong>'.format(c.rawsource.replace("*", ""))
-                )
-            elif isinstance(c, docutils.nodes.Text):
-                self.text.append(c.rawsource)
-                self.html.append('<span class="text">{0}</span>'.format(c.rawsource))
 
     def depart_paragraph(self, node):
         if self.memory:
@@ -231,8 +188,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
             self.shots[-1].items.append(
                 Model.Line(self.speaker, " ".join(self.text), "\n".join(self.html))
             )
-        del self.text
-        del self.html
+            del self.text
+            del self.html
 
     def visit_reference(self, node):
         ref_id = self.document.nameids.get(node.get("refname", None), None)
@@ -243,13 +200,56 @@ class Model(docutils.nodes.GenericNodeVisitor):
             ref_uri = node["refuri"]
             self.text.append(node.astext())
             self.html.append('<a href="{0}">{1}</a>'.format(ref_uri, node.astext()))
-        print(node)
-        print(self.document.nameids)
-        print("refname: ", )
 
-    def visit_citation_reference(self, node):
-        entity = self.get_entity(node.attributes["refname"])
-        self.speaker = entity.persona
+    def visit_section(self, node):
+        self.section_level += 1
+
+    def visit_strong(self, node):
+        self.text.append(node.rawsource)
+        self.html.append(
+            '<strong class="text">{0}</strong>'.format(node.rawsource.replace("*", ""))
+        )
+
+    def visit_substitution_reference(self, node):
+        try:
+            defn = self.document.substitution_defs[node.attributes["refname"]]
+        except KeyError:
+            self.log.warning(
+                "Bad substitution ref before line {0}: {1.rawsource}".format(
+                    node.line, node
+                )
+            )
+            raise
+        for tgt in defn.children:
+            if isinstance(tgt, PropertyDirective.Getter):
+                ref, dot, attr = tgt["arguments"][0].partition(".")
+                entity = self.get_entity(ref)
+                if entity is None:
+                    obj = Pathfinder.string_import(
+                        tgt["arguments"][0], relative=False, sep="."
+                    )
+                    self.text.append(str(obj))
+                    self.html.append(str(obj))
+                elif getattr(entity, "persona", None) is not None:
+                    val = operator.attrgetter(attr)(entity.persona)
+                    self.text.append(val)
+                    self.html.append('<span class="ref">{0}</span>'.format(val))
+
+    def visit_Text(self, node):
+        if isinstance(node.parent, docutils.nodes.paragraph):
+            self.text.append(node.astext())
+            self.html.append('<span class="text">{0}</span>'.format(node.astext()))
+
+    def visit_title(self, node):
+        self.log.debug(self.section_level)
+        if isinstance(node.parent, docutils.nodes.section):
+            if self.section_level == 1:
+                self.scenes.append(node.parent.attributes["names"][0])
+            elif self.section_level == 2:
+                self.shots.append(Model.Shot(
+                    node.parent.attributes["names"][0],
+                    self.scenes[-1],
+                    []))
 
 class SceneScript:
     """Gives access to a Turberfield scene script (.rst) file.
