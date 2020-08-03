@@ -143,6 +143,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
             subj and subj.persona, obj and obj.persona, state, None, None
         )
 
+    def visit_emphasis(self, node):
+        self.text.append(node.astext())
+        self.html.append('<em class="text">{0}</em>'.format(node.astext()))
+
     def visit_Evaluation(self, node):
         ref, attr = node["arguments"][0].split(".")
         entity = self.get_entity(ref)
@@ -161,15 +165,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 self.log.debug(data)
                 self.metadata.append(data)
 
-    def depart_section(self, node):
-        self.section_level -= 1
-
-    def visit_Setter(self, node):
-        ref, attr = node["arguments"][0].split(".")
-        entity = self.get_entity(ref)
-        s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
-        val = int(s) if s.isdigit() else node.string_import(s)
-        self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
+    def visit_literal(self, node):
+        self.text.append(node.astext())
+        self.html.append('<pre class="text">{0}</pre>'.format(node.astext()))
 
     def visit_paragraph(self, node):
         self.text = []
@@ -194,8 +192,12 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def visit_reference(self, node):
         ref_id = self.document.nameids.get(node.get("refname", None), None)
         if ref_id:
-            self.text.append(node.astext())
-            self.html.append('<a href="#{0}">{1}</a>'.format(ref_id, node.astext()))
+            try:
+                href = node["refid"]
+            except KeyError:
+                href = ref_id
+            self.text.append(href)
+            self.html.append('<a href="#{0}">{1}</a>'.format(href, node.astext()))
         else:
             ref_uri = node["refuri"]
             self.text.append(node.astext())
@@ -203,6 +205,16 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def visit_section(self, node):
         self.section_level += 1
+
+    def depart_section(self, node):
+        self.section_level -= 1
+
+    def visit_Setter(self, node):
+        ref, attr = node["arguments"][0].split(".")
+        entity = self.get_entity(ref)
+        s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
+        val = int(s) if s.isdigit() else node.string_import(s)
+        self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
 
     def visit_strong(self, node):
         self.text.append(node.rawsource)
