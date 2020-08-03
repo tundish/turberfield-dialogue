@@ -234,6 +234,19 @@ class Model(docutils.nodes.GenericNodeVisitor):
         del self.text
         del self.html
 
+    def visit_reference(self, node):
+        ref_id = self.document.nameids.get(node.get("refname", None), None)
+        if ref_id:
+            self.text.append(node.astext())
+            self.html.append('<a href="#{0}">{1}</a>'.format(ref_id, node.astext()))
+        else:
+            ref_uri = node["refuri"]
+            self.text.append(node.astext())
+            self.html.append('<a href="{0}">{1}</a>'.format(ref_uri, node.astext()))
+        print(node)
+        print(self.document.nameids)
+        print("refname: ", )
+
     def visit_citation_reference(self, node):
         entity = self.get_entity(node.attributes["refname"])
         self.speaker = entity.persona

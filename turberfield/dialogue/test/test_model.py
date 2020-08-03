@@ -741,6 +741,7 @@ class RstFeatureTests(unittest.TestCase):
         script = SceneScript("inline", doc=SceneScript.read(content))
         model = script.run()
         for shot in model.shots:
+            print(shot)
             with self.subTest(shot_name=shot.name):
                 self.assertTrue(all('<a href="http://www.python.org">' in i.html for i in shot.items))
                 print(shot.items)
