@@ -667,3 +667,80 @@ class SelectTests(unittest.TestCase):
         rv = list(script.select(ensemble, roles=2).values())
         self.assertEqual(ensemble[0], rv[0])
         self.assertEqual(ensemble[0], rv[1])
+
+
+class RstFeatureTests(unittest.TestCase):
+
+    def test_markup_body_text(self):
+        content = textwrap.dedent("""
+            Markup
+            ======
+
+            Emphasis
+            --------
+
+            I *keep* telling you.
+
+            I :emphasis:`keep` telling you.
+
+            Strong
+            ------
+
+            I **keep** telling you.
+
+            I :strong:`keep` telling you.
+
+            Preformat
+            ---------
+
+            I ``keep`` telling you.
+
+            I :literal:`keep` telling you.
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        for shot in model.shots:
+            with self.subTest(shot_name=shot.name):
+                self.assertTrue(all("keep" in line.text for line in shot.items)) 
+                if shot.name.startswith("em"):
+                    self.assertTrue(all('<em class="text">' in line.html for line in shot.items)) 
+                    self.assertTrue(all("</em>" in line.html for line in shot.items)) 
+                elif shot.name.startswith("strong"):
+                    self.assertTrue(all('<strong class="text">' in line.html for line in shot.items)) 
+                    self.assertTrue(all("</strong>" in line.html for line in shot.items)) 
+                elif shot.name.startswith("pre"):
+                    self.assertTrue(all('<pre class="text">' in line.html for line in shot.items)) 
+                    self.assertTrue(all("</pre>" in line.html for line in shot.items))
+
+    def test_hyperlink_body_text(self):
+        content = textwrap.dedent("""
+            Hyperlinks
+            ==========
+
+            Standalone
+            ----------
+
+            See http://www.python.org for info.
+
+            Embedded
+            --------
+
+            See the `Python home page <http://www.python.org>`_ for info.
+
+            Named
+            -----
+
+            See the `Python home page`_ for info.
+
+            This link_ is an alias to the link above.
+
+            .. _Python home page: http://www.python.org
+            .. _link: `Python home page`_
+
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        for shot in model.shots:
+            with self.subTest(shot_name=shot.name):
+                self.assertTrue(all('<a href="http://www.python.org">' in i.html for i in shot.items))
+                print(shot.items)

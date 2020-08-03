@@ -182,8 +182,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
                     []))
 
     def visit_paragraph(self, node):
-        text = []
-        html = []
+        self.text = []
+        self.html = []
         for c in node.children:
             if isinstance(c, docutils.nodes.substitution_reference):
                 try:
@@ -203,33 +203,36 @@ class Model(docutils.nodes.GenericNodeVisitor):
                             obj = Pathfinder.string_import(
                                 tgt["arguments"][0], relative=False, sep="."
                             )
-                            text.append(str(obj))
-                            html.append(str(obj))
+                            self.text.append(str(obj))
+                            self.html.append(str(obj))
                         elif getattr(entity, "persona", None) is not None:
                             val = operator.attrgetter(attr)(entity.persona)
-                            text.append(val)
-                            html.append('<span class="ref">{0}</span>'.format(val))
+                            self.text.append(val)
+                            self.html.append('<span class="ref">{0}</span>'.format(val))
             elif isinstance(c, docutils.nodes.strong):
-                text.append(c.rawsource)
-                html.append(
+                self.text.append(c.rawsource)
+                self.html.append(
                     '<strong class="text">{0}</strong>'.format(c.rawsource.replace("*", ""))
                 )
             elif isinstance(c, docutils.nodes.Text):
-                text.append(c.rawsource)
-                html.append('<span class="text">{0}</span>'.format(c.rawsource))
+                self.text.append(c.rawsource)
+                self.html.append('<span class="text">{0}</span>'.format(c.rawsource))
 
+    def depart_paragraph(self, node):
         if self.memory:
             self.shots[-1].items.append(
-                self.memory._replace(text=" ".join(text), html="\n".join(html))
+                self.memory._replace(text=" ".join(self.text), html="\n".join(self.html))
             )
             self.memory = None
         elif self.section_level == 0:
-            node.text = text
-            node.html = html
-        elif (text or html) and self.section_level == 2:
+            node.text = self.text
+            node.html = self.html
+        elif (self.text or self.html) and self.section_level == 2:
             self.shots[-1].items.append(
-                Model.Line(self.speaker, " ".join(text), "\n".join(html))
+                Model.Line(self.speaker, " ".join(self.text), "\n".join(self.html))
             )
+        del self.text
+        del self.html
 
     def visit_citation_reference(self, node):
         entity = self.get_entity(node.attributes["refname"])
