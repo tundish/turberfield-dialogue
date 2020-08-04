@@ -64,7 +64,7 @@ class PropertyDirectiveTests(unittest.TestCase):
         shot, line = next(iter(model))
         self.assertEqual("scene", shot.scene)
         self.assertEqual("shot", shot.name)
-        self.assertEqual("Hi, I'm  William .", line.text)
+        self.assertEqual("Hi, I'm William.", line.text)
 
     def test_property_getter_fields(self):
         content = textwrap.dedent("""
@@ -106,8 +106,8 @@ class PropertyDirectiveTests(unittest.TestCase):
         self.assertEqual("scene", shot.scene)
         self.assertEqual("shot", shot.name)
         self.assertIn(line.text, (
-            "You can call me  Fuzzer .",
-            "You can call me  Q.A ."))
+            "You can call me Fuzzer.",
+            "You can call me Q.A."))
 
     def test_property_setter_enum(self):
         content = textwrap.dedent("""
@@ -701,7 +701,8 @@ class RstFeatureTests(unittest.TestCase):
         model = script.run()
         for shot in model.shots:
             with self.subTest(shot_name=shot.name):
-                self.assertTrue(all("keep" in line.text for line in shot.items)) 
+                self.assertTrue(all("keep" in line.text for line in shot.items))
+                self.assertFalse(any("  " in line.text for line in shot.items), shot)
                 if shot.name.startswith("em"):
                     self.assertTrue(all('<em class="text">' in line.html for line in shot.items)) 
                     self.assertTrue(all("</em>" in line.html for line in shot.items)) 
@@ -725,23 +726,19 @@ class RstFeatureTests(unittest.TestCase):
             Embedded
             --------
 
-            See the `Python home page <http://www.python.org>`_ for info.
+            See the `Python site <http://www.python.org>`_ for info.
 
             Named
             -----
 
             See the `Python home page`_ for info.
 
-            This link_ is an alias to the link above.
-
             .. _Python home page: http://www.python.org
-            .. _link: `Python home page`_
 
         """)
         script = SceneScript("inline", doc=SceneScript.read(content))
         model = script.run()
         for shot in model.shots:
-            print(shot)
             with self.subTest(shot_name=shot.name):
-                self.assertTrue(all('<a href="http://www.python.org">' in i.html for i in shot.items))
-                print(shot.items)
+                self.assertFalse(any("  " in line.text for line in shot.items))
+                self.assertTrue(all('<a href="http://www.python.org">' in i.html for i in shot.items), shot)

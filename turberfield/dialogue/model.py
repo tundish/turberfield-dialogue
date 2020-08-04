@@ -26,6 +26,7 @@ import mimetypes
 import operator
 import os.path
 import re
+import string
 import sys
 
 from turberfield.dialogue.directives import Condition as ConditionDirective
@@ -98,7 +99,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             )
             ref, dot, attr = getter["arguments"][0].partition(".")
             entity = self.get_entity(ref)
-            rv = str(operator.attrgetter(attr)(entity.persona))
+            rv = str(operator.attrgetter(attr)(entity.persona)).strip()
         except (AttributeError, KeyError, IndexError, StopIteration) as e:
             self.log.warning("Argument has bad substitution ref {0}".format(matchObj.group(1)))
             rv = ""
@@ -144,8 +145,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
         )
 
     def visit_emphasis(self, node):
-        self.text.append(node.astext())
-        self.html.append('<em class="text">{0}</em>'.format(node.astext()))
+        text = node.astext()
+        self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
+        self.html.append('<em class="text">{0}</em>'.format(text))
 
     def visit_Evaluation(self, node):
         ref, attr = node["arguments"][0].split(".")
@@ -166,8 +168,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 self.metadata.append(data)
 
     def visit_literal(self, node):
-        self.text.append(node.astext())
-        self.html.append('<pre class="text">{0}</pre>'.format(node.astext()))
+        text = node.astext()
+        self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
+        self.html.append('<pre class="text">{0}</pre>'.format(text))
 
     def visit_paragraph(self, node):
         self.text = []
@@ -176,7 +179,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def depart_paragraph(self, node):
         if self.memory:
             self.shots[-1].items.append(
-                self.memory._replace(text=" ".join(self.text), html="\n".join(self.html))
+                self.memory._replace(text="".join(self.text), html="\n".join(self.html))
             )
             self.memory = None
         elif self.section_level == 0:
@@ -184,7 +187,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             node.html = self.html
         elif (self.text or self.html) and self.section_level == 2:
             self.shots[-1].items.append(
-                Model.Line(self.speaker, " ".join(self.text), "\n".join(self.html))
+                Model.Line(self.speaker, "".join(self.text), "\n".join(self.html))
             )
             del self.text
             del self.html
@@ -192,16 +195,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def visit_reference(self, node):
         ref_id = self.document.nameids.get(node.get("refname", None), None)
         if ref_id:
-            try:
-                href = node["refid"]
-            except KeyError:
-                href = ref_id
-            self.text.append(href)
-            self.html.append('<a href="#{0}">{1}</a>'.format(href, node.astext()))
+            target = self.document.ids[ref_id]
+            ref_uri = target["refuri"]
         else:
             ref_uri = node["refuri"]
-            self.text.append(node.astext())
-            self.html.append('<a href="{0}">{1}</a>'.format(ref_uri, node.astext()))
+        text = node.astext()
+        self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
+        self.html.append('<a href="{0}">{1}</a>'.format(ref_uri, text))
 
     def visit_section(self, node):
         self.section_level += 1
@@ -217,10 +217,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
 
     def visit_strong(self, node):
-        self.text.append(node.rawsource)
-        self.html.append(
-            '<strong class="text">{0}</strong>'.format(node.rawsource.replace("*", ""))
-        )
+        text = node.astext()
+        self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
+        self.html.append('<strong class="text">{0}</strong>'.format(text))
 
     def visit_substitution_reference(self, node):
         try:
@@ -240,17 +239,18 @@ class Model(docutils.nodes.GenericNodeVisitor):
                     obj = Pathfinder.string_import(
                         tgt["arguments"][0], relative=False, sep="."
                     )
-                    self.text.append(str(obj))
-                    self.html.append(str(obj))
+                    self.text.append(str(obj).strip())
+                    self.html.append(str(obj).strip())
                 elif getattr(entity, "persona", None) is not None:
                     val = operator.attrgetter(attr)(entity.persona)
-                    self.text.append(val)
+                    self.text.append(val.strip())
                     self.html.append('<span class="ref">{0}</span>'.format(val))
 
     def visit_Text(self, node):
         if isinstance(node.parent, docutils.nodes.paragraph):
-            self.text.append(node.astext())
-            self.html.append('<span class="text">{0}</span>'.format(node.astext()))
+            text = node.astext()
+            self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
+            self.html.append('<span class="text">{0}</span>'.format(text))
 
     def visit_title(self, node):
         self.log.debug(self.section_level)
