@@ -9,10 +9,12 @@ Change Log
 0.25.0
 ======
 
+* Hyperlinks are now properly rendered as Line HTML.
 * The following rST/HTML5 equivalences are implemented:
+
     * Emphasis directives (``*`` markup) rendered as HTML with `<em>` tags.
     * Strong directives (``**`` markup) rendered as HTML with `<strong>` tags.
-    * Literal directives (`````` markup) rendered as HTML with `<strong>` tags.
+    * Literal directives (`````` markup) rendered as HTML with `<pre>` tags.
 
 0.24.0
 ======

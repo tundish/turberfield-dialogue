@@ -237,7 +237,7 @@ Dialogue
 
 Here's where I stop explaining each component of the game. When it comes
 to understanding the dialogue, it's best just to study the *.rst* files
-in *demo/cloak*. As a taster, here's what the dialogue for the first
+in *sequences/cloak*. As a taster, here's what the dialogue for the first
 room looks like. It's probably the simplest of the three.
 
 .. code-block:: rest
@@ -300,7 +300,7 @@ Action
 
 You can run the game in a similar manner to the previous example::
 
-    cd demo/cloak
+    cd sequences/cloak
     ~/py3.5/bin/turberfield-rehearse @rehearse.cli
 
 Memory

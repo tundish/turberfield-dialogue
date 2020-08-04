@@ -38,12 +38,12 @@ Rehearsal
 
 On Linux or MacOSX::
 
-    $ cd demo/battle
+    $ cd sequences/battle
     $ ~/py3.5/bin/turberfield-rehearse @rehearse.cli
 
 On Windows 8.1::
 
-    > cd demo\battle
+    > cd sequences\battle
     > start %USERPROFILE%\py3.6\Scripts\turberfield-rehearse @rehearse.cli
 
 .. admonition:: You can do this.
@@ -70,7 +70,7 @@ Script file
 ===========
 
 Let's take a peek at the file which generates the dialogue. You can open
-`demo/battle/combat.rst` to see it in full. Here's the gist of
+`sequences/battle/combat.rst` to see it in full. Here's the gist of
 it below.
 
 .. code-block:: rest
@@ -136,7 +136,7 @@ References
 Alongside the script file, there is a Python (.py) file.
 Python files are called `modules`.
 They supply the entities referred to in the script.
-You should take a look in detail at `demo/battle/logic.py`.
+You should take a look in detail at `sequences/battle/logic.py`.
 Here below are its main features.
 
 
