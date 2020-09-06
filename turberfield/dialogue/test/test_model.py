@@ -669,6 +669,50 @@ class SelectTests(unittest.TestCase):
         self.assertEqual(ensemble[0], rv[1])
 
 
+class HTMLEscapingTests(unittest.TestCase):
+
+    def test_escape_ampersand(self):
+        content = textwrap.dedent("""
+            Characters
+            ==========
+
+            Ampersand
+            ---------
+
+            Three pints of M&B please.
+
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        line = model.shots[0].items[0]
+        self.assertIn("M&amp;B", line.html)
+
+    def test_escape_brackets(self):
+        content = textwrap.dedent("""
+            Characters
+            ==========
+
+            Greater
+            -------
+
+            3 > 1
+
+            Less
+            ----
+
+            1 < 3
+
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        for n, shot in enumerate(model.shots):
+            with self.subTest(n=n):
+                if n:
+                    self.assertIn("3 &lt; 1", shot.items[0].html)
+                else:
+                    self.assertIn("1 &gt; 3", shot.items[0].html)
+
+
 class RstFeatureTests(unittest.TestCase):
 
     def test_markup_body_text(self):
