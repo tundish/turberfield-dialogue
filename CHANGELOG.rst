@@ -6,6 +6,12 @@
 Change Log
 ::::::::::
 
+0.26.0
+======
+
+* When building the HTML for a dialogue Line, characters are now correctly
+  escaped as HTML5 entities.
+
 0.25.0
 ======
 
