@@ -77,10 +77,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.speaker = None
         self.memory = None
         self.metadata = []
-        self.entity_table = str.maketrans({
+        self.escape_table = str.maketrans({
             v: "&" + k for k, v in html.entities.html5.items()
             if k.endswith(";") and len(v) == 1
-            and v not in "."
+            and v not in "!\"#'()*+,-..:;=@{}~"
         })
 
     def __iter__(self):
@@ -153,7 +153,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         text = node.astext()
         self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
         self.html.append('<em class="text">{0}</em>'.format(
-            text.translate(self.entity_table)
+            text.translate(self.escape_table)
         ))
 
     def visit_Evaluation(self, node):
@@ -178,7 +178,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         text = node.astext()
         self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
         self.html.append('<pre class="text">{0}</pre>'.format(
-            text.translate(self.entity_table)
+            text.translate(self.escape_table)
         ))
 
     def visit_paragraph(self, node):
@@ -212,7 +212,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
         self.html.append('<a href="{0}">{1}</a>'.format(
             ref_uri,
-            text.translate(self.entity_table)
+            text.translate(self.escape_table)
         ))
 
     def visit_section(self, node):
@@ -232,7 +232,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         text = node.astext()
         self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
         self.html.append('<strong class="text">{0}</strong>'.format(
-            text.translate(self.entity_table)
+            text.translate(self.escape_table)
         ))
 
     def visit_substitution_reference(self, node):
@@ -255,13 +255,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
                     )
                     self.text.append(str(obj).strip())
                     self.html.append(
-                        str(obj).strip().translate(self.entity_table)
+                        str(obj).strip().translate(self.escape_table)
                     )
                 elif getattr(entity, "persona", None) is not None:
                     val = operator.attrgetter(attr)(entity.persona)
                     self.text.append(val.strip())
                     self.html.append('<span class="ref">{0}</span>'.format(
-                        val.translate(self.entity_table)
+                        val.translate(self.escape_table)
                     ))
 
     def visit_Text(self, node):
@@ -269,7 +269,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             text = node.astext()
             self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
             self.html.append('<span class="text">{0}</span>'.format(
-                text.translate(self.entity_table)
+                text.translate(self.escape_table)
             ))
 
     def visit_title(self, node):

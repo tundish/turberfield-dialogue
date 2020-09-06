@@ -712,6 +712,38 @@ class HTMLEscapingTests(unittest.TestCase):
                 else:
                     self.assertIn("3 &gt; 1", shot.items[0].html)
 
+    def test_noescape_common_characters(self):
+        content = textwrap.dedent("""
+            Characters
+            ==========
+
+            Unchanged
+            ---------
+
+            !"*()+-:;'.,@#{}=~
+
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        line = model.shots[0].items[0]
+        self.assertNotIn("&", line.html)
+
+    def test_escape_common_characters(self):
+        content = textwrap.dedent("""
+            Characters
+            ==========
+
+            Changed
+            -------
+
+            $%^©£
+
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        line = model.shots[0].items[0]
+        self.assertEqual(5, line.html.count("&"), line.html)
+
 
 class RstFeatureTests(unittest.TestCase):
 
