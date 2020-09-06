@@ -21,6 +21,7 @@ import argparse
 from collections import defaultdict
 from collections import namedtuple
 from collections import OrderedDict
+import html.entities
 import logging
 import mimetypes
 import operator
@@ -76,16 +77,16 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.speaker = None
         self.memory = None
         self.metadata = []
+        self.entity_table = str.maketrans({
+            v: "&" + k for k, v in html.entities.html5.items()
+            if k.endswith(";") and len(v) == 1
+            and v not in "."
+        })
 
     def __iter__(self):
         for shot in self.shots:
             for item in shot.items:
                 yield shot, item
-
-
-    @staticmethod
-    def escape_html_entities(text):
-        return text
 
     def get_entity(self, ref):
         return next((
@@ -152,7 +153,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         text = node.astext()
         self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
         self.html.append('<em class="text">{0}</em>'.format(
-            self.escape_html_entities(text)
+            text.translate(self.entity_table)
         ))
 
     def visit_Evaluation(self, node):
@@ -177,7 +178,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         text = node.astext()
         self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
         self.html.append('<pre class="text">{0}</pre>'.format(
-            self.escape_html_entities(text)
+            text.translate(self.entity_table)
         ))
 
     def visit_paragraph(self, node):
@@ -211,7 +212,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
         self.html.append('<a href="{0}">{1}</a>'.format(
             ref_uri,
-            self.escape_html_entities(text)
+            text.translate(self.entity_table)
         ))
 
     def visit_section(self, node):
@@ -231,7 +232,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         text = node.astext()
         self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
         self.html.append('<strong class="text">{0}</strong>'.format(
-            self.escape_html_entities(text)
+            text.translate(self.entity_table)
         ))
 
     def visit_substitution_reference(self, node):
@@ -254,13 +255,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
                     )
                     self.text.append(str(obj).strip())
                     self.html.append(
-                        self.escape_html_entities(str(obj).strip())
+                        str(obj).strip().translate(self.entity_table)
                     )
                 elif getattr(entity, "persona", None) is not None:
                     val = operator.attrgetter(attr)(entity.persona)
                     self.text.append(val.strip())
                     self.html.append('<span class="ref">{0}</span>'.format(
-                        self.escape_html_entities(val)
+                        val.translate(self.entity_table)
                     ))
 
     def visit_Text(self, node):
@@ -268,7 +269,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             text = node.astext()
             self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
             self.html.append('<span class="text">{0}</span>'.format(
-                self.escape_html_entities(text)
+                text.translate(self.entity_table)
             ))
 
     def visit_title(self, node):

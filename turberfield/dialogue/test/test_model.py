@@ -708,9 +708,9 @@ class HTMLEscapingTests(unittest.TestCase):
         for n, shot in enumerate(model.shots):
             with self.subTest(n=n):
                 if n:
-                    self.assertIn("3 &lt; 1", shot.items[0].html)
+                    self.assertIn("1 &lt; 3", shot.items[0].html)
                 else:
-                    self.assertIn("1 &gt; 3", shot.items[0].html)
+                    self.assertIn("3 &gt; 1", shot.items[0].html)
 
 
 class RstFeatureTests(unittest.TestCase):
