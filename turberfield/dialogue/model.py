@@ -99,7 +99,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 self.memory._replace(text="".join(self.text), html="\n".join(self.html))
             )
             self.memory = None
-        elif (self.text or self.html):
+        elif self.text:
             self.shots[-1].items.append(
                 Model.Line(self.speaker, "".join(self.text), "\n".join(self.html))
             )
@@ -193,11 +193,14 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def depart_field(self, node):
         if self.section_level == 0:
+            print(self.text)
+            print(node.children)
             data = tuple(
                 ("\n".join([" ".join(getattr(p, "text", [p.rawsource])) for p in f.children])
                  if f.tagname == "field_body" else f.rawsource).strip()
                 for f in node.children
             )
+            print(data)
             if data not in self.metadata:
                 self.log.debug(data)
                 self.metadata.append(data)
@@ -217,12 +220,12 @@ class Model(docutils.nodes.GenericNodeVisitor):
         ))
 
     def visit_paragraph(self, node):
-        if not isinstance(node.parent, (field_body, list_item)):
+        if self.section_level and not isinstance(node.parent, (field_body, list_item)):
             self.text = []
             self.html = ["<p>"]
 
     def depart_paragraph(self, node):
-        if not isinstance(node.parent, (field_body, list_item)):
+        if self.section_level and not isinstance(node.parent, (field_body, list_item)):
             self.html.append("</p>\n")
             self.close_shot()
 

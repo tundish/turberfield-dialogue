@@ -80,7 +80,7 @@ class PropertyDirectiveTests(unittest.TestCase):
         metadata = dict(model.metadata)
         self.assertIn("copyright", metadata)
         self.assertIn("version", metadata)
-        self.assertEqual(2, metadata["version"].count("."))
+        self.assertEqual(2, metadata["version"].count("."), metadata)
 
     def test_nickname_getter(self):
         content = textwrap.dedent(
@@ -101,7 +101,7 @@ class PropertyDirectiveTests(unittest.TestCase):
             """)
         script = SceneScript("inline", doc=SceneScript.read(content))
         script.cast(script.select([self.personae[0]]))
-        model = script.run()
+        model = list(script.run())
         shot, line = next(iter(model))
         self.assertEqual("scene", shot.scene)
         self.assertEqual("shot", shot.name)
