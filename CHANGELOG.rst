@@ -6,6 +6,16 @@
 Change Log
 ::::::::::
 
+0.27.0
+======
+
+This release comprises a refactoring of the parser model. You now get more flexibility,
+but you should check your existing projects to see if they are any changes in rendering.
+
+* The `raw:: html` directive is now supported.
+* Bullet lists are now recognised and rendered as HTML unordered lists.
+* The requirement for two sections has been relaxed, allowing you to render document fragments.
+
 0.26.0
 ======
 

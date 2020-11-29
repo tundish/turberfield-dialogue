@@ -346,7 +346,11 @@ class SceneScript:
         pep_references=1,
         report_level=2, rfc_references=1,
         strict_visitor=False, tab_width=4,
-        warning_stream=sys.stderr
+        warning_stream=sys.stderr,
+        raw_enabled=True,
+        file_insertion_enabled=True,
+        input_encoding="utf-8",
+        input_encoding_error_handler="replace"
     )
 
     docutils.parsers.rst.directives.register_directive(

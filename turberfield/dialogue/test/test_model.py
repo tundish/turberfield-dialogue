@@ -747,6 +747,27 @@ class HTMLEscapingTests(unittest.TestCase):
 
 class RstFeatureTests(unittest.TestCase):
 
+    def test_bullet_lists(self):
+        content = textwrap.dedent("""
+            Scene
+            =====
+
+            Shot
+            ----
+
+            ABC.
+
+            * Always
+            * Be
+            * Closing
+
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        self.assertEqual(["Always", "Be", "Closing"], model.shots[-1].items[-1].text.splitlines())
+        self.assertEqual(2, model.shots[-1].items[-1].html.count("ul>"))
+        self.assertEqual(6, model.shots[-1].items[-1].html.count("li>"))
+
     def test_markup_body_text(self):
         content = textwrap.dedent("""
             Markup
@@ -818,3 +839,22 @@ class RstFeatureTests(unittest.TestCase):
             with self.subTest(shot_name=shot.name):
                 self.assertFalse(any("  " in line.text for line in shot.items))
                 self.assertTrue(all('<a href="http://www.python.org">' in i.html for i in shot.items), shot)
+
+    def test_raw_html(self):
+        content = textwrap.dedent("""
+            Scene
+            =====
+
+            Shot
+            ----
+
+            I know what I'll do...
+
+            .. raw:: html
+
+                <marquee>Puppies die of bad design</marquee>
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        self.assertEqual(2, model.shots[-1].items[-1].html.count("marquee"))
+        self.assertEqual(0, model.shots[-1].items[-1].text.count("marquee"))
