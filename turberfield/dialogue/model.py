@@ -191,19 +191,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
             val = s
         self.shots[-1].items.append(Model.Condition(entity.persona, attr, val, operator.eq))
 
-    def depart_field(self, node):
-        if self.section_level == 0:
-            print(self.text)
-            print(node.children)
-            data = tuple(
-                ("\n".join([" ".join(getattr(p, "text", [p.rawsource])) for p in f.children])
-                 if f.tagname == "field_body" else f.rawsource).strip()
-                for f in node.children
-            )
-            print(data)
-            if data not in self.metadata:
-                self.log.debug(data)
-                self.metadata.append(data)
+    def depart_field_name(self, node):
+        self.metadata.append((node.astext(), None))
+
+    def depart_field_body(self, node):
+        name, _ = self.metadata.pop(-1)
+        self.metadata.append((name, " ".join(self.text)))
+        self.text.clear()
 
     def visit_list_item(self, node):
         self.html.append("<li>")
@@ -220,12 +214,12 @@ class Model(docutils.nodes.GenericNodeVisitor):
         ))
 
     def visit_paragraph(self, node):
-        if self.section_level and not isinstance(node.parent, (field_body, list_item)):
+        if self.shots and not isinstance(node.parent, (field_body, list_item)):
             self.text = []
             self.html = ["<p>"]
 
     def depart_paragraph(self, node):
-        if self.section_level and not isinstance(node.parent, (field_body, list_item)):
+        if self.shots and not isinstance(node.parent, (field_body, list_item)):
             self.html.append("</p>\n")
             self.close_shot()
 
