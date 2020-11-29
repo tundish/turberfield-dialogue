@@ -42,6 +42,46 @@ class PropertyDirectiveTests(unittest.TestCase):
         object()
     ]
 
+    def test_dialogue_at_level_0(self):
+        content = textwrap.dedent(
+            """
+            .. entity:: P
+
+            [P]_
+
+                You can call me |P_NICKNAME|.
+
+            .. |P_NICKNAME| property:: P.nickname
+            """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([self.personae[0]]))
+        model = list(script.run())
+        shot, line = next(iter(model))
+        self.assertIs(None, shot.scene)
+        self.assertIs(None, shot.name)
+        self.assertIn(line.text, (
+            "You can call me Fuzzer.",
+            "You can call me Q.A."))
+
+    def test_dialogue_at_level_1(self):
+        content = textwrap.dedent(
+            """
+            .. entity:: P
+
+            Scene
+            =====
+
+            [P]_
+
+                You can call me |P_NICKNAME|.
+
+            .. |P_NICKNAME| property:: P.nickname
+            """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([self.personae[0]]))
+        model = list(script.run())
+        self.assertFalse(model)
+
     def test_property_getter(self):
         content = textwrap.dedent("""
             .. entity:: P
@@ -848,11 +888,11 @@ class RstFeatureTests(unittest.TestCase):
             Shot
             ----
 
-            I know what I'll do...
+            I know what it needs...
 
             .. raw:: html
 
-                <marquee>Puppies die of bad design</marquee>
+                <marquee>Puppies die when you do bad design</marquee>
         """)
         script = SceneScript("inline", doc=SceneScript.read(content))
         model = script.run()
