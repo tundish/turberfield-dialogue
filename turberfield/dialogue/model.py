@@ -41,6 +41,9 @@ from turberfield.utils.misc import group_by_type
 
 import pkg_resources
 import docutils
+from docutils.nodes import field_body
+from docutils.nodes import list_item
+
 
 
 class Model(docutils.nodes.GenericNodeVisitor):
@@ -72,8 +75,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
             "turberfield.dialogue.{0}".format(os.path.basename(self.fP))
         )
         self.section_level = 0
-        self.scenes = []
-        self.shots = []
+        self.scenes = [None]
+        self.shots = [Model.Shot(None, None, [])]
         self.speaker = None
         self.memory = None
         self.metadata = []
@@ -82,11 +85,26 @@ class Model(docutils.nodes.GenericNodeVisitor):
             if k.endswith(";") and len(v) == 1
             and v not in "!\"#'()*+,-..:;=@{}~"
         })
+        self.text = []
+        self.html = []
 
     def __iter__(self):
         for shot in self.shots:
             for item in shot.items:
                 yield shot, item
+
+    def close_shot(self):
+        if self.memory:
+            self.shots[-1].items.append(
+                self.memory._replace(text="".join(self.text), html="\n".join(self.html))
+            )
+            self.memory = None
+        elif (self.text or self.html):
+            self.shots[-1].items.append(
+                Model.Line(self.speaker, "".join(self.text), "\n".join(self.html))
+            )
+            self.text.clear()
+            self.html.clear()
 
     def get_entity(self, ref):
         return next((
@@ -116,9 +134,16 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def default_departure(self, node):
         pass
 
+    def visit_bullet_list(self, node):
+        self.html.append("<ul>")
+
+    def depart_bullet_list(self, node):
+        self.html.append("</ul>")
+        self.close_shot()
+
     def visit_citation_reference(self, node):
         entity = self.get_entity(node.attributes["refname"])
-        self.speaker = entity.persona
+        self.speaker = entity and entity.persona
 
     def visit_Cue(self, node):
         subref_re = re.compile("\|(\w+)\|")
@@ -160,7 +185,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
         ref, attr = node["arguments"][0].split(".")
         entity = self.get_entity(ref)
         s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
-        val = int(s) if s.isdigit() else node.string_import(s)
+        try:
+            val = int(s) if s.isdigit() else node.string_import(s)
+        except ValueError:
+            val = s
         self.shots[-1].items.append(Model.Condition(entity.persona, attr, val, operator.eq))
 
     def depart_field(self, node):
@@ -174,6 +202,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 self.log.debug(data)
                 self.metadata.append(data)
 
+    def visit_list_item(self, node):
+        self.html.append("<li>")
+
+    def depart_list_item(self, node):
+        self.html.append("</li>")
+        self.text.append("\n")
+
     def visit_literal(self, node):
         text = node.astext()
         self.text.append(text.lstrip() if self.text and self.text[-1].endswith(tuple(string.whitespace)) else text)
@@ -182,24 +217,20 @@ class Model(docutils.nodes.GenericNodeVisitor):
         ))
 
     def visit_paragraph(self, node):
-        self.text = []
-        self.html = []
+        if not isinstance(node.parent, (field_body, list_item)):
+            self.text = []
+            self.html = ["<p>"]
 
     def depart_paragraph(self, node):
-        if self.memory:
-            self.shots[-1].items.append(
-                self.memory._replace(text="".join(self.text), html="\n".join(self.html))
-            )
-            self.memory = None
-        elif self.section_level == 0:
-            node.text = self.text
-            node.html = self.html
-        elif (self.text or self.html) and self.section_level == 2:
-            self.shots[-1].items.append(
-                Model.Line(self.speaker, "".join(self.text), "\n".join(self.html))
-            )
-            del self.text
-            del self.html
+        if not isinstance(node.parent, (field_body, list_item)):
+            self.html.append("</p>\n")
+            self.close_shot()
+
+    def depart_raw(self, node):
+        if "html" in node.attributes["format"] and self.shots:
+            if self.shots[-1].items:
+                line = self.shots[-1].items[-1]
+                self.shots[-1].items[-1] = line._replace(html=line.html + "\n" + node.astext())
 
     def visit_reference(self, node):
         ref_id = self.document.nameids.get(node.get("refname", None), None)
@@ -225,8 +256,15 @@ class Model(docutils.nodes.GenericNodeVisitor):
         ref, attr = node["arguments"][0].split(".")
         entity = self.get_entity(ref)
         s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
-        val = int(s) if s.isdigit() else node.string_import(s)
-        self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
+        try:
+            val = int(s) if s.isdigit() else node.string_import(s)
+        except ValueError:
+            val = s
+
+        try:
+            self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
+        except AttributeError:
+            warnings.warn("Entity {0} has no persona.".format(entity))
 
     def visit_strong(self, node):
         text = node.astext()
@@ -274,6 +312,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def visit_title(self, node):
         self.log.debug(self.section_level)
+        if self.scenes == [None] and self.shots == [Model.Shot(None, None, [])]:
+            self.scenes.clear()
+            self.shots.clear()
+
         if isinstance(node.parent, docutils.nodes.section):
             if self.section_level == 1:
                 self.scenes.append(node.parent.attributes["names"][0])
@@ -282,6 +324,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
                     node.parent.attributes["names"][0],
                     self.scenes[-1],
                     []))
+
 
 class SceneScript:
     """Gives access to a Turberfield scene script (.rst) file.
