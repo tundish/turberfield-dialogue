@@ -6,6 +6,12 @@
 Change Log
 ::::::::::
 
+0.28.0
+======
+
+* Fixed a bug where the current speaker would carry over from a previous
+  block quote.
+
 0.27.0
 ======
 

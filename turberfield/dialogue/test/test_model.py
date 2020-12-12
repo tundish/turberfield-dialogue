@@ -82,6 +82,58 @@ class PropertyDirectiveTests(unittest.TestCase):
         model = list(script.run())
         self.assertFalse(model)
 
+    def test_speaker_reset_by_shot(self):
+        content = textwrap.dedent("""
+            .. entity:: P
+
+            Scene
+            ~~~~~
+
+            One
+            ---
+
+            [P]_
+
+                I'm speaking.
+
+            Two
+            ---
+
+            Not any more.
+            """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([self.personae[0]]))
+        model = script.run()
+        one, two = list(model)
+        self.assertTrue(one[1].persona)
+        self.assertIsNone(two[1].persona)
+
+    def test_speaker_reset_by_dedent(self):
+        content = textwrap.dedent("""
+            .. entity:: P
+
+            Scene
+            ~~~~~
+
+            One
+            ---
+
+            [P]_
+
+                I'm speaking.
+
+                Still speaking.
+
+            Not any more.
+            """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([self.personae[0]]))
+        model = script.run()
+        one, two, three = list(model)
+        self.assertTrue(one[1].persona)
+        self.assertTrue(two[1].persona)
+        self.assertIsNone(three[1].persona, three)
+
     def test_property_getter(self):
         content = textwrap.dedent("""
             .. entity:: P

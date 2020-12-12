@@ -41,6 +41,7 @@ from turberfield.utils.misc import group_by_type
 
 import pkg_resources
 import docutils
+from docutils.nodes import block_quote
 from docutils.nodes import field_body
 from docutils.nodes import list_item
 
@@ -133,6 +134,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def default_departure(self, node):
         pass
+
+    def depart_block_quote(self, node):
+        self.speaker = None
 
     def visit_bullet_list(self, node):
         self.html.append("<ul>")
