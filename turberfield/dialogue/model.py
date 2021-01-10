@@ -29,6 +29,7 @@ import os.path
 import re
 import string
 import sys
+import warnings
 
 from turberfield.dialogue.directives import Condition as ConditionDirective
 from turberfield.dialogue.directives import Entity as EntityDirective
