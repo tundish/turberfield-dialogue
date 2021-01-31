@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.29.0
+======
+
+* Improved handling of AttributeError when substituting a persona reference.
+
 0.28.0
 ======
 
