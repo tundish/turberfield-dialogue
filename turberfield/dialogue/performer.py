@@ -57,10 +57,19 @@ class Performer:
     @staticmethod
     def allows(item: Model.Condition):
         if item.attr == "state" and isinstance(item.object, Stateful):
-            value = item.object.get_state(type(item.val))
+            lhs = item.object.get_state(type(item.val))
+            rhs = item.val
         else:
-            value = operator.attrgetter(item.attr)(item.object)
-        return item.operator(value, item.val)
+            fmt = "".join(("{0.", item.attr, "}"))
+            try:
+                lhs = fmt.format(item.object)
+            except (AttributeError, IndexError, KeyError, ValueError):
+                return False
+            else:
+                rhs = str(item.val)
+
+        op = item.operator or operator.eq
+        return op(lhs, rhs)
 
     @property
     def stopped(self):

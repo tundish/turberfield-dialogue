@@ -319,7 +319,7 @@ class ConditionDirectiveTests(unittest.TestCase):
 
         Outside.
 
-        Summary
+        Intense
         -------
 
         .. condition:: WEATHER.state
@@ -328,6 +328,15 @@ class ConditionDirectiveTests(unittest.TestCase):
         [WEATHER]_
 
             It's stormy!
+
+        Hushed
+        ------
+
+        .. condition:: WEATHER.state.name quiet
+
+        [WEATHER]_
+
+            It's quiet.
 
         Snow storm
         ----------

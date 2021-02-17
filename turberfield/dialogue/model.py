@@ -187,7 +187,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         ))
 
     def visit_Evaluation(self, node):
-        ref, attr = node["arguments"][0].split(".")
+        ref, dot, attr = node["arguments"][0].partition(".")
         entity = self.get_entity(ref)
         s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
         try:
