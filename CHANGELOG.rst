@@ -6,6 +6,12 @@
 Change Log
 ::::::::::
 
+0.30.0
+======
+
+* Dialogue model permits multiple dots in a condition specifier.
+* Performer implements format string style evaluation of conditions.
+
 0.29.0
 ======
 
