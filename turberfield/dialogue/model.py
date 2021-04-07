@@ -61,7 +61,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
     Still = namedtuple("Still", ["package", "resource", "offset", "duration", "loop", "label"])
     Memory = namedtuple("Memory", ["subject", "object", "state", "text", "html"])
     Line = namedtuple("Line", ["persona", "text", "html"])
-    Condition = namedtuple("Condition", ["object", "attr", "val", "operator"])
+    Condition = namedtuple("Condition", ["object", "format", "pattern", "value"])
 
     def __init__(self, fP, document):
         super().__init__(document)
@@ -187,14 +187,17 @@ class Model(docutils.nodes.GenericNodeVisitor):
         ))
 
     def visit_Evaluation(self, node):
-        ref, dot, attr = node["arguments"][0].partition(".")
+        ref, dot, format_ = node["arguments"][0].partition(".")
         entity = self.get_entity(ref)
-        s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
+        s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][-1])
         try:
-            val = int(s) if s.isdigit() else node.string_import(s)
+            value = int(s) if s.isdigit() else node.string_import(s)
         except ValueError:
-            val = s
-        self.shots[-1].items.append(Model.Condition(entity.persona, attr, val, operator.eq))
+            value = s
+        pattern = node["arguments"][1] if len(node["arguments"]) == 3 else None
+        self.shots[-1].items.append(
+            Model.Condition(entity.persona, format_, pattern, value)
+        )
 
     def depart_field_name(self, node):
         self.metadata.append((node.astext(), None))

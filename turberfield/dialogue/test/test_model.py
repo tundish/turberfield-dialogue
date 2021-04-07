@@ -442,6 +442,39 @@ class ConditionSyntaxTests(unittest.TestCase):
         self.assertTrue(Performer.allows(conditions[0]))
         self.assertFalse(Performer.allows(conditions[1]))
 
+    def test_regex_matching(self):
+        content = textwrap.dedent("""
+            .. entity:: WHATEVER
+
+            Test exact
+            ~~~~~~~~~~
+
+            Odd
+            ---
+
+            .. condition:: WHATEVER.value [13579] 1
+
+            Odd.
+
+            Even
+            ----
+
+            .. condition:: WHATEVER.value [02468] 2
+
+            Even.
+
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        selection = script.select([DataObject(value=1)])
+        self.assertTrue(all(selection.values()))
+        script.cast(selection)
+        model = script.run()
+        conditions = [l for s, l in model if isinstance(l, Model.Condition)]
+        self.assertEqual(2, len(conditions))
+
+        self.assertTrue(Performer.allows(conditions[0]), conditions[0])
+        self.assertFalse(Performer.allows(conditions[1]))
+
 
 class FXDirectiveTests(unittest.TestCase):
 

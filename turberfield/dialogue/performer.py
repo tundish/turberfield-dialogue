@@ -56,20 +56,20 @@ class Performer:
 
     @staticmethod
     def allows(item: Model.Condition):
-        if item.attr == "state" and isinstance(item.object, Stateful):
-            lhs = item.object.get_state(type(item.val))
-            rhs = item.val
+        if item.format == "state" and isinstance(item.object, Stateful):
+            lhs = item.object.get_state(type(item.value))
+            rhs = item.value
         else:
-            fmt = "".join(("{0.", item.attr, "}"))
+            fmt = "".join(("{0.", item.format, "}"))
             try:
                 lhs = fmt.format(item.object)
             except (AttributeError, IndexError, KeyError, ValueError):
                 return False
             else:
-                rhs = str(item.val)
+                rhs = str(item.value)
 
-        op = item.operator or operator.eq
-        return op(lhs, rhs)
+        op = item.pattern or operator.eq
+        return lhs == rhs
 
     @property
     def stopped(self):
