@@ -10,6 +10,8 @@ Change Log
 ======
 
 * Fix unit tests for Condition when not skipped.
+* Permit regular expressions in Condition values.
+* `Performer.allows` implements regular expression match where necessary.
 
 0.30.0
 ======

@@ -128,6 +128,9 @@ Condition directive
     This directive takes no other options.
 
     The condition directive specifies that a comparison be evaluated.
+    If VALUE is supplied in parentheses, it is used as a Regular Expression.
+    Otherwise, it is treated as a plain string, though it may contain
+    substitution references.
 
     The intended purpose of this directive is to mask off sections of dialogue
     which do not satisfy certain criteria.
