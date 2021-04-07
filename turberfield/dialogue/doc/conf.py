@@ -47,7 +47,7 @@ MOCK_MODULES = ["simpleaudio"]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 def setup(app):
-    app.add_stylesheet("turberfield.css")
+    app.add_css_file("turberfield.css")
 
 # -- General configuration ------------------------------------------------
 
