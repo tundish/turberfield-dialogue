@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.31.0
+======
+
+* Fix unit tests for Condition when not skipped.
+
 0.30.0
 ======
 

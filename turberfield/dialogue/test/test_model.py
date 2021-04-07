@@ -378,11 +378,12 @@ class ConditionDirectiveTests(unittest.TestCase):
         script.cast(selection)
         model = script.run()
         conditions = [l for s, l in model if isinstance(l, Model.Condition)]
-        self.assertEqual(3, len(conditions))
+        self.assertEqual(4, len(conditions))
 
         self.assertTrue(Performer.allows(conditions[0]))
         self.assertFalse(Performer.allows(conditions[1]))
-        self.assertTrue(Performer.allows(conditions[2]))
+        self.assertFalse(Performer.allows(conditions[2]))
+        self.assertTrue(Performer.allows(conditions[3]))
 
     def test_condition_evaluation_two(self):
         effects = [
@@ -397,11 +398,12 @@ class ConditionDirectiveTests(unittest.TestCase):
         script.cast(selection)
         model = script.run()
         conditions = [l for s, l in model if isinstance(l, Model.Condition)]
-        self.assertEqual(3, len(conditions))
+        self.assertEqual(4, len(conditions))
 
         self.assertTrue(Performer.allows(conditions[0]))
-        self.assertTrue(Performer.allows(conditions[1]))
-        self.assertFalse(Performer.allows(conditions[2]))
+        self.assertFalse(Performer.allows(conditions[1]))
+        self.assertTrue(Performer.allows(conditions[2]))
+        self.assertFalse(Performer.allows(conditions[3]))
 
 
 class FXDirectiveTests(unittest.TestCase):
