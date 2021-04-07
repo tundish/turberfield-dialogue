@@ -145,7 +145,7 @@ class Condition(docutils.parsers.rst.Directive):
         pass
 
     required_arguments = 2
-    optional_arguments = 1
+    optional_arguments = 0
     final_argument_whitespace = False
     option_spec = {}
     has_content = False

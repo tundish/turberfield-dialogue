@@ -189,18 +189,21 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def visit_Evaluation(self, node):
         ref, dot, format_ = node["arguments"][0].partition(".")
         entity = self.get_entity(ref)
-        s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][-1])
-        try:
-            value = int(s) if s.isdigit() else node.string_import(s)
-        except ValueError:
-            value = s
+        pattern = node["arguments"][-1]
+        regex = None
+        if "(" in pattern:
+            try:
+                regex = re.compile(pattern)
+                value = pattern
+            except Exception as e:
+                self.log.warning("Condition regex error {0} {1}".format(e, pattern))
 
-        pattern = node["arguments"][1] if len(node["arguments"]) == 3 else ""
-        try:
-            regex = re.compile(pattern) if pattern else None
-        except Exception as e:
-            self.log.warning("Condition regex error {0} {1}".format(e, pattern))
-            regex = None
+        if not regex:
+            s = re.compile("\|(\w+)\|").sub(self.substitute_property, pattern)
+            try:
+                value = int(s) if s.isdigit() else node.string_import(s)
+            except ValueError:
+                value = s
 
         self.shots[-1].items.append(
             Model.Condition(entity.persona, format_, regex, value)

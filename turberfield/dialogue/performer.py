@@ -68,7 +68,10 @@ class Performer:
             else:
                 rhs = str(item.value)
 
-        return lhs == rhs
+        if item.regex:
+            return item.regex.match(lhs)
+        else:
+            return lhs == rhs
 
     @property
     def stopped(self):

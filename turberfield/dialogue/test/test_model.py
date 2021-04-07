@@ -452,20 +452,21 @@ class ConditionSyntaxTests(unittest.TestCase):
             Odd
             ---
 
-            .. condition:: WHATEVER.value [13579] 1
+            .. condition:: WHATEVER.value ([13579])
 
             Odd.
 
             Even
             ----
 
-            .. condition:: WHATEVER.value [02468] 2
+            .. condition:: WHATEVER.value ([02468])
 
             Even.
 
         """)
+        obj = DataObject(value=1)
         script = SceneScript("inline", doc=SceneScript.read(content))
-        selection = script.select([DataObject(value=1)])
+        selection = script.select([obj])
         self.assertTrue(all(selection.values()))
         script.cast(selection)
         model = script.run()
@@ -475,6 +476,9 @@ class ConditionSyntaxTests(unittest.TestCase):
         self.assertTrue(Performer.allows(conditions[0]), conditions[0])
         self.assertFalse(Performer.allows(conditions[1]))
 
+        obj.value = 2
+        self.assertFalse(Performer.allows(conditions[0]), conditions[0])
+        self.assertTrue(Performer.allows(conditions[1]))
 
 class FXDirectiveTests(unittest.TestCase):
 
