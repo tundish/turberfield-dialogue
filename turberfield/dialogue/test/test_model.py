@@ -28,6 +28,7 @@ from turberfield.dialogue.directives import Entity
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.performer import Performer
+from turberfield.dialogue.types import DataObject
 from turberfield.dialogue.types import EnumFactory
 from turberfield.dialogue.types import Stateful
 from turberfield.dialogue.types import Player
@@ -404,6 +405,42 @@ class ConditionDirectiveTests(unittest.TestCase):
         self.assertFalse(Performer.allows(conditions[1]))
         self.assertTrue(Performer.allows(conditions[2]))
         self.assertFalse(Performer.allows(conditions[3]))
+
+
+class ConditionSyntaxTests(unittest.TestCase):
+
+    def test_exact_matching(self):
+        content = textwrap.dedent("""
+            .. entity:: WHATEVER
+
+            Test exact
+            ~~~~~~~~~~
+
+            One
+            ---
+
+            .. condition:: WHATEVER.value 1
+
+            One.
+
+            Two
+            ---
+
+            .. condition:: WHATEVER.value 2
+
+            Two.
+
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        selection = script.select([DataObject(value=1)])
+        self.assertTrue(all(selection.values()))
+        script.cast(selection)
+        model = script.run()
+        conditions = [l for s, l in model if isinstance(l, Model.Condition)]
+        self.assertEqual(2, len(conditions))
+
+        self.assertTrue(Performer.allows(conditions[0]))
+        self.assertFalse(Performer.allows(conditions[1]))
 
 
 class FXDirectiveTests(unittest.TestCase):
