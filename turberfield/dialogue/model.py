@@ -61,7 +61,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
     Still = namedtuple("Still", ["package", "resource", "offset", "duration", "loop", "label"])
     Memory = namedtuple("Memory", ["subject", "object", "state", "text", "html"])
     Line = namedtuple("Line", ["persona", "text", "html"])
-    Condition = namedtuple("Condition", ["object", "format", "pattern", "value"])
+    Condition = namedtuple("Condition", ["object", "format", "regex", "value"])
 
     def __init__(self, fP, document):
         super().__init__(document)
@@ -194,9 +194,16 @@ class Model(docutils.nodes.GenericNodeVisitor):
             value = int(s) if s.isdigit() else node.string_import(s)
         except ValueError:
             value = s
-        pattern = node["arguments"][1] if len(node["arguments"]) == 3 else None
+
+        pattern = node["arguments"][1] if len(node["arguments"]) == 3 else ""
+        try:
+            regex = re.compile(pattern) if pattern else None
+        except Exception as e:
+            self.log.warning("Condition regex error {0} {1}".format(e, pattern))
+            regex = None
+
         self.shots[-1].items.append(
-            Model.Condition(entity.persona, format_, pattern, value)
+            Model.Condition(entity.persona, format_, regex, value)
         )
 
     def depart_field_name(self, node):

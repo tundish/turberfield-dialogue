@@ -18,7 +18,7 @@
 
 from collections import defaultdict
 import itertools
-import operator
+import re
 
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
@@ -68,7 +68,6 @@ class Performer:
             else:
                 rhs = str(item.value)
 
-        op = item.pattern or operator.eq
         return lhs == rhs
 
     @property
