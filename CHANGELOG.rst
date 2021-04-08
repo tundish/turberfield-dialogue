@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.32.0
+======
+
+* Fix an issue on updating to docutils 0.17.
+
 0.31.0
 ======
 
