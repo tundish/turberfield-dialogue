@@ -368,7 +368,8 @@ class SceneScript:
         raw_enabled=True,
         file_insertion_enabled=True,
         input_encoding="utf-8",
-        input_encoding_error_handler="replace"
+        input_encoding_error_handler="replace",
+        line_length_limit=float("inf"),
     )
 
     docutils.parsers.rst.directives.register_directive(
