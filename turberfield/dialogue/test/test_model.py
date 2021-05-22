@@ -149,15 +149,50 @@ class PropertyDirectiveTests(unittest.TestCase):
 
                 Hi, I'm |P_FIRSTNAME|.
 
+            |P_SURNAME|.
+
             .. |P_FIRSTNAME| property:: P.name.firstname
+            .. |P_SURNAME| property:: P.name.surname
             """)
         script = SceneScript("inline", doc=SceneScript.read(content))
         script.cast(script.select([self.personae[0]]))
-        model = script.run()
-        shot, line = next(iter(model))
+        model = iter(script.run())
+        shot, line = next(model)
         self.assertEqual("scene", shot.scene)
         self.assertEqual("shot", shot.name)
         self.assertEqual("Hi, I'm William.", line.text)
+        shot, line = next(model)
+        self.assertFalse(line.persona, line)
+
+    def test_property_getter_indent(self):
+        content = textwrap.dedent("""
+            .. entity:: P
+
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            [P]_
+
+                Hi, I'm |P_FIRSTNAME|.
+
+                |P_SURNAME|.
+
+            .. |P_FIRSTNAME| property:: P.name.firstname
+            .. |P_SURNAME| property:: P.name.surname
+            """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([self.personae[0]]))
+        model = iter(script.run())
+        shot, line = next(model)
+        self.assertEqual("scene", shot.scene)
+        self.assertEqual("shot", shot.name)
+        self.assertEqual("Hi, I'm William.", line.text)
+        self.assertTrue(line.persona)
+        shot, line = next(model)
+        self.assertTrue(line.persona, line)
 
     def test_property_getter_fields(self):
         content = textwrap.dedent("""
