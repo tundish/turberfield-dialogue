@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.33.0
+======
+
+* Use internal docutils type for SceneScript settings.
+
 0.32.0
 ======
 

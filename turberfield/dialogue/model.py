@@ -17,7 +17,6 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import argparse
 from collections import defaultdict
 from collections import namedtuple
 from collections import OrderedDict
@@ -42,6 +41,7 @@ from turberfield.utils.misc import group_by_type
 
 import pkg_resources
 import docutils
+from docutils.frontend import Values
 from docutils.nodes import block_quote
 from docutils.nodes import field_body
 from docutils.nodes import list_item
@@ -356,7 +356,7 @@ class SceneScript:
 
     log = logging.getLogger("turberfield.dialogue.model.scenescript")
 
-    settings = argparse.Namespace(
+    settings = Values(defaults=dict(
         character_level_inline_markup=False,
         debug=False, error_encoding="utf-8",
         error_encoding_error_handler="backslashreplace", halt_level=4,
@@ -370,7 +370,7 @@ class SceneScript:
         input_encoding="utf-8",
         input_encoding_error_handler="replace",
         line_length_limit=float("inf"),
-    )
+    ))
 
     docutils.parsers.rst.directives.register_directive(
         "entity", EntityDirective

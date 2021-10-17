@@ -70,7 +70,7 @@ setup(
     },
     install_requires=[
         "blessings>=1.6",
-        "docutils>=0.12",
+        "docutils>=0.17.1",
         "turberfield-utils>=0.36.0",
     ],
     extras_require={
@@ -78,14 +78,14 @@ setup(
             "simpleaudio>=1.0.1",
         ],
         "dev": [
-            "pep8>=1.6.2",
+            "flake8", "wheel"
         ],
         "docbuild": [
             "babel>=2.4.0",
             "sphinx>=1.6.1",
             "sphinx-argparse>=0.2.0",
             "sphinxcontrib-seqdiag>=0.8.5",
-            "sphinx_rtd_theme>=0.2.4"
+            "sphinx_rtd_theme>=1.0.0"
         ],
     },
     tests_require=[],
