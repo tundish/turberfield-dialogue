@@ -311,7 +311,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
                         str(obj).strip().translate(self.escape_table)
                     )
                 elif getattr(entity, "persona", None) is not None:
-                    val = operator.attrgetter(attr)(entity.persona)
+                    fmt = "".join(("{0.", attr, "}"))
+                    val = fmt.format(entity.persona)
                     self.text.append(val.strip())
                     self.html.append('<span class="ref">{0}</span>'.format(
                         val.translate(self.escape_table)

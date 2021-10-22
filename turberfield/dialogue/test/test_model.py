@@ -164,6 +164,35 @@ class PropertyDirectiveTests(unittest.TestCase):
         shot, line = next(model)
         self.assertFalse(line.persona, line)
 
+    def test_property_getter_format(self):
+        content = textwrap.dedent("""
+            .. entity:: P
+
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            [P]_
+
+                Hi, I'm |P_FIRSTNAME|.
+
+            |P_SURNAME|.
+
+            .. |P_FIRSTNAME| property:: P.name.firstname[0]
+            .. |P_SURNAME| property:: P.name.surname
+            """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([self.personae[0]]))
+        model = iter(script.run())
+        shot, line = next(model)
+        self.assertEqual("scene", shot.scene)
+        self.assertEqual("shot", shot.name)
+        self.assertEqual("Hi, I'm W.", line.text)
+        shot, line = next(model)
+        self.assertFalse(line.persona, line)
+
     def test_property_getter_indent(self):
         content = textwrap.dedent("""
             .. entity:: P

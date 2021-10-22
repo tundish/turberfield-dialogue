@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.34.0
+======
+
+* Model implements format string style substitution of references.
+
 0.33.0
 ======
 
