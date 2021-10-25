@@ -51,19 +51,21 @@ class Vocabulary(EnumFactory, enum.Enum):
 
 class DataObject:
 
-    def __init__(self, id=None, **kwargs):
+    def __init__(self, *args, id=None, **kwargs):
+        super().__init__(*args)
         self.id = id or uuid.uuid4()
         for k, v in kwargs.items():
             setattr(self, k, v)
-        super().__init__()
 
     def __repr__(self):
         return "<{0}> {1}".format(type(self).__name__, vars(self))
 
+
 class Persona(DataObject):
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         self._name = kwargs.pop("name", None)
+        super().__init__(*args, **kwargs)
 
         try:
             bits = self._name.split()
@@ -74,7 +76,6 @@ class Persona(DataObject):
         except IndexError:
             self.name = Name("", self._name, [], "")
 
-        super().__init__(**kwargs)
 
     @property
     def nickname(self):
@@ -83,9 +84,9 @@ class Persona(DataObject):
 
 class Stateful:
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._states = {}
-        super().__init__(**kwargs)
 
     @property
     def state(self):
@@ -103,7 +104,7 @@ class Stateful:
     def get_state(self, typ=int, default=0):
         return self._states.get(typ.__name__, default)
 
-class Player(Stateful, Persona):
+class Player(Persona, Stateful):
     pass
 
 Assembly.register(Name, type(uuid.uuid4()))

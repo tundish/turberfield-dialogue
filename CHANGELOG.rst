@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.35.0
+======
+
+* Better collaborative multiple inheritance.
+
 0.34.0
 ======
 
