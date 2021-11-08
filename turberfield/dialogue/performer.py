@@ -57,8 +57,11 @@ class Performer:
     @staticmethod
     def allows(item: Model.Condition):
         if item.format == "state" and isinstance(item.object, Stateful):
-            lhs = item.object.get_state(type(item.value))
             rhs = item.value
+            if item.regex:
+                lhs = item.object.state
+            else:
+                lhs = item.object.get_state(type(item.value))
         else:
             fmt = "".join(("{0.", item.format, "}"))
             try:
@@ -69,7 +72,7 @@ class Performer:
                 rhs = str(item.value)
 
         if item.regex:
-            return item.regex.match(lhs)
+            return item.regex.match(str(lhs))
         else:
             return lhs == rhs
 

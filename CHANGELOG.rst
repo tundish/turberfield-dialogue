@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.36.0
+======
+
+* Fix a bug with regex matching of integer state.
+
 0.35.0
 ======
 

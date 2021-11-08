@@ -506,7 +506,7 @@ class ConditionSyntaxTests(unittest.TestCase):
         self.assertTrue(Performer.allows(conditions[0]))
         self.assertFalse(Performer.allows(conditions[1]))
 
-    def test_regex_matching(self):
+    def test_regex_matching_attribute(self):
         content = textwrap.dedent("""
             .. entity:: WHATEVER
 
@@ -543,6 +543,45 @@ class ConditionSyntaxTests(unittest.TestCase):
         obj.value = 2
         self.assertFalse(Performer.allows(conditions[0]), conditions[0])
         self.assertTrue(Performer.allows(conditions[1]))
+
+    def test_regex_matching_state(self):
+        content = textwrap.dedent("""
+            .. entity:: WHATEVER
+
+            Test exact
+            ~~~~~~~~~~
+
+            Even
+            ----
+
+            .. condition:: WHATEVER.state ([02468])
+
+            Even.
+
+            Odd
+            ---
+
+            .. condition:: WHATEVER.state ([13579])
+
+            Odd.
+
+        """)
+        obj = Stateful()
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        selection = script.select([obj])
+        self.assertTrue(all(selection.values()))
+        script.cast(selection)
+        model = script.run()
+        conditions = [l for s, l in model if isinstance(l, Model.Condition)]
+        self.assertEqual(2, len(conditions))
+
+        self.assertTrue(Performer.allows(conditions[0]), conditions[0])
+        self.assertFalse(Performer.allows(conditions[1]))
+
+        obj.state = 1
+        self.assertFalse(Performer.allows(conditions[0]), conditions[0])
+        self.assertTrue(Performer.allows(conditions[1]))
+
 
 class FXDirectiveTests(unittest.TestCase):
 
