@@ -377,8 +377,10 @@ class PropertyDirectiveTests(unittest.TestCase):
         script.cast(script.select(ensemble))
         model = script.run()
         p = [l for s, l in model if isinstance(l, Model.Property)][-1]
+        self.assertEqual(ensemble[0], p.object)
         self.assertEqual("id", p.attr)
         self.assertIsInstance(p.val, uuid.UUID)
+        self.assertEqual(p.val, ensemble[1].id)
 
 
 @unittest.skipIf(

@@ -277,7 +277,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             bits = s.partition(".")
             donor = self.get_entity(bits[0])
             val = operator.attrgetter(bits[2])(donor.persona) if bits[2] else donor.persona
-            self.shots[-1].items.append(Model.Property(self.speaker, donor.persona, attr, val))
+            self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
         except AttributeError:
             pass
         else:

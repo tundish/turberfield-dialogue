@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.38.0
+======
+
+* Fix implementation of previous feature.
+
 0.37.0
 ======
 
