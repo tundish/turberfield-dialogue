@@ -23,6 +23,7 @@ import operator
 import sys
 import textwrap
 import unittest
+import uuid
 
 from turberfield.dialogue.directives import Entity
 from turberfield.dialogue.model import Model
@@ -355,6 +356,29 @@ class PropertyDirectiveTests(unittest.TestCase):
         p = [l for s, l in model if isinstance(l, Model.Property)][-1]
         self.assertEqual("state", p.attr)
         self.assertIsInstance(p.val, int)
+
+    def test_property_setter_object(self):
+        content = textwrap.dedent(
+            """
+            .. entity:: P
+            .. entity:: S
+
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            .. property:: P.id S.id
+
+            """)
+        ensemble = copy.deepcopy(PropertyDirectiveTests.personae)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select(ensemble))
+        model = script.run()
+        p = [l for s, l in model if isinstance(l, Model.Property)][-1]
+        self.assertEqual("id", p.attr)
+        self.assertIsInstance(p.val, uuid.UUID)
 
 
 @unittest.skipIf(
