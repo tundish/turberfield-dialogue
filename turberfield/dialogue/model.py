@@ -276,7 +276,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             # Attempt objectwise assignment if RHS is an entity
             bits = s.partition(".")
             donor = self.get_entity(bits[0])
-            val = operator.attrgetter(bits[2])(donor.persona) if bits[2] else donor
+            val = operator.attrgetter(bits[2])(donor.persona) if bits[2] else donor.persona
             self.shots[-1].items.append(Model.Property(self.speaker, donor.persona, attr, val))
         except AttributeError:
             pass

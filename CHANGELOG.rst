@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.37.0
+======
+
+* Allow object assignment via property setter.
+
 0.36.0
 ======
 
