@@ -626,7 +626,7 @@ class FXDirectiveTests(unittest.TestCase):
                :loop: 1
 
             """)
-        for suffix in ("mp3", "ogg", "wav"):
+        for suffix in ("mp3", ".oga", "ogg", "wav"):
             with self.subTest(suffix=suffix):
                 text = content.format(suffix)
                 script = SceneScript("inline", doc=SceneScript.read(text))
@@ -664,6 +664,37 @@ class FXDirectiveTests(unittest.TestCase):
                 model = script.run()
                 shot, cue = next(iter(model))
                 self.assertIsInstance(cue, Model.Still)
+                self.assertEqual(
+                    "turberfield.dialogue.sequences.battle_royal",
+                    cue.package
+                )
+                self.assertEqual("whack.{0}".format(suffix), cue.resource)
+                self.assertEqual(0, cue.offset)
+                self.assertEqual(3000, cue.duration)
+                self.assertEqual(1, cue.loop)
+
+    def test_fx_image(self):
+        content = textwrap.dedent(
+            """
+            Scene
+            ~~~~~
+
+            Shot
+            ----
+
+            .. fx:: turberfield.dialogue.sequences.battle_royal whack.{0}
+               :offset: 0
+               :duration: 3000
+               :loop: 1
+
+            """)
+        for suffix in ("mp4", "ogv", "webm"):
+            with self.subTest(suffix=suffix):
+                text = content.format(suffix)
+                script = SceneScript("inline", doc=SceneScript.read(text))
+                model = script.run()
+                shot, cue = next(iter(model))
+                self.assertIsInstance(cue, Model.Video)
                 self.assertEqual(
                     "turberfield.dialogue.sequences.battle_royal",
                     cue.package
