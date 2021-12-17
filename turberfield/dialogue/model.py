@@ -59,7 +59,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
     Property = namedtuple("Property", ["entity", "object", "attr", "val"])
     Audio = namedtuple("Audio", ["package", "resource", "offset", "duration", "loop"])
     Still = namedtuple("Still", ["package", "resource", "offset", "duration", "loop", "label"])
-    Video = namedtuple("Video", list(Still._fields) + [])
+    Video = namedtuple(
+        "Video", list(Still._fields) + ["height", "poster", "src", "url", "width"]
+    )
     Memory = namedtuple("Memory", ["subject", "object", "state", "text", "html"])
     Line = namedtuple("Line", ["persona", "text", "html"])
     Condition = namedtuple("Condition", ["object", "format", "regex", "value"])
@@ -167,7 +169,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
             elif typ.startswith("image"):
                 item = Model.Still(pkg, rsrc, offset, duration, loop, label)
             elif typ.startswith("video"):
-                item = Model.Video(pkg, rsrc, offset, duration, loop, label)
+                item = Model.Video(
+                    pkg, rsrc, offset, duration, loop, label,
+                    *(node["options"].get(i, None) for i in ["height", "poster", "src", "url", "width"])
+                )
         except AttributeError:
             pass
 

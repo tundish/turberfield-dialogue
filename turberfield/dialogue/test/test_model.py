@@ -673,7 +673,7 @@ class FXDirectiveTests(unittest.TestCase):
                 self.assertEqual(3000, cue.duration)
                 self.assertEqual(1, cue.loop)
 
-    def test_fx_image(self):
+    def test_fx_video(self):
         content = textwrap.dedent(
             """
             Scene
@@ -683,9 +683,14 @@ class FXDirectiveTests(unittest.TestCase):
             ----
 
             .. fx:: turberfield.dialogue.sequences.battle_royal whack.{0}
-               :offset: 0
-               :duration: 3000
-               :loop: 1
+                :offset:    0
+                :duration:  3000
+                :loop:      1
+                :label:     A clip of someone getting whacked
+                :height:    720
+                :poster:    http://soundcloud.com/abcdef/cover.jpg
+                :url:       http://soundcloud.com/abcdef/
+                :width:     1080
 
             """)
         for suffix in ("mp4", "ogv", "webm"):

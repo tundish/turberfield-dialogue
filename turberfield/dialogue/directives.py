@@ -170,10 +170,14 @@ class FX(docutils.parsers.rst.Directive):
     optional_arguments = 0
     final_argument_whitespace = False
     option_spec = {
-        "offset": int,
         "duration": int,
-        "loop": int,
+        "height": int,
         "label": str,
+        "loop": int,
+        "offset": int,
+        "poster": str,
+        "url": str,
+        "width": int,
     }
     has_content = False
 
