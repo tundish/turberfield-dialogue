@@ -655,6 +655,7 @@ class FXDirectiveTests(unittest.TestCase):
                :offset: 0
                :duration: 3000
                :loop: 1
+               :width: 480
 
             """)
         for suffix in ("jpg", "jpeg", "png"):
@@ -672,6 +673,8 @@ class FXDirectiveTests(unittest.TestCase):
                 self.assertEqual(0, cue.offset)
                 self.assertEqual(3000, cue.duration)
                 self.assertEqual(1, cue.loop)
+                self.assertIsNone(cue.height)
+                self.assertEqual(480, cue.width)
 
     def test_fx_video(self):
         content = textwrap.dedent(
@@ -708,6 +711,8 @@ class FXDirectiveTests(unittest.TestCase):
                 self.assertEqual(0, cue.offset)
                 self.assertEqual(3000, cue.duration)
                 self.assertEqual(1, cue.loop)
+                self.assertEqual(720, cue.height)
+                self.assertEqual(1080, cue.width)
 
     def test_fx_unhandled(self):
         content = textwrap.dedent(

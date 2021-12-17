@@ -58,10 +58,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
     Shot = namedtuple("Shot", ["name", "scene", "items"])
     Property = namedtuple("Property", ["entity", "object", "attr", "val"])
     Audio = namedtuple("Audio", ["package", "resource", "offset", "duration", "loop"])
-    Still = namedtuple("Still", ["package", "resource", "offset", "duration", "loop", "label"])
-    Video = namedtuple(
-        "Video", list(Still._fields) + ["height", "poster", "src", "url", "width"]
-    )
+    Still = namedtuple("Still", ["package", "resource", "offset", "duration", "loop", "label", "width", "height"])
+    Video = namedtuple("Video", list(Still._fields) + ["poster", "url"])
     Memory = namedtuple("Memory", ["subject", "object", "state", "text", "html"])
     Line = namedtuple("Line", ["persona", "text", "html"])
     Condition = namedtuple("Condition", ["object", "format", "regex", "value"])
@@ -161,17 +159,19 @@ class Model(docutils.nodes.GenericNodeVisitor):
         duration = node["options"].get("duration")
         label = subref_re.sub(self.substitute_property, node["options"].get("label", ""))
         loop = node["options"].get("loop")
+        width = node["options"].get("width")
+        height = node["options"].get("height")
         typ = mimetypes.guess_type(rsrc)[0]
         item = None
         try:
             if typ.startswith("audio"):
                 item = Model.Audio(pkg, rsrc, offset, duration, loop)
             elif typ.startswith("image"):
-                item = Model.Still(pkg, rsrc, offset, duration, loop, label)
+                item = Model.Still(pkg, rsrc, offset, duration, loop, label, width, height)
             elif typ.startswith("video"):
                 item = Model.Video(
-                    pkg, rsrc, offset, duration, loop, label,
-                    *(node["options"].get(i, None) for i in ["height", "poster", "src", "url", "width"])
+                    pkg, rsrc, offset, duration, loop, label, width, height,
+                    *(node["options"].get(i, None) for i in ["poster", "url"])
                 )
         except AttributeError:
             pass
