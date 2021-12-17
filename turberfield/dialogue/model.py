@@ -58,7 +58,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
     Shot = namedtuple("Shot", ["name", "scene", "items"])
     Property = namedtuple("Property", ["entity", "object", "attr", "val"])
     Audio = namedtuple("Audio", ["package", "resource", "offset", "duration", "loop"])
-    Still = namedtuple("Still", ["package", "resource", "offset", "duration", "loop", "label", "width", "height"])
+    Still = namedtuple("Still", list(Audio._fields) + ["label", "width", "height"])
     Video = namedtuple("Video", list(Still._fields) + ["poster", "url"])
     Memory = namedtuple("Memory", ["subject", "object", "state", "text", "html"])
     Line = namedtuple("Line", ["persona", "text", "html"])

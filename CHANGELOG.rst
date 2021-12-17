@@ -6,10 +6,11 @@
 Change Log
 ::::::::::
 
-0.39.0 TODO
-===========
+0.39.0
+======
 
-* Implement Model Video
+* `Model.Still` gets width and height.
+* Implement `Model.Video`.
 
 0.38.0
 ======
