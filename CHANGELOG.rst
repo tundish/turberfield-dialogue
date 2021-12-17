@@ -6,6 +6,22 @@
 Change Log
 ::::::::::
 
+0.39.0 TODO
+===========
+
+* Implement Model Video
+    * caption
+    * download
+    * width
+    * height
+    * poster
+    * url
+    * src
+    * loop
+    * offset
+    * length
+
+
 0.38.0
 ======
 
