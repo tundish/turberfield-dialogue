@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.40.0
+======
+
+* Fix a bug preventing duplicate shot names
+
 0.39.0
 ======
 
