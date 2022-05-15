@@ -356,10 +356,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
             if self.section_level == 1:
                 self.scenes.append(node.parent.attributes["names"][0])
             elif self.section_level == 2:
-                self.shots.append(Model.Shot(
-                    node.parent.attributes["names"][0],
-                    self.scenes[-1],
-                    []))
+                names = node.parent.attributes["names"] + node.parent.attributes["dupnames"]
+                self.shots.append(Model.Shot(names[0], self.scenes[-1], []))
 
 
 class SceneScript:
