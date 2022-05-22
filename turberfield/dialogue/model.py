@@ -153,7 +153,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
         try:
             self.speaker = entity.persona
         except AttributeError:
-            warnings.warn("Entity {0} has no persona.".format(entity))
+            self.log.warning(
+                "{0.parent.source} Line {0.parent.line}: "
+                "Entity has no persona ({1}).".format(node, entity)
+            )
             names = entity.attributes["names"] + entity.attributes["dupnames"]
             self.speaker = names[0]
 
@@ -305,7 +308,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
         try:
             self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
         except AttributeError:
-            warnings.warn("Entity {0} has no persona.".format(entity))
+            warnings.warn(
+                "{0.parent.source} Line {0.parent.line}: "
+                "Entity has no persona ({1}).".format(node, entity)
+            )
 
     def visit_strong(self, node):
         text = node.astext()
