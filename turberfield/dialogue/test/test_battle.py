@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
-
+import argparse
 import collections.abc
 from collections import namedtuple
 import datetime
@@ -46,6 +46,13 @@ import pkg_resources
 
 class LoaderTests(unittest.TestCase):
 
+    def setUp(self):
+        args = argparse.Namespace(
+            log_level=logging.INFO,
+            log_path=None
+        )
+        self.log_name = log_setup(args)
+
     def test_scripts(self):
         folder = SceneScript.Folder(
             "turberfield.dialogue.sequences.battle.logic", "test", None,
@@ -71,12 +78,18 @@ class LoaderTests(unittest.TestCase):
         rv = list(SceneScript.scripts(**folder._asdict()))
         self.assertFalse(rv)
 
+
 class CastingTests(unittest.TestCase):
 
     Persona = namedtuple("Persona", ["uuid", "title", "names"])
     Location = namedtuple("Location", ["name", "capacity"])
 
     def setUp(self):
+        args = argparse.Namespace(
+            log_level=logging.CRITICAL,
+            log_path=None
+        )
+        self.log_name = log_setup(args)
         self.personae = {
             Animal(name="Itchy").set_state(1),
             Animal(name="Scratchy").set_state(1),
