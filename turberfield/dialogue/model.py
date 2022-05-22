@@ -149,7 +149,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def visit_citation_reference(self, node):
         entity = self.get_entity(node.attributes["refname"])
-        self.speaker = entity and entity.persona
+        try:
+            self.speaker = entity.persona
+        except AttributeError:
+            warnings.warn("Entity {0} has no persona.".format(entity))
 
     def visit_Cue(self, node):
         subref_re = re.compile("\|(\w+)\|")

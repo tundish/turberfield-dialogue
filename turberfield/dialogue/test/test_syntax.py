@@ -17,29 +17,16 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import copy
-import enum
-import operator
-import sys
 import textwrap
 import unittest
-import uuid
 
-from turberfield.dialogue.directives import Entity
-from turberfield.dialogue.model import Model
 from turberfield.dialogue.model import SceneScript
-from turberfield.dialogue.performer import Performer
-from turberfield.dialogue.types import DataObject
-from turberfield.dialogue.types import EnumFactory
-from turberfield.dialogue.types import Stateful
-from turberfield.dialogue.types import Player
 
 
 class CitationTests(unittest.TestCase):
 
     def test_regular_citations(self):
-        content = textwrap.dedent(
-        """
+        content = textwrap.dedent("""
         .. [NARRATOR]   Dialogue under development. No entities yet.
 
         [NARRATOR]_
@@ -49,6 +36,9 @@ class CitationTests(unittest.TestCase):
         script = SceneScript("inline", doc=SceneScript.read(content))
         script.cast(script.select([]))
         model = list(script.run())
-        shot, line = next(iter(model))
-        self.assertEqual("scene", shot.scene)
+        items = list(model)
+        self.assertEqual(1, len(items))
+        print(*list(model), sep="\n")
+        shot, line = items[0]
+        self.assertIs(None, shot.scene)
         self.assertEqual("shot", shot.name)
