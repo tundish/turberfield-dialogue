@@ -6,6 +6,16 @@
 Change Log
 ::::::::::
 
+0.41.0 (unreleased)
+===================
+
+These changes are intended to allow dialogue file processing despite missing object references.
+This is to accomodate a writing workflow which begins with regular .rst files.
+
+* Supply 'extra' metadata to logging of errors.
+* Improve tolerance of references lacking persona.
+* Improve tolerance of missing citations.
+
 0.40.0
 ======
 
