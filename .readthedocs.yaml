@@ -19,7 +19,8 @@ sphinx:
 formats:
    - pdf
 
-install:
+python:
+  install:
     - method: pip
       path: .
       extra_requirements:
