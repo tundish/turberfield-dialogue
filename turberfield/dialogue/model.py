@@ -75,9 +75,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 FXDirective.Cue, ConditionDirective.Evaluation
             )
         )
-        self.log = logging.getLogger(
-            "turberfield.dialogue.{0}".format(os.path.basename(self.fP))
-        )
+        self.log = logging.getLogger("turberfield.dialogue.model")
         self.section_level = 0
         self.scenes = [None]
         self.shots = [Model.Shot(None, None, [])]
@@ -128,12 +126,15 @@ class Model(docutils.nodes.GenericNodeVisitor):
             entity = self.get_entity(ref)
             rv = str(operator.attrgetter(attr)(entity.persona)).strip()
         except (AttributeError, KeyError, IndexError, StopIteration) as e:
-            self.log.warning("Argument has bad substitution ref {0}".format(matchObj.group(1)))
+            self.log.warning(
+                "Argument has bad substitution ref {0}".format(matchObj.group(1)),
+                extra={"path": self.fP}
+            )
             rv = ""
         return rv
 
     def default_visit(self, node):
-        self.log.debug(node)
+        self.log.debug(node, extra={"path": self.fP, "line": node.line})
 
     def default_departure(self, node):
         pass
@@ -154,8 +155,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
             self.speaker = entity.persona
         except AttributeError:
             self.log.warning(
-                "{0.parent.source} Line {0.parent.line}: "
-                "Reference to entity with no persona ({1}).".format(node, entity)
+                "Line {0.parent.line: 4}: "
+                "Reference to entity with no persona ({1}).".format(node, entity),
+                extra={"path": self.fP, "line": node.line}
             )
             self.speaker = node.attributes["refname"]
 
@@ -212,7 +214,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 regex = re.compile(pattern)
                 value = pattern
             except Exception as e:
-                self.log.warning("Condition regex error {0} {1}".format(e, pattern))
+                self.log.warning(
+                    "Condition regex error {0} {1}".format(e, pattern),
+                    extra={"path": self.fP, "line": node.line}
+                )
 
         if not regex:
             s = re.compile("\|(\w+)\|").sub(self.substitute_property, pattern)
@@ -308,7 +313,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
         except AttributeError:
             warnings.warn(
-                "{0.parent.source} Line {0.parent.line}: "
+                "Line {0.parent.line}: "
                 "Entity has no persona ({1}).".format(node, entity)
             )
 
@@ -326,7 +331,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
             self.log.warning(
                 "Bad substitution ref before line {0}: {1.rawsource}".format(
                     node.line, node
-                )
+                ),
+                extra={"path": self.fP, "line": node.line}
             )
             raise
         for tgt in defn.children:
@@ -358,7 +364,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
             ))
 
     def visit_title(self, node):
-        self.log.debug(self.section_level)
+        self.log.debug(
+            "Title '{1.rawsource}' at level {0.section_level}".format(self, node),
+            extra={"path": self.fP, "line": node.line}
+        )
         if self.scenes == [None] and self.shots == [Model.Shot(None, None, [])]:
             self.scenes.clear()
             self.shots.clear()
@@ -503,7 +512,7 @@ class SceneScript:
         rv = OrderedDict()
         performing = defaultdict(set)
         pool = list(personae)
-        self.log.debug(pool)
+        self.log.debug(pool, extra={"path": self.fP})
         entities = OrderedDict([
             ("".join(entity.attributes["names"]), entity)
             for entity in sorted(
@@ -543,7 +552,8 @@ class SceneScript:
                     self.log.debug(
                         "No persona for type {0} and states {1} with {2} {3}.".format(
                             typ, states, roles, "role" if roles == 1 else "roles"
-                        )
+                        ),
+                        extra={"path": self.fP}
                     )
         return rv
 
@@ -561,7 +571,8 @@ class SceneScript:
             self.doc.note_explicit_target(c, c)
             c.persona = p
             self.log.debug("{0} to be played by {1}".format(
-                c["names"][0].capitalize(), p)
+                c["names"][0].capitalize(), p),
+                extra={"path": self.fP}
             )
         return self
 
