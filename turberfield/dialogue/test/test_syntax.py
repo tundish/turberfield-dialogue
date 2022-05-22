@@ -42,3 +42,19 @@ class CitationTests(unittest.TestCase):
         self.assertIs(None, shot.scene)
         self.assertIs(None, shot.name)
         self.assertEqual("narrator", line.persona)
+
+    def test_missing_citations(self):
+        content = textwrap.dedent("""
+        [NARRATOR]_
+
+            And they lived happily ever after.
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([]))
+        model = list(script.run())
+        items = list(model)
+        self.assertEqual(1, len(items), items)
+        shot, line = items[0]
+        self.assertIs(None, shot.scene)
+        self.assertIs(None, shot.name)
+        self.assertEqual("narrator", line.persona)

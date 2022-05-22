@@ -155,10 +155,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
         except AttributeError:
             self.log.warning(
                 "{0.parent.source} Line {0.parent.line}: "
-                "Entity has no persona ({1}).".format(node, entity)
+                "Reference to entity with no persona ({1}).".format(node, entity)
             )
-            names = entity.attributes["names"] + entity.attributes["dupnames"]
-            self.speaker = names[0]
+            self.speaker = node.attributes["refname"]
 
     def visit_Cue(self, node):
         subref_re = re.compile("\|(\w+)\|")
