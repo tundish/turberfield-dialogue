@@ -38,6 +38,7 @@ from turberfield.dialogue.directives import Property as PropertyDirective
 from turberfield.dialogue.directives import Memory as MemoryDirective
 from turberfield.utils.assembly import Assembly
 from turberfield.utils.misc import group_by_type
+from turberfield.utils.misc import SyntaxLogger
 
 import pkg_resources
 import docutils
@@ -128,13 +129,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
         except (AttributeError, KeyError, IndexError, StopIteration) as e:
             self.log.warning(
                 "Argument has bad substitution ref {0}".format(matchObj.group(1)),
-                extra={"path": self.fP}
+                extra={"reference": SyntaxLogger.Reference(self.fP)}
             )
             rv = ""
         return rv
 
     def default_visit(self, node):
-        self.log.debug(node, extra={"path": self.fP, "line": node.line})
+        self.log.debug(node, extra={"reference": SyntaxLogger.Reference(self.fP, node.line)})
 
     def default_departure(self, node):
         pass
@@ -155,9 +156,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
             self.speaker = entity.persona
         except AttributeError:
             self.log.warning(
-                "Line {0.parent.line: 4}: "
                 "Reference to entity with no persona ({1}).".format(node, entity),
-                extra={"path": self.fP, "line": node.line}
+                extra={"reference": SyntaxLogger.Reference(self.fP, node.parent.line)}
             )
             self.speaker = node.attributes["refname"]
 
@@ -216,7 +216,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             except Exception as e:
                 self.log.warning(
                     "Condition regex error {0} {1}".format(e, pattern),
-                    extra={"path": self.fP, "line": node.line}
+                    extra={"reference": SyntaxLogger.Reference(self.fP, node.line)}
                 )
 
         if not regex:
@@ -332,7 +332,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 "Bad substitution ref before line {0}: {1.rawsource}".format(
                     node.line, node
                 ),
-                extra={"path": self.fP, "line": node.line}
+                extra={"reference": SyntaxLogger.Reference(self.fP, node.line)}
             )
             raise
         for tgt in defn.children:
@@ -366,7 +366,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def visit_title(self, node):
         self.log.debug(
             "Title '{1.rawsource}' at level {0.section_level}".format(self, node),
-            extra={"path": self.fP, "line": node.line}
+            extra={"reference": SyntaxLogger.Reference(self.fP, node.line)}
         )
         if self.scenes == [None] and self.shots == [Model.Shot(None, None, [])]:
             self.scenes.clear()
@@ -512,7 +512,7 @@ class SceneScript:
         rv = OrderedDict()
         performing = defaultdict(set)
         pool = list(personae)
-        self.log.debug(pool, extra={"path": self.fP})
+        self.log.debug(pool, extra={"reference": SyntaxLogger.Reference(self.fP)})
         entities = OrderedDict([
             ("".join(entity.attributes["names"]), entity)
             for entity in sorted(
@@ -553,7 +553,7 @@ class SceneScript:
                         "No persona for type {0} and states {1} with {2} {3}.".format(
                             typ, states, roles, "role" if roles == 1 else "roles"
                         ),
-                        extra={"path": self.fP}
+                        extra={"reference": SyntaxLogger.Reference(self.fP)}
                     )
         return rv
 
@@ -572,7 +572,7 @@ class SceneScript:
             c.persona = p
             self.log.debug("{0} to be played by {1}".format(
                 c["names"][0].capitalize(), p),
-                extra={"path": self.fP}
+                extra={"reference": SyntaxLogger.Reference(self.fP)}
             )
         return self
 
