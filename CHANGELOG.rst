@@ -15,6 +15,7 @@ This is to accomodate a writing workflow which begins with regular .rst files.
 * Supply 'extra' metadata to logging of errors.
 * Improve tolerance of references lacking persona.
 * Improve tolerance of missing citations.
+* Improve reporting of line numbers where there is an error in property substitution.
 
 0.40.0
 ======
