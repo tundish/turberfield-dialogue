@@ -37,8 +37,8 @@ class CitationTests(unittest.TestCase):
         script.cast(script.select([]))
         model = list(script.run())
         items = list(model)
-        self.assertEqual(1, len(items))
-        print(*list(model), sep="\n")
+        self.assertEqual(1, len(items), items)
         shot, line = items[0]
         self.assertIs(None, shot.scene)
-        self.assertEqual("shot", shot.name)
+        self.assertIs(None, shot.name)
+        self.assertEqual("narrator", line.persona)

@@ -43,6 +43,7 @@ import pkg_resources
 import docutils
 from docutils.frontend import Values
 from docutils.nodes import block_quote
+from docutils.nodes import citation
 from docutils.nodes import field_body
 from docutils.nodes import list_item
 
@@ -153,6 +154,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
             self.speaker = entity.persona
         except AttributeError:
             warnings.warn("Entity {0} has no persona.".format(entity))
+            names = entity.attributes["names"] + entity.attributes["dupnames"]
+            self.speaker = names[0]
 
     def visit_Cue(self, node):
         subref_re = re.compile("\|(\w+)\|")
@@ -243,12 +246,12 @@ class Model(docutils.nodes.GenericNodeVisitor):
         ))
 
     def visit_paragraph(self, node):
-        if self.shots and not isinstance(node.parent, (field_body, list_item)):
+        if self.shots and not isinstance(node.parent, (citation, field_body, list_item)):
             self.text = []
             self.html = ["<p>"]
 
     def depart_paragraph(self, node):
-        if self.shots and not isinstance(node.parent, (field_body, list_item)):
+        if self.shots and not isinstance(node.parent, (citation, field_body, list_item)):
             self.html.append("</p>\n")
             self.close_shot()
 
