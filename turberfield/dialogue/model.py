@@ -20,6 +20,7 @@
 from collections import defaultdict
 from collections import namedtuple
 from collections import OrderedDict
+import functools
 import html.entities
 import logging
 import mimetypes
@@ -116,7 +117,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             if ref and ref.lower() in entity.attributes["names"]),
             None)
 
-    def substitute_property(self, matchObj):
+    def substitute_property(self, matchObj, line=None):
         try:
             defn = self.document.substitution_defs[matchObj.group(1)]
             getter = next(
@@ -128,8 +129,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
             rv = str(operator.attrgetter(attr)(entity.persona)).strip()
         except (AttributeError, KeyError, IndexError, StopIteration) as e:
             self.log.warning(
-                "Argument has bad substitution ref {0}".format(matchObj.group(1)),
-                extra={"reference": SyntaxLogger.Reference(self.fP)}
+                "Argument has bad substitution ref '{0}'".format(matchObj.group(1)),
+                extra={"reference": SyntaxLogger.Reference(self.fP, line)}
             )
             rv = ""
         return rv
@@ -163,11 +164,12 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def visit_Cue(self, node):
         subref_re = re.compile("\|(\w+)\|")
+        subber = functools.partial(self.substitute_property, line=node.parent.line)
         pkg = node["arguments"][0]
-        rsrc = subref_re.sub(self.substitute_property, node["arguments"][1])
+        rsrc = subref_re.sub(subber, node["arguments"][1])
         offset = node["options"].get("offset")
         duration = node["options"].get("duration")
-        label = subref_re.sub(self.substitute_property, node["options"].get("label", ""))
+        label = subref_re.sub(subber, node["options"].get("label", ""))
         loop = node["options"].get("loop")
         width = node["options"].get("width")
         height = node["options"].get("height")
@@ -220,7 +222,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 )
 
         if not regex:
-            s = re.compile("\|(\w+)\|").sub(self.substitute_property, pattern)
+            subber = functools.partial(self.substitute_property, line=node.line)
+            s = re.compile("\|(\w+)\|").sub(subber, pattern)
             try:
                 value = int(s) if s.isdigit() else node.string_import(s)
             except ValueError:
@@ -292,7 +295,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
         ref, attr = node["arguments"][0].split(".")
         entity = self.get_entity(ref)
 
-        s = re.compile("\|(\w+)\|").sub(self.substitute_property, node["arguments"][1])
+        subber = functools.partial(self.substitute_property, line=node.line)
+        s = re.compile("\|(\w+)\|").sub(subber, node["arguments"][1])
         try:
             # Attempt objectwise assignment if RHS is an entity
             bits = s.partition(".")
@@ -329,9 +333,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             defn = self.document.substitution_defs[node.attributes["refname"]]
         except KeyError:
             self.log.warning(
-                "Bad substitution ref before line {0}: {1.rawsource}".format(
-                    node.line, node
-                ),
+                "Bad substitution ref '{0.rawsource}".format(node),
                 extra={"reference": SyntaxLogger.Reference(self.fP, node.line)}
             )
             raise
