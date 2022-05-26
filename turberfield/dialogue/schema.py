@@ -19,12 +19,12 @@
 from collections import OrderedDict
 import datetime
 import enum
-import logging
 import sqlite3
 
 from turberfield.utils.db import Insertion
 from turberfield.utils.db import SQLOperation
 from turberfield.utils.db import Table
+from turberfield.utils.logger import LogManager
 
 
 class SchemaBase:
@@ -69,7 +69,7 @@ class SchemaBase:
 
     @classmethod
     def populate(cls, con, items, log=None):
-        log = log or logging.getLogger("turberfield.dialogue.schema.populate")
+        log = log or LogManager().get_logger("turberfield.dialogue.schema.populate")
         states = [i for i in items if type(i) is enum.EnumMeta]
         entities = [i for i in items if i not in states]
         rv = 0

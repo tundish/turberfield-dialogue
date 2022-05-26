@@ -38,6 +38,7 @@ from turberfield.dialogue.schema import SchemaBase
 from turberfield.utils.assembly import Assembly
 from turberfield.utils.db import Connection
 from turberfield.utils.db import Creation
+from turberfield.utils.logger import LogManager
 
 
 class TerminalHandler:
@@ -286,7 +287,12 @@ class TerminalHandler:
         self.dbPath = dbPath
         self.pause = pause
         self.dwell = dwell
-        self.log = log or logging.getLogger("turberfield.dialogue.handle")
+
+        self.log_manager = LogManager()
+        self.log = log or self.log_manager.clone(
+            self.log_manager.get_logger("turberfield"), "turberfield.dialogue.handle"
+        )
+
         self.shot = None
         self.con = Connection(**Connection.options(paths=[dbPath] if dbPath else []))
         self.handle_creation()
@@ -355,8 +361,9 @@ class CGIHandler(TerminalHandler):
         return obj
 
     def handle_property(self, obj):
-        log = logging.getLogger("turberfield")
-        log.info(obj)
+        self.log_manager = LogManager()
+        self.log = self.log_manager.get_logger("turberfield")
+        self.log.info(obj)
         if obj.object is not None:
             try:
                 setattr(obj.object, obj.attr, obj.val)

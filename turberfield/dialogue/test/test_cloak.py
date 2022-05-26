@@ -21,7 +21,6 @@ from collections import Counter
 from collections.abc import Callable
 import copy
 import itertools
-import logging
 import unittest
 
 from turberfield.dialogue.model import Model
@@ -65,7 +64,6 @@ class SceneTests(unittest.TestCase):
         self.folder = copy.deepcopy(game)
 
     def test_locations(self):
-        log = logging.getLogger("turberfield")
         narrator = next(i for i in self.references if isinstance(i, Narrator))
         cloak = next(i for i in self.references if isinstance(i, Garment))
 

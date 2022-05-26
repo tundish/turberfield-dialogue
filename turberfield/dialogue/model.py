@@ -77,10 +77,11 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 FXDirective.Cue, ConditionDirective.Evaluation
             )
         )
-        # self.log = logging.getLogger("turberfield.dialogue.model")
         self.log_manager = LogManager()
-        self.log = self.log_manager.clone(self.log_manager.get_logger("main"), "turberfield.dialogue.model")
-        print(self.log_manager.routing)
+        self.log = self.log_manager.clone(
+            self.log_manager.get_logger("main"), "turberfield.dialogue.model"
+        )
+
         self.section_level = 0
         self.scenes = [None]
         self.shots = [Model.Shot(None, None, [])]
@@ -452,7 +453,12 @@ class SceneScript:
         The method generates a sequence of
         :py:class:`~turberfield.dialogue.model.SceneScript` objects.
         """
-        log = logging.getLogger("turberfield.dialogue.model.scenescript")
+        log_manager = LogManager()
+        log = log_manager.clone(
+            log_manager.get_logger("main"),
+            "turberfield.dialogue.model.scenescript"
+        )
+
         for path in paths:
             try:
                 fP = pkg_resources.resource_filename(pkg, path)
@@ -484,7 +490,10 @@ class SceneScript:
         return doc
 
     def __init__(self, fP, metadata=None, doc=None):
-        self.log = logging.getLogger("turberfield.dialogue.model.scenescript")
+        self.log_manager = LogManager()
+        self.log = self.log_manager.get_logger(
+            "turberfield.dialogue.model.scenescript"
+        )
         self.fP = fP
         self.metadata = metadata
         self.doc = doc

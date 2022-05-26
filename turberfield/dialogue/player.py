@@ -17,11 +17,11 @@
 # along with turberfield.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections.abc import Callable
-import logging
 
 from turberfield.dialogue.matcher import Matcher
 from turberfield.dialogue.model import SceneScript
 from turberfield.dialogue.performer import Performer
+from turberfield.utils.logger import LogManager
 
 
 def run_through(script, ensemble, roles=1, strict=False):
@@ -36,7 +36,10 @@ def run_through(script, ensemble, roles=1, strict=False):
         try:
             model = dialogue.cast(selection).run()
         except (AttributeError, ValueError) as e:
-            log = logging.getLogger("turberfield.dialogue.player.run_through")
+            log_manager = LogManager()
+            log = log_manager.clone(
+                log_manager.get_logger("main"), "turberfield.dialogue.player.run_through"
+            )
             log.warning(". ".join(getattr(e, "args", e) or e))
             return
         else:

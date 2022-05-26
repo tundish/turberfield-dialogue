@@ -183,7 +183,8 @@ def cgi_consumer(args):
     return rv
 
 def cgi_producer(args, stream=None):
-    log = logging.getLogger("turberfield")
+    log_manager = LogManager()
+    log = log_manager.get_logger("turberfield")
     log.info(args)
     try:
         handler = CGIHandler(
@@ -279,7 +280,8 @@ def main(args):
             for key in vars(args).keys()
         }
         params["folder"] = form.getlist("folder")
-        log = logging.getLogger("turberfield")
+        log_manager = LogManager()
+        log = log_manager.get_logger("turberfield")
         log.info("params")
         log.info(params)
         cgitb.enable()
