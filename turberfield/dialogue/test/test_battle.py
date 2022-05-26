@@ -52,6 +52,7 @@ class LoaderTests(unittest.TestCase):
             log_path=None
         )
         self.log_name = log_setup(args)
+        log = logging.getLogger(self.log_name)
 
     def test_scripts(self):
         folder = SceneScript.Folder(

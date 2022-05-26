@@ -395,8 +395,6 @@ class SceneScript:
 
     Folder = namedtuple("Folder", ["pkg", "description", "metadata", "paths", "interludes"])
 
-    log = logging.getLogger("turberfield.dialogue.model.scenescript")
-
     settings = Values(defaults=dict(
         character_level_inline_markup=False,
         debug=False, error_encoding="utf-8",
@@ -451,16 +449,17 @@ class SceneScript:
         The method generates a sequence of
         :py:class:`~turberfield.dialogue.model.SceneScript` objects.
         """
+        log = logging.getLogger("turberfield.dialogue.model.scenescript")
         for path in paths:
             try:
                 fP = pkg_resources.resource_filename(pkg, path)
             except ImportError:
-                cls.log.warning(
+                log.warning(
                     "No package called {}".format(pkg)
                 )
             else:
                 if not os.path.isfile(fP):
-                    cls.log.warning(
+                    log.warning(
                         "No script file at {}".format(os.path.join(*pkg.split(".") + [path]))
                     )
                 else:
@@ -482,6 +481,7 @@ class SceneScript:
         return doc
 
     def __init__(self, fP, metadata=None, doc=None):
+        self.log = logging.getLogger("turberfield.dialogue.model.scenescript")
         self.fP = fP
         self.metadata = metadata
         self.doc = doc

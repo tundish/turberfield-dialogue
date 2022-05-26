@@ -71,7 +71,7 @@ setup(
     install_requires=[
         "blessings>=1.6",
         "docutils>=0.17.1",
-        "turberfield-utils>=0.40.0",
+        "turberfield-utils>=0.42.0",
     ],
     extras_require={
         "audio": [
