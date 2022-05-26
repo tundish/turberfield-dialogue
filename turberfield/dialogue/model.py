@@ -39,7 +39,7 @@ from turberfield.dialogue.directives import Property as PropertyDirective
 from turberfield.dialogue.directives import Memory as MemoryDirective
 from turberfield.utils.assembly import Assembly
 from turberfield.utils.misc import group_by_type
-from turberfield.utils.misc import SyntaxLogger
+from turberfield.utils.logger import LogManager
 
 import pkg_resources
 import docutils
@@ -77,7 +77,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 FXDirective.Cue, ConditionDirective.Evaluation
             )
         )
-        self.log = logging.getLogger("turberfield.dialogue.model")
+        # self.log = logging.getLogger("turberfield.dialogue.model")
+        self.log_manager = LogManager()
+        self.log = self.log_manager.clone(self.log_manager.get_logger("main"), "turberfield.dialogue.model")
+        print(self.log_manager.routing)
         self.section_level = 0
         self.scenes = [None]
         self.shots = [Model.Shot(None, None, [])]
@@ -130,13 +133,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
         except (AttributeError, KeyError, IndexError, StopIteration) as e:
             self.log.warning(
                 "Argument has bad substitution ref '{0}'".format(matchObj.group(1)),
-                extra={"reference": SyntaxLogger.Reference(self.fP, line)}
+                {"path": self.fP, "line": line}
             )
             rv = ""
         return rv
 
     def default_visit(self, node):
-        self.log.debug(node, extra={"reference": SyntaxLogger.Reference(self.fP, node.line)})
+        self.log.debug(node, {"path": self.fP, "line": node.line})
 
     def default_departure(self, node):
         pass
@@ -158,7 +161,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         except AttributeError:
             self.log.warning(
                 "Reference to entity with no persona ({1}).".format(node, entity),
-                extra={"reference": SyntaxLogger.Reference(self.fP, node.parent.line)}
+                {"path": self.fP, "line": node.parent.line}
             )
             self.speaker = node.attributes["refname"]
 
@@ -218,7 +221,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             except Exception as e:
                 self.log.warning(
                     "Condition regex error {0} {1}".format(e, pattern),
-                    extra={"reference": SyntaxLogger.Reference(self.fP, node.line)}
+                    {"path": self.fP, "line": node.line}
                 )
 
         if not regex:
@@ -334,7 +337,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         except KeyError:
             self.log.warning(
                 "Bad substitution ref '{0.rawsource}".format(node),
-                extra={"reference": SyntaxLogger.Reference(self.fP, node.line)}
+                {"path": self.fP, "line": node.line}
             )
             raise
         for tgt in defn.children:
@@ -368,7 +371,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def visit_title(self, node):
         self.log.debug(
             "Title '{1.rawsource}' at level {0.section_level}".format(self, node),
-            extra={"reference": SyntaxLogger.Reference(self.fP, node.line)}
+            {"path": self.fP, "line": node.line}
         )
         if self.scenes == [None] and self.shots == [Model.Shot(None, None, [])]:
             self.scenes.clear()
@@ -514,7 +517,7 @@ class SceneScript:
         rv = OrderedDict()
         performing = defaultdict(set)
         pool = list(personae)
-        self.log.debug(pool, extra={"reference": SyntaxLogger.Reference(self.fP)})
+        self.log.debug(pool, {"path": self.fP})
         entities = OrderedDict([
             ("".join(entity.attributes["names"]), entity)
             for entity in sorted(
@@ -555,7 +558,7 @@ class SceneScript:
                         "No persona for type {0} and states {1} with {2} {3}.".format(
                             typ, states, roles, "role" if roles == 1 else "roles"
                         ),
-                        extra={"reference": SyntaxLogger.Reference(self.fP)}
+                        {"path": self.fP}
                     )
         return rv
 
@@ -572,9 +575,9 @@ class SceneScript:
             self.doc.note_citation(c)
             self.doc.note_explicit_target(c, c)
             c.persona = p
-            self.log.debug("{0} to be played by {1}".format(
-                c["names"][0].capitalize(), p),
-                extra={"reference": SyntaxLogger.Reference(self.fP)}
+            self.log.debug(
+                "{0} to be played by {1}".format(c["names"][0].capitalize(), p),
+                {"path": self.fP}
             )
         return self
 

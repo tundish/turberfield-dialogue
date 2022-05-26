@@ -39,20 +39,10 @@ try:
 except ImportError:
     viewer = None
 
-from turberfield.utils.misc import log_setup
-
 import pkg_resources
 
 
 class LoaderTests(unittest.TestCase):
-
-    def setUp(self):
-        args = argparse.Namespace(
-            log_level=logging.INFO,
-            log_path=None
-        )
-        self.log_name = log_setup(args)
-        log = logging.getLogger(self.log_name)
 
     def test_scripts(self):
         folder = SceneScript.Folder(
@@ -86,11 +76,6 @@ class CastingTests(unittest.TestCase):
     Location = namedtuple("Location", ["name", "capacity"])
 
     def setUp(self):
-        args = argparse.Namespace(
-            log_level=logging.CRITICAL,
-            log_path=None
-        )
-        self.log_name = log_setup(args)
         self.personae = {
             Animal(name="Itchy").set_state(1),
             Animal(name="Scratchy").set_state(1),
@@ -132,7 +117,6 @@ class CastingTests(unittest.TestCase):
                 "--pause", "0.5", "--dwell", "0.1",
                 "--repeat", "1", "--roles", "2", "--strict"
             ])
-            self.assertEqual("turberfield", log_setup(ns))
             stream = io.StringIO()
             then = datetime.datetime.now()
             rv = list(viewer.cgi_producer(ns, stream))

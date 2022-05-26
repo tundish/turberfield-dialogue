@@ -44,7 +44,8 @@ from turberfield.dialogue.handlers import TerminalHandler
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.player import rehearse
 from turberfield.utils.assembly import Assembly
-from turberfield.utils.misc import log_setup
+from turberfield.utils.logger import LogAdapter
+from turberfield.utils.logger import LogManager
 
 DFLT_PORT = 8080
 DFLT_DB = ":memory:"
@@ -232,7 +233,15 @@ def presenter(args):
             )
 
 def main(args):
-    log = logging.getLogger(log_setup(args))
+    log_manager = LogManager()
+    log = log_manager.get_logger("main")
+
+    if args.log_path:
+        log_manager.set_route(log, args.log_level, LogAdapter(), sys.stderr)
+        log_manager.set_route(log, log.Level.NOTSET, LogAdapter(), args.log_path)
+    else:
+        log_manager.set_route(log, args.log_level, LogAdapter(), sys.stderr)
+
     if args.web:
         os.chdir(sys.prefix)
         log.warning("Web mode: running scripts from directory {0}".format(os.getcwd()))

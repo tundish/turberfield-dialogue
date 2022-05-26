@@ -33,7 +33,8 @@ from turberfield.dialogue.cli import resolve_objects
 from turberfield.dialogue.matcher import Matcher
 from turberfield.dialogue.model import Model
 from turberfield.dialogue.performer import Performer
-from turberfield.utils.misc import log_setup
+from turberfield.utils.logger import LogAdapter
+from turberfield.utils.logger import LogManager
 
 __doc__ = """
 A utility to generate a printable screenplay.
@@ -287,7 +288,15 @@ class HTMLHandler:
         ).lstrip()
 
 def main(args):
-    log = logging.getLogger(log_setup(args))
+    log_manager = LogManager()
+    log = log_manager.get_logger("main")
+
+    if args.log_path:
+        log_manager.set_route(log, args.log_level, LogAdapter(), sys.stderr)
+        log_manager.set_route(log, log.Level.NOTSET, LogAdapter(), args.log_path)
+    else:
+        log_manager.set_route(log, args.log_level, LogAdapter(), sys.stderr)
+
     folders, references = resolve_objects(args)
     matcher = Matcher(folders)
     performer = Performer(folders, references)

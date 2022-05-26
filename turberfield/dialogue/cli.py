@@ -21,6 +21,7 @@ import argparse
 import logging
 
 from turberfield.dialogue.directives import Pathfinder
+from turberfield.utils.logger import Logger
 
 DEFAULT_PAUSE_SECS = 1.2
 DEFAULT_DWELL_SECS = 0.3
@@ -41,15 +42,8 @@ def parser(descr=__doc__):
     rv = argparse.ArgumentParser(description=descr)
     rv.add_argument(
         "--version", action="store_true", default=False,
-        help="Print the current version number")
-    rv.add_argument(
-        "-v", "--verbose", required=False,
-        action="store_const", dest="log_level",
-        const=logging.DEBUG, default=logging.INFO,
-        help="Increase the verbosity of output")
-    rv.add_argument(
-        "--log", default=None, dest="log_path",
-        help="Set a file path for log output")
+        help="Print the current version number"
+    )
     return rv
 
 def add_common_options(parser):
@@ -59,7 +53,7 @@ def add_common_options(parser):
     parser.add_argument(
         "-v", "--verbose", required=False,
         action="store_const", dest="log_level",
-        const=logging.DEBUG, default=logging.INFO,
+        const=Logger.Level.DEBUG, default=Logger.Level.INFO,
         help="Increase the verbosity of output")
     parser.add_argument(
         "--log", default=None, dest="log_path",
