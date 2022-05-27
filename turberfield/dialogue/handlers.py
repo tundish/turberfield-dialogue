@@ -290,7 +290,7 @@ class TerminalHandler:
 
         self.log_manager = LogManager()
         self.log = log or self.log_manager.clone(
-            self.log_manager.get_logger("turberfield"), "turberfield.dialogue.handle"
+            self.log_manager.get_logger("main"), "turberfield.dialogue.handle"
         )
 
         self.shot = None
