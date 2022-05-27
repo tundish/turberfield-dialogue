@@ -12,7 +12,7 @@ Change Log
 These changes are intended to allow dialogue file processing despite missing object references.
 This is to accomodate a writing workflow which begins with regular .rst files.
 
-* Supply 'extra' metadata to logging of errors.
+* Switch from standard library logging to using the LogManager and LogAdapter classes from `turberfield-utils`_.
 * Improve tolerance of references lacking persona.
 * Improve tolerance of missing citations.
 * Improve reporting of line numbers where there is an error in property substitution.
@@ -227,3 +227,5 @@ but you should check your existing projects to see if they are any changes in re
 * Added **strict** mode for casting a rehearsal.
 * Interludes now see a sequence of folders they may **branch** to.
 * State matching is hierarchical; '31' matches a criterion of '3'.
+
+.. _turberfield-utils: https://github.com/tundish/turberfield-utils
