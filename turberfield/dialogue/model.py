@@ -81,6 +81,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
         self.log = self.log_manager.clone(
             self.log_manager.get_logger("main"), "turberfield.dialogue.model"
         )
+        self.log.frame = [
+            "{now}", "{level.name:>8}", "{logger.name}",
+            "{1[path]}", "{1[line]:>5}", " {0}", " {token}"
+        ]
 
         self.section_level = 0
         self.scenes = [None]
@@ -133,8 +137,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
             rv = str(operator.attrgetter(attr)(entity.persona)).strip()
         except (AttributeError, KeyError, IndexError, StopIteration) as e:
             self.log.warning(
-                "Argument has bad substitution ref '{0}'".format(matchObj.group(1)),
-                {"path": self.fP, "line": line}
+                "Argument has bad substitution reference",
+                {"path": self.fP, "line": line},
+                token=matchObj.group(1)
             )
             rv = ""
         return rv
@@ -161,8 +166,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
             self.speaker = entity.persona
         except AttributeError:
             self.log.warning(
-                "Reference to entity with no persona ({1}).".format(node, entity),
-                {"path": self.fP, "line": node.parent.line}
+                "Reference to entity with no persona",
+                {"path": self.fP, "line": node.parent.line},
+                node=node, entity=entity, token=node.rawsource
             )
             self.speaker = node.attributes["refname"]
 
@@ -221,8 +227,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 value = pattern
             except Exception as e:
                 self.log.warning(
-                    "Condition regex error {0} {1}".format(e, pattern),
-                    {"path": self.fP, "line": node.line}
+                    "Condition regex error",
+                    {"path": self.fP, "line": node.line},
+                    token=pattern, exception=e
                 )
 
         if not regex:
@@ -337,8 +344,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
             defn = self.document.substitution_defs[node.attributes["refname"]]
         except KeyError:
             self.log.warning(
-                "Bad substitution ref '{0.rawsource}".format(node),
-                {"path": self.fP, "line": node.line}
+                "Bad substitution reference",
+                {"path": self.fP, "line": node.line},
+                token=node.rawsource
             )
             raise
         for tgt in defn.children:
@@ -371,8 +379,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def visit_title(self, node):
         self.log.debug(
-            "Title '{1.rawsource}' at level {0.section_level}".format(self, node),
-            {"path": self.fP, "line": node.line}
+            "Title level {0.section_level}".format(self),
+            {"path": self.fP, "line": node.line},
+            token=node.rawsource,
         )
         if self.scenes == [None] and self.shots == [Model.Shot(None, None, [])]:
             self.scenes.clear()
