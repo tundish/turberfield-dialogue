@@ -69,14 +69,10 @@ setup(
         ]
     },
     install_requires=[
-        "blessings>=1.6",
         "docutils>=0.17.1",
-        "turberfield-utils>=0.45.0",
+        "turberfield-utils>=0.46.0",
     ],
     extras_require={
-        "audio": [
-            "simpleaudio>=1.0.1",
-        ],
         "dev": [
             "flake8", "wheel"
         ],
@@ -86,6 +82,10 @@ setup(
             "sphinx-argparse>=0.2.0",
             "sphinxcontrib-seqdiag>=0.8.5",
             "sphinx_rtd_theme>=1.0.0"
+        ],
+        "play": [
+            "blessings>=1.6",
+            "simpleaudio>=1.0.1",
         ],
     },
     tests_require=[],

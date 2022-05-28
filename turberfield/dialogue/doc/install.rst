@@ -71,7 +71,7 @@ Microsoft Windows 8.1
    many things, you can limit it to one particular job, or install everything it
    is capable of doing.
 
-   In a moment, we will install `turberfield-dialogue`, including all its `audio`
+   In a moment, we will install `turberfield-dialogue`, including all its `play`
    capabilities. 
 
 .. _install Turberfield Dialogue:
@@ -81,11 +81,11 @@ Install Turberfield Dialogue into the Python environment
 
 On Linux and MacOSX::
 
-    $ ~/py3.5/bin/pip install turberfield-dialogue[audio]
+    $ ~/py3.5/bin/pip install turberfield-dialogue[play]
 
 On Windows 8.1::
 
-    > %USERPROFILE%\py3.6\Scripts\pip install turberfield-dialogue[audio]
+    > %USERPROFILE%\py3.6\Scripts\pip install turberfield-dialogue[play]
 
 Download the examples
 =====================
