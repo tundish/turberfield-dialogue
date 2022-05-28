@@ -9,13 +9,16 @@ Change Log
 0.41.0 (unreleased)
 ===================
 
-These changes are intended to allow dialogue file processing despite missing object references.
-This is to accomodate a writing workflow which begins with regular .rst files.
+These changes are intended to allow dialogue file processing to continue despite missing object references.
+This is to accomodate a writing workflow which begins with regular `.rst` files, and progressively develops
+them to `.dlg.rst` scene scripts.
 
 * Switch from standard library logging to using the LogManager and LogAdapter classes from `turberfield-utils`_.
+* Add a custome LogAdapter for colourized output.
 * Improve tolerance of references lacking persona.
 * Improve tolerance of missing citations.
 * Improve reporting of line numbers where there is an error in property substitution.
+* Minimise package dependencies (blessings and simpleaudio are optional now).
 
 0.40.0
 ======
