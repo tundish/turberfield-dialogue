@@ -114,7 +114,7 @@ class HTMLHandler:
                     notes="{0:02.2f}s. {1:0{2}}".format(span, n + 1, pad)
                 ) for n, (name, text, span) in enumerate(rows)
             )
-        ) for i, (shot, rows) in enumerate(shots.items()))
+        ) for i, (shot, rows) in enumerate(shots.items()) if shot)
 
 
     @staticmethod
@@ -133,12 +133,12 @@ class HTMLHandler:
         )
 
     @staticmethod
-    def format_summary(shots):
+    def format_summary(shots, default="?"):
         return "<ol>\n{0}\n</ol>".format(
             "\n".join(
                 '<li><a href="#{0}">{1}</a></li>'.format(
                     i + 1,
-                    shot.name.capitalize()
+                    default if not shot else shot.name.capitalize()
                 )
                 for i, (shot, rows) in enumerate(shots.items())
             )
@@ -179,7 +179,7 @@ class HTMLHandler:
             name = ""
 
         span = self.pause + self.dwell * text.count(" ")
-        self.shots[self.shot].append((name, text, span))
+        self.shots.setdefault(self.shot, []).append((name, text, span))
         return obj
 
     def to_html(self, metadata, **kwargs):
