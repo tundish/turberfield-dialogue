@@ -58,14 +58,38 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     """
 
-    Shot = namedtuple("Shot", ["name", "scene", "items"])
-    Property = namedtuple("Property", ["entity", "object", "attr", "val"])
-    Audio = namedtuple("Audio", ["package", "resource", "offset", "duration", "loop"])
-    Still = namedtuple("Still", list(Audio._fields) + ["label", "width", "height"])
-    Video = namedtuple("Video", list(Still._fields) + ["poster", "url"])
-    Memory = namedtuple("Memory", ["subject", "object", "state", "text", "html"])
-    Line = namedtuple("Line", ["persona", "text", "html"])
-    Condition = namedtuple("Condition", ["object", "format", "regex", "value"])
+    Shot = namedtuple("Shot", ["name", "scene", "items", "path", "line_nr"], defaults=(None, None))
+    Property = namedtuple(
+        "Property",
+        ["entity", "object", "attr", "val", "path", "line_nr"],
+        defaults=(None, None)
+    )
+    Audio = namedtuple(
+        "Audio",
+        ["package", "resource", "offset", "duration", "loop", "path", "line_nr"],
+        defaults=(None, None)
+    )
+    Still = namedtuple(
+        "Still",
+        list(Audio._fields[:-2]) + ["label", "width", "height", "path", "line_nr"],
+        defaults=(None, None)
+    )
+    Video = namedtuple(
+        "Video",
+        list(Still._fields[:-2]) + ["poster", "url", "path", "line_nr"],
+        defaults=(None, None)
+    )
+    Memory = namedtuple(
+        "Memory",
+        ["subject", "object", "state", "text", "html", "path", "line_nr"],
+        defaults=(None, None)
+    )
+    Line = namedtuple("Line", ["persona", "text", "html", "path", "line_nr"], defaults=(None, None))
+    Condition = namedtuple(
+        "Condition",
+        ["object", "format", "regex", "value", "path", "line_nr"],
+        defaults=(None, None)
+    )
 
     def __init__(self, fP, document):
         super().__init__(document)
