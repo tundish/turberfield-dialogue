@@ -15,6 +15,7 @@ them to `.dlg.rst` scene scripts.
 
 * Switch from standard library logging to using the LogManager and LogAdapter classes from `turberfield-utils`_.
 * Add a custome LogAdapter for colourized output.
+* Add path and line data to model objects.
 * Improve tolerance of references lacking persona.
 * Improve tolerance of missing citations.
 * Improve reporting of line numbers where there is an error in property substitution.
