@@ -83,7 +83,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         )
         self.log.frame = [
             "{now}", "{level.name:>8}", "{logger.name}",
-            "{1[path]}", "{1[line]:>5}", " {0}", " {token}"
+            "{1[path]}", "{1[line_nr]:>5}", " {0}", " {token}"
         ]
 
         self.section_level = 0
@@ -138,14 +138,14 @@ class Model(docutils.nodes.GenericNodeVisitor):
         except (AttributeError, KeyError, IndexError, StopIteration) as e:
             self.log.warning(
                 "Argument has bad substitution reference",
-                {"path": self.fP, "line": line},
+                {"path": self.fP, "line_nr": line},
                 token=matchObj.group(1)
             )
             rv = ""
         return rv
 
     def default_visit(self, node):
-        self.log.debug(node, {"path": self.fP, "line": node.line})
+        self.log.debug(node, {"path": self.fP, "line_nr": node.line})
 
     def default_departure(self, node):
         pass
@@ -167,7 +167,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         except AttributeError:
             self.log.warning(
                 "Reference to entity with no persona",
-                {"path": self.fP, "line": node.parent.line},
+                {"path": self.fP, "line_nr": node.parent.line},
                 node=node, entity=entity, token=node.rawsource
             )
             self.speaker = node.attributes["refname"]
@@ -228,7 +228,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             except Exception as e:
                 self.log.warning(
                     "Condition regex error",
-                    {"path": self.fP, "line": node.line},
+                    {"path": self.fP, "line_nr": node.line},
                     token=pattern, exception=e
                 )
 
@@ -345,7 +345,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         except KeyError:
             self.log.warning(
                 "Bad substitution reference",
-                {"path": self.fP, "line": node.line},
+                {"path": self.fP, "line_nr": node.line},
                 token=node.rawsource
             )
             raise
@@ -380,7 +380,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def visit_title(self, node):
         self.log.debug(
             "Title level {0.section_level}".format(self),
-            {"path": self.fP, "line": node.line},
+            {"path": self.fP, "line_nr": node.line},
             token=node.rawsource,
         )
         if self.scenes == [None] and self.shots == [Model.Shot(None, None, [])]:
