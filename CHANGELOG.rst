@@ -6,8 +6,8 @@
 Change Log
 ::::::::::
 
-0.41.0 (unreleased)
-===================
+0.41.1
+======
 
 These changes are intended to allow dialogue file processing to continue despite missing object references.
 This is to accomodate a writing workflow which begins with regular `.rst` files, and progressively develops
