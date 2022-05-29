@@ -129,7 +129,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             for item in shot.items:
                 yield shot, item
 
-    def close_shot(self):
+    def close_shot(self, line_nr=None):
         if self.memory:
             self.shots[-1].items.append(
                 self.memory._replace(text="".join(self.text), html="\n".join(self.html))
@@ -137,7 +137,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
             self.memory = None
         elif self.text:
             self.shots[-1].items.append(
-                Model.Line(self.speaker, "".join(self.text), "\n".join(self.html))
+                Model.Line(self.speaker, "".join(self.text), "\n".join(self.html), self.fP, line_nr)
             )
             self.text.clear()
             self.html.clear()
@@ -182,7 +182,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def depart_bullet_list(self, node):
         self.html.append("</ul>")
-        self.close_shot()
+        self.close_shot(node.line)
 
     def visit_citation_reference(self, node):
         entity = self.get_entity(node.attributes["refname"])
@@ -211,13 +211,14 @@ class Model(docutils.nodes.GenericNodeVisitor):
         item = None
         try:
             if typ.startswith("audio"):
-                item = Model.Audio(pkg, rsrc, offset, duration, loop)
+                item = Model.Audio(pkg, rsrc, offset, duration, loop, self.fP, node.line)
             elif typ.startswith("image"):
-                item = Model.Still(pkg, rsrc, offset, duration, loop, label, width, height)
+                item = Model.Still(pkg, rsrc, offset, duration, loop, label, width, height, self.fP, node.line)
             elif typ.startswith("video"):
                 item = Model.Video(
                     pkg, rsrc, offset, duration, loop, label, width, height,
-                    *(node["options"].get(i, None) for i in ["poster", "url"])
+                    *(node["options"].get(i, None) for i in ["poster", "url"]),
+                    path=self.fP, line_nr=node.line
                 )
         except AttributeError:
             pass
@@ -230,7 +231,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         subj = self.get_entity(node["options"].get("subject"))
         obj = self.get_entity(node["options"].get("object"))
         self.memory = Model.Memory(
-            subj and subj.persona, obj and obj.persona, state, None, None
+            subj and subj.persona, obj and obj.persona, state, None, None, self.fP, node.line
         )
 
     def visit_emphasis(self, node):
@@ -265,7 +266,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 value = s
 
         self.shots[-1].items.append(
-            Model.Condition(entity.persona, format_, regex, value)
+            Model.Condition(entity.persona, format_, regex, value, self.fP, node.line)
         )
 
     def depart_field_name(self, node):
@@ -298,7 +299,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
     def depart_paragraph(self, node):
         if self.shots and not isinstance(node.parent, (citation, field_body, list_item)):
             self.html.append("</p>\n")
-            self.close_shot()
+            self.close_shot(node.line)
 
     def depart_raw(self, node):
         if "html" in node.attributes["format"] and self.shots:
@@ -337,7 +338,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
             bits = s.partition(".")
             donor = self.get_entity(bits[0])
             val = operator.attrgetter(bits[2])(donor.persona) if bits[2] else donor.persona
-            self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
+            self.shots[-1].items.append(
+                Model.Property(self.speaker, entity.persona, attr, val, self.fP, node.line)
+            )
         except AttributeError:
             pass
         else:
@@ -349,7 +352,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
             val = s
 
         try:
-            self.shots[-1].items.append(Model.Property(self.speaker, entity.persona, attr, val))
+            self.shots[-1].items.append(
+                Model.Property(self.speaker, entity.persona, attr, val, self.fP, node.line)
+            )
         except AttributeError:
             warnings.warn(
                 "Line {0.parent.line}: "
@@ -416,7 +421,9 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 self.scenes.append(node.parent.attributes["names"][0])
             elif self.section_level == 2:
                 names = node.parent.attributes["names"] + node.parent.attributes["dupnames"]
-                self.shots.append(Model.Shot(names[0], self.scenes[-1], []))
+                self.shots.append(
+                    Model.Shot(names[0], self.scenes[-1], [], path=self.fP, line_nr=node.parent.line)
+                )
 
 
 class SceneScript:
