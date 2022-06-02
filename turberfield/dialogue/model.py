@@ -418,7 +418,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
         if isinstance(node.parent, docutils.nodes.section):
             if self.section_level == 1:
-                self.scenes.append(node.parent.attributes["names"][0])
+                names = node.parent.attributes["names"] + node.parent.attributes["dupnames"]
+                self.scenes.append(names[0])
             elif self.section_level == 2:
                 names = node.parent.attributes["names"] + node.parent.attributes["dupnames"]
                 self.shots.append(

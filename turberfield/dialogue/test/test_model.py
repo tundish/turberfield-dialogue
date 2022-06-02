@@ -81,7 +81,7 @@ class SceneTests(unittest.TestCase):
         self.assertEqual("scene 1", shot.scene)
         self.assertEqual("shot 1", shot.name)
 
-    def test_duplicate_scene(self):
+    def test_duplicate_shot(self):
         content = textwrap.dedent(
             """
             Scene 1
@@ -106,6 +106,58 @@ class SceneTests(unittest.TestCase):
         shot, line = next(iter(model))
         self.assertEqual("scene 1", shot.scene)
         self.assertEqual("shot", shot.name)
+
+    def test_duplicate_scene(self):
+        content = textwrap.dedent(
+            """
+            Scene
+            =====
+
+            Shot 1
+            ------
+
+            Text
+
+            Scene
+            =====
+
+            Shot 1
+            ------
+
+            Text
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([]))
+        model = list(script.run())
+        shot, line = next(iter(model))
+        self.assertEqual("scene", shot.scene)
+        self.assertEqual("shot 1", shot.name)
+
+    def test_shot_duplicates_scene(self):
+        content = textwrap.dedent(
+            """
+            Scene 1
+            =======
+
+            Shot 1
+            ------
+
+            Text
+
+            Scene 2
+            =======
+
+            Scene 1
+            -------
+
+            Text
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        script.cast(script.select([]))
+        model = list(script.run())
+        shot, line = next(iter(model))
+        self.assertEqual("scene 1", shot.scene)
+        self.assertEqual("shot 1", shot.name)
 
 
 class PropertyDirectiveTests(unittest.TestCase):

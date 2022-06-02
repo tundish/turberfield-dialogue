@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.42.0
+======
+
+* Better handling of duplicate scene names.
+
 0.41.1
 ======
 
