@@ -165,7 +165,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 {"path": self.fP, "line_nr": line},
                 token=matchObj.group(1)
             )
-            rv = ""
+            rv = None
         return rv
 
     def default_visit(self, node):
@@ -274,7 +274,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def depart_field_body(self, node):
         name, _ = self.metadata.pop(-1)
-        self.metadata.append((name, " ".join(self.text)))
+        if self.text:
+            self.metadata.append((name, " ".join(self.text)))
         self.text.clear()
 
     def visit_list_item(self, node):
@@ -387,10 +388,11 @@ class Model(docutils.nodes.GenericNodeVisitor):
                         tgt["arguments"][0], relative=False, sep=".",
                         path=self.fP, line_nr=defn.line
                     )
-                    self.text.append(str(obj).strip())
-                    self.html.append(
-                        str(obj).strip().translate(self.escape_table)
-                    )
+                    if obj is not None:
+                        self.text.append(str(obj).strip())
+                        self.html.append(
+                            str(obj).strip().translate(self.escape_table)
+                        )
                 elif getattr(entity, "persona", None) is not None:
                     fmt = "".join(("{0.", attr, "}"))
                     val = fmt.format(entity.persona)

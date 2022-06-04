@@ -455,7 +455,7 @@ class PropertyDirectiveTests(unittest.TestCase):
         model = script.run()
         p = next(l for s, l in model if isinstance(l, Model.Property))
         self.assertEqual("state", p.attr)
-        self.assertEqual(None, p.val)
+        self.assertIs(None, p.val)
 
     def test_property_setter_good_substitution(self):
         content = textwrap.dedent(

@@ -41,7 +41,6 @@ class Pathfinder:
             log.warning(
                 "Empty argument",
                 {"path": path, "line_nr": line_nr},
-                token=name
             )
             return None
 
