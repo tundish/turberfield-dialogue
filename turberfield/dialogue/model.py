@@ -107,7 +107,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
         )
         self.log.frame = [
             "{now}", "{level.name:>8}", "{logger.name}",
-            "{1[path]}", "{1[line_nr]:>5}", " {0}", " {token}"
+            "{1[path]}", "{1[line_nr]:>5}", " {0:<64}", " {token}"
         ]
 
         self.section_level = 0
