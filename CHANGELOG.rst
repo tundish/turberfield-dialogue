@@ -6,8 +6,8 @@
 Change Log
 ::::::::::
 
-0.43.0 (unreleased)
-===================
+0.43.0
+======
 
 * Better handling of missing substitution references.
 
