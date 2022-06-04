@@ -70,7 +70,7 @@ setup(
     },
     install_requires=[
         "docutils>=0.17.1",
-        "turberfield-utils>=0.46.0",
+        "turberfield-utils>=0.47.0",
     ],
     extras_require={
         "dev": [

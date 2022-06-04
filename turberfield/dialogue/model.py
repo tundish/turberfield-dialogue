@@ -384,7 +384,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 entity = self.get_entity(ref)
                 if entity is None:
                     obj = Pathfinder.string_import(
-                        tgt["arguments"][0], relative=False, sep="."
+                        tgt["arguments"][0], relative=False, sep=".",
+                        path=self.fP, line_nr=defn.line
                     )
                     self.text.append(str(obj).strip())
                     self.html.append(

@@ -26,13 +26,23 @@ from docutils.nodes import BackLinkable, Element, General, Inline
 from docutils.nodes import Labeled, Targetable, TextElement
 import docutils.parsers.rst
 
+from turberfield.utils.logger import LogManager
+
 
 class Pathfinder:
 
     @staticmethod
-    def string_import(arg, relative=False, sep=None):
+    def string_import(arg, relative=False, sep=None, path=None, line_nr=None):
+        log = LogManager().get_logger(
+            "turberfield.dialogue.model"
+        ).clone("turberfield.dialogue.directives")
         arg = arg.strip()
         if not arg:
+            log.warning(
+                "Empty argument",
+                {"path": path, "line_nr": line_nr},
+                token=name
+            )
             return None
 
         try:
@@ -69,7 +79,15 @@ class Pathfinder:
 
         obj = mod
         for name in bits[index:]:
-            obj = getattr(obj, name)
+            try:
+                obj = getattr(obj, name)
+            except AttributeError:
+                log.warning(
+                    "Object missing an attribute",
+                    {"path": path, "line_nr": line_nr},
+                    token=name
+                )
+                return None
 
         return obj
 
