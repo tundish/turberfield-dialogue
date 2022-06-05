@@ -39,7 +39,7 @@ class FootnoteTests(unittest.TestCase):
 
     def test_unspoken_footnote_html_to_weasyprint(self):
         content = textwrap.dedent("""
-            Don't worry, I'm a doctor [*]_.
+            Don't worry, I'm a doctor. [*]_
 
             .. [*] Not a medical doctor.
 
@@ -49,6 +49,7 @@ class FootnoteTests(unittest.TestCase):
         self.assertEqual(1, len(model.shots))
         lines = model.shots[0].items
         self.assertEqual(2, len(lines))
+        self.assertIn('class="call"', lines[0].html)
         self.assertIn('class="footnote"', lines[-1].html)
         self.assertIn('role="note"', lines[-1].html)
         self.assertNotIn("<p>", lines[-1].html)
@@ -58,7 +59,7 @@ class FootnoteTests(unittest.TestCase):
         content = textwrap.dedent("""
             [P]_
 
-                Don't worry, I'm a doctor [*]_.
+                Don't worry, I'm a doctor. [*]_
 
             .. [*] Not a medical doctor.
 
@@ -68,6 +69,7 @@ class FootnoteTests(unittest.TestCase):
         self.assertEqual(1, len(model.shots))
         lines = model.shots[0].items
         self.assertEqual(2, len(lines))
+        self.assertIn('class="call"', lines[0].html)
         self.assertIn('class="footnote"', lines[-1].html)
         self.assertIn('role="note"', lines[-1].html)
         self.assertNotIn("<p>", lines[-1].html)
@@ -77,7 +79,7 @@ class FootnoteTests(unittest.TestCase):
         content = textwrap.dedent("""
             [P]_
 
-                Don't worry, I'm a doctor [*]_.
+                Don't worry, I'm a doctor. [*]_
 
                 .. [*] Not a medical doctor.
 
@@ -87,6 +89,7 @@ class FootnoteTests(unittest.TestCase):
         self.assertEqual(1, len(model.shots))
         lines = model.shots[0].items
         self.assertEqual(2, len(lines))
+        self.assertIn('class="call"', lines[0].html)
         self.assertIn('class="footnote"', lines[-1].html)
         self.assertIn('role="note"', lines[-1].html)
         self.assertNotIn("<p>", lines[-1].html)

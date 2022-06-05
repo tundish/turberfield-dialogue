@@ -279,6 +279,16 @@ class Model(docutils.nodes.GenericNodeVisitor):
             self.metadata.append((name, " ".join(self.text)))
         self.text.clear()
 
+    def depart_footnote_reference(self, node):
+        try:
+            span = self.html.pop(-1)
+            self.html.append(span.replace('class="text"','class="call"'))
+        except InderError:
+            self.log.warning(
+                "Unable to process footnote callout",
+                {"path": self.fP, "line_nr": node.line},
+            )
+
     def visit_footnote(self, node):
         self.text = []
 
