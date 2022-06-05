@@ -6,8 +6,8 @@
 Change Log
 ::::::::::
 
-0.44.0 (unreleased)
-===================
+0.44.0
+======
 
 * Special handling of footnotes to allow formatting for print.
 
