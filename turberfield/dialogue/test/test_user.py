@@ -37,26 +37,60 @@ from turberfield.dialogue.types import Player
 
 class FootnoteTests(unittest.TestCase):
 
-    def test_bullet_lists(self):
+    def test_unspoken_footnote_html_to_weasyprint(self):
         content = textwrap.dedent("""
-            Scene
-            =====
+            Don't worry, I'm a doctor [*]_.
 
-            Shot
-            ----
-
-            ABC.
-
-            * Always
-            * Be
-            * Closing
+            .. [*] Not a medical doctor.
 
         """)
         script = SceneScript("inline", doc=SceneScript.read(content))
         model = script.run()
-        self.assertEqual(["Always", "Be", "Closing"], model.shots[-1].items[-1].text.splitlines())
-        self.assertEqual(2, model.shots[-1].items[-1].html.count("ul>"))
-        self.assertEqual(6, model.shots[-1].items[-1].html.count("li>"))
+        self.assertEqual(1, len(model.shots))
+        lines = model.shots[0].items
+        self.assertEqual(2, len(lines))
+        self.assertIn('class="footnote"', lines[-1].html)
+        self.assertIn('role="note"', lines[-1].html)
+        self.assertNotIn("<p>", lines[-1].html)
+        self.assertNotIn("</p>", lines[-1].html)
+
+    def test_spoken_footnote_reference_html_to_weasyprint(self):
+        content = textwrap.dedent("""
+            [P]_
+
+                Don't worry, I'm a doctor [*]_.
+
+            .. [*] Not a medical doctor.
+
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        self.assertEqual(1, len(model.shots))
+        lines = model.shots[0].items
+        self.assertEqual(2, len(lines))
+        self.assertIn('class="footnote"', lines[-1].html)
+        self.assertIn('role="note"', lines[-1].html)
+        self.assertNotIn("<p>", lines[-1].html)
+        self.assertNotIn("</p>", lines[-1].html)
+
+    def test_spoken_footnote_html_to_weasyprint(self):
+        content = textwrap.dedent("""
+            [P]_
+
+                Don't worry, I'm a doctor [*]_.
+
+                .. [*] Not a medical doctor.
+
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        self.assertEqual(1, len(model.shots))
+        lines = model.shots[0].items
+        self.assertEqual(2, len(lines))
+        self.assertIn('class="footnote"', lines[-1].html)
+        self.assertIn('role="note"', lines[-1].html)
+        self.assertNotIn("<p>", lines[-1].html)
+        self.assertNotIn("</p>", lines[-1].html)
 
 
 class SceneTests(unittest.TestCase):

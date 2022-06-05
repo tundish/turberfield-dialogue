@@ -47,6 +47,7 @@ from docutils.frontend import Values
 from docutils.nodes import block_quote
 from docutils.nodes import citation
 from docutils.nodes import field_body
+from docutils.nodes import footnote
 from docutils.nodes import list_item
 
 
@@ -278,6 +279,20 @@ class Model(docutils.nodes.GenericNodeVisitor):
             self.metadata.append((name, " ".join(self.text)))
         self.text.clear()
 
+    def visit_footnote(self, node):
+        self.text = []
+
+    def depart_footnote(self, node):
+        try:
+            span = self.html.pop(-1)
+            self.html.append(span.replace('class="text"','class="footnote" role="note"'))
+        except InderError:
+            self.log.warning(
+                "Unable to process footnote",
+                {"path": self.fP, "line_nr": node.line},
+            )
+        self.close_shot(node.line)
+
     def visit_list_item(self, node):
         self.html.append("<li>")
 
@@ -293,12 +308,12 @@ class Model(docutils.nodes.GenericNodeVisitor):
         ))
 
     def visit_paragraph(self, node):
-        if self.shots and not isinstance(node.parent, (citation, field_body, list_item)):
+        if self.shots and not isinstance(node.parent, (citation, field_body, footnote, list_item)):
             self.text = []
             self.html = ["<p>"]
 
     def depart_paragraph(self, node):
-        if self.shots and not isinstance(node.parent, (citation, field_body, list_item)):
+        if self.shots and not isinstance(node.parent, (citation, field_body, footnote, list_item)):
             self.html.append("</p>\n")
             self.close_shot(node.line)
 
