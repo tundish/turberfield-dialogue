@@ -48,6 +48,7 @@ from docutils.nodes import block_quote
 from docutils.nodes import citation
 from docutils.nodes import field_body
 from docutils.nodes import footnote
+from docutils.nodes import footnote_reference
 from docutils.nodes import list_item
 
 
@@ -301,6 +302,7 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 "Unable to process footnote",
                 {"path": self.fP, "line_nr": node.line},
             )
+        self.html.append("</p>\n")
         self.close_shot(node.line)
 
     def visit_list_item(self, node):
@@ -323,6 +325,13 @@ class Model(docutils.nodes.GenericNodeVisitor):
             self.html = ["<p>"]
 
     def depart_paragraph(self, node):
+        if any(isinstance(i, footnote_reference) for i in node.children):
+            self.log.debug(
+                "Not closing after footnote reference",
+                {"path": self.fP, "line_nr": node.line},
+            )
+            return
+
         if self.shots and not isinstance(node.parent, (citation, field_body, footnote, list_item)):
             self.html.append("</p>\n")
             self.close_shot(node.line)

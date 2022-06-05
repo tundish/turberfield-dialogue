@@ -47,13 +47,15 @@ class FootnoteTests(unittest.TestCase):
         script = SceneScript("inline", doc=SceneScript.read(content))
         model = script.run()
         self.assertEqual(1, len(model.shots))
-        lines = model.shots[0].items
-        self.assertEqual(2, len(lines))
-        self.assertIn('class="call"', lines[0].html)
-        self.assertIn('class="footnote"', lines[-1].html)
-        self.assertIn('role="note"', lines[-1].html)
-        self.assertNotIn("<p>", lines[-1].html)
-        self.assertNotIn("</p>", lines[-1].html)
+        self.assertEqual(1, len(model.shots[0].items))
+        line = model.shots[0].items[0]
+        self.assertIn('class="call"', line.html)
+        self.assertIn('class="footnote"', line.html)
+        self.assertIn('role="note"', line.html)
+        self.assertTrue(line.html.startswith("<p>"))
+        self.assertTrue(line.html.endswith("</p>\n"))
+        self.assertNotIn("<p>", line.html[1:])
+        self.assertNotIn("</p>", line.html[:-2])
 
     def test_spoken_footnote_reference_html_to_weasyprint(self):
         content = textwrap.dedent("""
@@ -67,13 +69,15 @@ class FootnoteTests(unittest.TestCase):
         script = SceneScript("inline", doc=SceneScript.read(content))
         model = script.run()
         self.assertEqual(1, len(model.shots))
-        lines = model.shots[0].items
-        self.assertEqual(2, len(lines))
-        self.assertIn('class="call"', lines[0].html)
-        self.assertIn('class="footnote"', lines[-1].html)
-        self.assertIn('role="note"', lines[-1].html)
-        self.assertNotIn("<p>", lines[-1].html)
-        self.assertNotIn("</p>", lines[-1].html)
+        self.assertEqual(1, len(model.shots[0].items))
+        line = model.shots[0].items[0]
+        self.assertIn('class="call"', line.html)
+        self.assertIn('class="footnote"', line.html)
+        self.assertIn('role="note"', line.html)
+        self.assertTrue(line.html.startswith("<p>"))
+        self.assertTrue(line.html.endswith("</p>\n"))
+        self.assertNotIn("<p>", line.html[1:])
+        self.assertNotIn("</p>", line.html[:-2])
 
     def test_spoken_footnote_html_to_weasyprint(self):
         content = textwrap.dedent("""
@@ -87,13 +91,15 @@ class FootnoteTests(unittest.TestCase):
         script = SceneScript("inline", doc=SceneScript.read(content))
         model = script.run()
         self.assertEqual(1, len(model.shots))
-        lines = model.shots[0].items
-        self.assertEqual(2, len(lines))
-        self.assertIn('class="call"', lines[0].html)
-        self.assertIn('class="footnote"', lines[-1].html)
-        self.assertIn('role="note"', lines[-1].html)
-        self.assertNotIn("<p>", lines[-1].html)
-        self.assertNotIn("</p>", lines[-1].html)
+        self.assertEqual(1, len(model.shots[0].items))
+        line = model.shots[0].items[0]
+        self.assertIn('class="call"', line.html)
+        self.assertIn('class="footnote"', line.html)
+        self.assertIn('role="note"', line.html)
+        self.assertTrue(line.html.startswith("<p>"))
+        self.assertTrue(line.html.endswith("</p>\n"))
+        self.assertNotIn("<p>", line.html[1:])
+        self.assertNotIn("</p>", line.html[:-2])
 
 
 class SceneTests(unittest.TestCase):
