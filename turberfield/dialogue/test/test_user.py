@@ -57,6 +57,28 @@ class FootnoteTests(unittest.TestCase):
         self.assertNotIn("<p>", line.html[1:])
         self.assertNotIn("</p>", line.html[:-2])
 
+    def test_multispan_unspoken_footnote_html_to_weasyprint(self):
+        content = textwrap.dedent("""
+            Don't worry, I'm a doctor. [*]_
+
+            .. [*] Not a *medical* doctor.
+
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        self.assertEqual(1, len(model.shots))
+        self.assertEqual(1, len(model.shots[0].items))
+        line = model.shots[0].items[0]
+        print(line)
+        self.assertNotIn('class="text"', line.html)
+        self.assertIn('class="call"', line.html)
+        self.assertIn('class="footnote"', line.html)
+        self.assertIn('role="note"', line.html)
+        self.assertTrue(line.html.startswith("<p>"))
+        self.assertTrue(line.html.endswith("</p>\n"))
+        self.assertNotIn("<p>", line.html[1:])
+        self.assertNotIn("</p>", line.html[:-2])
+
     def test_spoken_footnote_reference_html_to_weasyprint(self):
         content = textwrap.dedent("""
             [P]_
