@@ -292,16 +292,19 @@ class Model(docutils.nodes.GenericNodeVisitor):
 
     def visit_footnote(self, node):
         self.text = []
+        self.html.append('<span class="footnote" role="note">')
 
     def depart_footnote(self, node):
         try:
             for n, span in enumerate(self.html.copy()):
-                self.html[n] = span.replace('class="text"','class="footnote" role="note"')
+                if '<span class="text">' in span:
+                    self.html[n] = span.replace('<span class="text">', "").replace("</span>", "")
         except InderError:
             self.log.warning(
                 "Unable to process footnote",
                 {"path": self.fP, "line_nr": node.line},
             )
+        self.html.append("</span>")
         self.html.append("</p>\n")
         self.close_shot(node.line)
 

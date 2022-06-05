@@ -69,8 +69,7 @@ class FootnoteTests(unittest.TestCase):
         self.assertEqual(1, len(model.shots))
         self.assertEqual(1, len(model.shots[0].items))
         line = model.shots[0].items[0]
-        print(line)
-        self.assertNotIn('class="text"', line.html)
+        self.assertNotIn('<span class="text"', line.html)
         self.assertIn('class="call"', line.html)
         self.assertIn('class="footnote"', line.html)
         self.assertIn('role="note"', line.html)
