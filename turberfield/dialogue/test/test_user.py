@@ -437,3 +437,19 @@ class RstFeatureTests(unittest.TestCase):
         model = script.run()
         self.assertEqual(2, model.shots[-1].items[-1].html.count("marquee"))
         self.assertEqual(0, model.shots[-1].items[-1].text.count("marquee"))
+
+    def test_replacement_substitution(self):
+        content = textwrap.dedent("""
+            .. |RST| replace:: reStructuredText
+
+            Just like real |RST|
+
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        self.assertEqual(1, len(model.shots))
+        self.assertEqual(1, len(model.shots[0].items))
+        line = model.shots[0].items[0]
+        self.assertEqual("Just like real reStructuredText", line.text)
+        self.assertIn("Just", line.html.splitlines()[1])
+        self.assertIn("reStructuredText", line.html.splitlines()[2])

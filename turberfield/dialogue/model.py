@@ -406,6 +406,11 @@ class Model(docutils.nodes.GenericNodeVisitor):
             text.translate(self.escape_table)
         ))
 
+    def visit_substitution_definition(self, node):
+        label = re.compile("\|(\w+)\|").search(node.rawsource)
+        if label:
+            self.document.substitution_defs[label.group(1)] = node
+
     def visit_substitution_reference(self, node):
         try:
             defn = self.document.substitution_defs[node.attributes["refname"]]
@@ -415,7 +420,6 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 {"path": self.fP, "line_nr": node.line},
                 token=node.rawsource
             )
-            raise
         for tgt in defn.children:
             if isinstance(tgt, PropertyDirective.Getter):
                 ref, dot, attr = tgt["arguments"][0].partition(".")
@@ -437,6 +441,12 @@ class Model(docutils.nodes.GenericNodeVisitor):
                     self.html.append('<span class="ref">{0}</span>'.format(
                         val.translate(self.escape_table)
                     ))
+            else:
+                text = defn.astext()
+                self.text.append(text)
+                self.html.append('<span class="ref">{0}</span>'.format(
+                    text.translate(self.escape_table)
+                ))
 
     def visit_Text(self, node):
         if isinstance(node.parent, docutils.nodes.paragraph):
