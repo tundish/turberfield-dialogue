@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.45.0
+======
+
+* Basic implementation of reStructuredText style substitution definitions.
+
 0.44.0
 ======
 
