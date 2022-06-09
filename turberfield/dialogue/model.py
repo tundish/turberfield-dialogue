@@ -420,6 +420,8 @@ class Model(docutils.nodes.GenericNodeVisitor):
                 {"path": self.fP, "line_nr": node.line},
                 token=node.rawsource
             )
+            return
+
         for tgt in defn.children:
             if isinstance(tgt, PropertyDirective.Getter):
                 ref, dot, attr = tgt["arguments"][0].partition(".")
