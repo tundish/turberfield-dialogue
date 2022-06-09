@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.46.1
+======
+
+* Fix handling of missing substitution definitions.
+
 0.45.0
 ======
 
