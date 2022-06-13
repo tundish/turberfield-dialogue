@@ -344,6 +344,10 @@ class Model(docutils.nodes.GenericNodeVisitor):
             if self.shots[-1].items:
                 line = self.shots[-1].items[-1]
                 self.shots[-1].items[-1] = line._replace(html=line.html + "\n" + node.astext())
+            else:
+                self.shots[-1].items.append(
+                    Model.Line(None, "", node.astext(), self.fP, node.line)
+                )
 
     def visit_reference(self, node):
         ref_id = self.document.nameids.get(node.get("refname", None), None)

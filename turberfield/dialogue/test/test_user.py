@@ -438,6 +438,19 @@ class RstFeatureTests(unittest.TestCase):
         self.assertEqual(2, model.shots[-1].items[-1].html.count("marquee"))
         self.assertEqual(0, model.shots[-1].items[-1].text.count("marquee"))
 
+    def test_inline_raw_html(self):
+        content = textwrap.dedent("""
+            .. raw:: html
+
+                <marquee>Puppies die when you do bad design</marquee>
+        """)
+        script = SceneScript("inline", doc=SceneScript.read(content))
+        model = script.run()
+        self.assertTrue(model.shots)
+        self.assertTrue(model.shots[0].items)
+        self.assertEqual(2, model.shots[0].items[0].html.count("marquee"))
+        self.assertEqual(0, model.shots[0].items[0].text.count("marquee"))
+
     def test_replacement_substitution(self):
         content = textwrap.dedent("""
             .. |RST| replace:: reStructuredText

@@ -6,6 +6,11 @@
 Change Log
 ::::::::::
 
+0.47.0
+======
+
+* Allow raw html directive outside the context of a shot.
+
 0.46.1
 ======
 
